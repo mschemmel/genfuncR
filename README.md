@@ -1,5 +1,5 @@
 # gvizR
-Collection of R functions to visualize genomic features
+A home for R functions I use myself to visualize genomic features. Will grow over time.
 
 ## genearrow
 
