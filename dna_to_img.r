@@ -6,7 +6,7 @@ dna_to_img <- function(sequence, base_colors) {
 
     grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.99, height = 0.99))
     count <- 1
-    for (i in seq) {
+    for (i in sequence) {
         bcol <- unlist(unname(base_colors[i]))
         x_ <- count / x_spacer
         if (x_ == 1) {
