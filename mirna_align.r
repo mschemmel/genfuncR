@@ -196,17 +196,18 @@ mirnali <- function(mirna,
     grid::popViewport(1)
 }
 
-mirna <-  "AUUCUCAGCGCCUGUAUAGAGG"
-target <- "UAGGAGUCGCGGAAUUAACACU"
+# EXAMPLE
+#mirna <-  "AUUCUCAGCGCCUGUAUAGAGG"
+#target <- "UAGGAGUCGCGGAAUUAACACU"
 
-mirnali(mirna,
-        target,
-        mirna_name = "miRNA 1",
-        target_name = "mRNA 1",
-        alignment_type = ":",
-        match_color = "forestgreen",
-        mismatch_color = "firebrick",
-        highlight_area = list("A" = c(5, 10), "B" = c(13, 17), "C" = c(20, 20)),
-        highlight_color = list("A" = "gray90", "B" = "navajowhite", "C" = "gray90"),
-        target_position_label = c(200:(199 + nchar(target))),
-        target_position_label_rot = 90)
+#mirnali(mirna,
+#        target,
+#        mirna_name = "miRNA 1",
+#        target_name = "mRNA 1",
+#        alignment_type = ":",
+#        match_color = "forestgreen",
+#        mismatch_color = "firebrick",
+#        highlight_area = list("A" = c(5, 10), "B" = c(13, 17), "C" = c(20, 20)),
+#        highlight_color = list("A" = "gray90", "B" = "navajowhite", "C" = "gray90"),
+#        target_position_label = c(200:(199 + nchar(target))),
+#        target_position_label_rot = 90)
