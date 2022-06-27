@@ -1,6 +1,3 @@
-library(grid)
-library(GetoptLong)
-
 text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
                                       x = grid::unit(x_, "npc"),
@@ -195,19 +192,3 @@ mirnali <- function(mirna,
 
     grid::popViewport(1)
 }
-
-# EXAMPLE
-#mirna <-  "AUUCUCAGCGCCUGUAUAGAGG"
-#target <- "UAGGAGUCGCGGAAUUAACACU"
-
-#mirnali(mirna,
-#        target,
-#        mirna_name = "miRNA 1",
-#        target_name = "mRNA 1",
-#        alignment_type = ":",
-#        match_color = "forestgreen",
-#        mismatch_color = "firebrick",
-#        highlight_area = list("A" = c(5, 10), "B" = c(13, 17), "C" = c(20, 20)),
-#        highlight_color = list("A" = "gray90", "B" = "navajowhite", "C" = "gray90"),
-#        target_position_label = c(200:(199 + nchar(target))),
-#        target_position_label_rot = 90)
