@@ -1,4 +1,10 @@
-dna_to_img <- function(sequence, base_colors) {
+dna_to_img <- function(sequence, base_colors = NULL) {
+    seq_ <- unlist(strsplit(sequence, split = ""))
+
+    if(is.null(base_colors)) {
+        base_colors <- list(A = "#9EE362", T = "#00C0D0", G = "#FFD403", C = "#FF9356", U = "#d83131")
+    }
+
     # define some constants
     y_ <- 0.95          # starting point
     y_spacer <- 0.05    # spacer in y direction
@@ -6,7 +12,7 @@ dna_to_img <- function(sequence, base_colors) {
 
     grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.99, height = 0.99))
     count <- 1
-    for (i in sequence) {
+    for (i in seq_) {
         bcol <- unlist(unname(base_colors[i]))
         x_ <- count / x_spacer
         if (x_ == 1) {

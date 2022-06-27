@@ -8,21 +8,11 @@ Returns a `grid.polygon` object. Can be combined to a series of genes.
 </p>
 
 ## dna_to_img
-Returns a colored DNA sequence for further editing.
-<br>
-Example:
 ```r
 library(grid)
-source("/PATH/OF/R_FILE.r")
 
-# create random dna sequence
-seq <- paste0(sample(c("A", "T", "G", "C"), 76, replace = TRUE), collapse = "")
-seq <- unlist(strsplit(seq, split = ""))
-
-# set colors
-base_col <- list(A = "#9EE362", T = "#00C0D0", G = "#FFD403", C = "#FF9356")
-
-# print colored dna sequences
+# example
+mirna <-  "TCAGCTAGCTATCTAGCTAGCTAGCTACTACGA"
 dna_to_img(seq, base_col)
 ```
 
