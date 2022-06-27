@@ -12,7 +12,7 @@ Returns a `grid.polygon` object. Can be combined to a series of genes.
 library(grid)
 
 # example
-mirna <-  "TCAGCTAGCTATCTAGCTAGCTAGCTACTACGA"
+seq <-  "TCAGCTAGCTATCTAGCTAGCTAGCTACTACGA"
 dna_to_img(seq, base_col)
 ```
 
