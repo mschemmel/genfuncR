@@ -13,7 +13,7 @@ library(grid)
 
 # example
 seq <-  "TCAGCTAGCTATCTAGCTAGCTAGCTACTACGA"
-dna_to_img(seq, base_col)
+dna_to_img(seq)
 ```
 
 <p align="center">
