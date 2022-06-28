@@ -1,3 +1,12 @@
+#' plots nucleotide sequence as image
+#'
+#' @param sequence A nucleotide sequence string
+#' @param base_colos A list of colors to be used for every nucleotide
+#' return Viewport with printed nucleotide sequence
+#'
+#' @examples
+#' dna_to_img("TATCGATCGATC", list(A = "#9EE362", T = "#00C0D0", G = "#FFD403", C = "#FF9356", U = "#d83131"))
+
 dna_to_img <- function(sequence, base_colors = NULL) {
     seq_ <- unlist(strsplit(sequence, split = ""))
 
