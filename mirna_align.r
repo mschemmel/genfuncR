@@ -1,3 +1,13 @@
+#' puts a text label on a specific position
+#' @param vp_name Name of the viewport
+#' @param x_ x coordinate
+#' @param y_ y coordinate
+#' @param w_ w coordinate
+#' @param h_ h coordinate
+#' @param label_txt Text to be printed on that position
+#' @param gp_ Grid parameter like font, style, color, ...
+#' @example
+#' text_label(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
 text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
                                       x = grid::unit(x_, "npc"),
@@ -8,6 +18,21 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
     grid::grid.text(label_txt, gp = gp_, rot = angle)
     grid::popViewport(1)
 }
+
+#' plot alignment
+#' @param mirna Sequence of miRNA sequence
+#' @param target Sequence of target sequence
+#' @param mirna_name Name of the miRNA
+#' @param target_name Name of the target
+#' @param alignment_type Type of alignment
+#' @param match_color Color of matched nucleotides
+#' @param mismatch_color Color of mismatches nucleotides
+#' @param highlight_area Area to highlight
+#' @param highlight_color Color of highlighted area
+#' @param target_position_label Positional label of target sequence
+#' @param target_position_label_rot Angle of positional label
+#' @example
+#' mirnali(mirna, target)
 
 mirnali <- function(mirna,
                     target,
