@@ -63,8 +63,8 @@ geneset <- function(gff_file) {
 
     # store some constants
     max_value <- max(gff_file$start, gff_file$end)
-    s1_height <- 0.8 # Target
-    s2_height <- 0.2 # miRNA
+    s1_height <- 0.8
+    s2_height <- 0.2
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
 
