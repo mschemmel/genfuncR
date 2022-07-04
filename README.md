@@ -1,5 +1,11 @@
 # genfuncR
 A home for R functions I use myself to visualize genomic features. Will grow over time. Should serve as a starting point for own representations and compilations (multi panel plots).
+<br>
+<br>
+Each function should do three things at its core:
+-   easy to use (data.frame or string/vector as input - no fancy objects)
+-   lightweight
+-   no dependencies other than base R
 
 ## gene_arrow
 Returns a `grid.polygon` object. Can be combined to a series of genes. 
