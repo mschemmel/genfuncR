@@ -20,8 +20,9 @@ gff <- data.frame(seqname = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "C
 #' return grid polygon object
 
 #' @examples
-#' genearrow(1,5,4,6,"downstream")
+#' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, direction = "downstream")
 
+# TODO: add multiple arrow head types
 genearrow <- function(x1, y1, x2, y2, direction, ...){
     arrsize <- x2 - x1
     arrw <- arrsize * 0.2 # TODO: make size dynamic
@@ -40,7 +41,6 @@ genearrow <- function(x1, y1, x2, y2, direction, ...){
 }
 
 geneset <- function(gff_file) {
-    # start plotting grids
     # create newpage to draw on
     grid::grid.newpage()
 
@@ -58,13 +58,11 @@ geneset <- function(gff_file) {
                         width = 0.7,
                         height = 0.3,
                         just = c("center")))
-                        
-
 
     # store some constants
     max_value <- max(gff_file$start, gff_file$end)
-    s1_height <- 0.8
-    s2_height <- 0.2
+    s1_pos <- 0.8
+    s2_pos <- 0.2
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
 
@@ -80,11 +78,13 @@ geneset <- function(gff_file) {
                         just = c("center")))
 
     # forward and reverse direction
-    grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"), y0 = unit(s1_height, "npc"), x1 = unit(genomic_vp_width_x1, "npc"), y1 = unit(s1_height, "npc"))   
-    grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"), y0 = unit(s2_height, "npc"), x1 = unit(genomic_vp_width_x1, "npc"), y1 = unit(s2_height, "npc"))   
+    grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"), y0 = unit(s1_pos, "npc"), x1 = unit(genomic_vp_width_x1, "npc"), y1 = unit(s1_pos, "npc"))   
+    grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"), y0 = unit(s2_pos, "npc"), x1 = unit(genomic_vp_width_x1, "npc"), y1 = unit(s2_pos, "npc"))   
+    
+    # TODO: add proper axis plus label
     #grid::grid.xaxis(label = seq(0,max_value, max_value/10), at = seq(0, 1, 0.1))
 
-    # add genes
+    # add features of gff (or dataframe) file
     for(i in seq(1:nrow(gff_file))) {
         # downstream
         if(gff_file$strand[i] == "+") {
@@ -102,11 +102,8 @@ geneset <- function(gff_file) {
                       y2 = unit(0.3, "npc"), direction = "upstream", gp = gpar(fill = "navajowhite3"))
         }
         else {
-           warning("Start and end position are the same.")
+           warning("Unrecognized 'strand' symbol.")
         }
     }
     grid::popViewport(1)
 }
-
-
-
