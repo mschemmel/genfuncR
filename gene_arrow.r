@@ -1,17 +1,4 @@
-# random gff file
-gff <- data.frame(seqname = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "Chr3"),
-                    source = rep("Genome",7),
-                    feature = rep("Gene",7),
-                    start = c(34, 370, 800, 1100, 1500, 2020, 2500),
-                    end = c(364,700, 950, 1250, 2000, 2200, 2700),
-                    score = rep(".", 7),
-                    strand = c("+","+","-","+","+","-","+"),
-                    frame = c(rep(0,7)),
-                    attribute = paste0("seq", seq(1,7,1))
-                    )
-
 #' plots an arrow in an defined direction representing a single gene
-
 #' @param x1 x1 coordinate
 #' @param y1 y1 coordinate
 #' @param x2 x2 coordinate
@@ -40,6 +27,28 @@ genearrow <- function(x1, y1, x2, y2, direction, ...){
     }
 }
 
+#' puts a text label on a specific position
+#' @param vp_name Name of the viewport
+#' @param x_ x coordinate
+#' @param y_ y coordinate
+#' @param w_ w coordinate
+#' @param h_ h coordinate
+#' @param label_txt Text to be printed on that position
+#' @param gp_ Grid parameter like font, style, color, ...
+#' 
+#' @examples
+#' text_label(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
+text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_ = NULL) {
+    grid::pushViewport(grid::viewport(name = vp_name,
+                                      x = grid::unit(x_, "npc"),
+                                      y = grid::unit(y_, "npc"),
+                                      width = w_,
+                                      height = h_,
+                                      just = c("center")))
+    grid::grid.text(label_txt, gp = gp_, rot = angle)
+    grid::popViewport(1)
+}
+
 geneset <- function(gff_file) {
     # create newpage to draw on
     grid::grid.newpage()
@@ -61,6 +70,7 @@ geneset <- function(gff_file) {
 
     # store some constants
     max_value <- max(gff_file$start, gff_file$end)
+    min_value <- min(gff_file$start, gff_file$end)
     s1_pos <- 0.8
     s2_pos <- 0.2
     genomic_vp_width_x0 <- 0
@@ -82,7 +92,8 @@ geneset <- function(gff_file) {
     grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"), y0 = unit(s2_pos, "npc"), x1 = unit(genomic_vp_width_x1, "npc"), y1 = unit(s2_pos, "npc"))   
     
     # TODO: add proper axis plus label
-    #grid::grid.xaxis(label = seq(0,max_value, max_value/10), at = seq(0, 1, 0.1))
+    grid::grid.xaxis(label = round(seq(min_value, max_value, (max_value - min_value)/10), 0), at = seq(0, 1, 0.1))
+    text_label(x_ = 0.5, y_ = -0.5 , w_ = 0.1, h_ = 0.2, label_txt = "Region (bp)")
 
     # add features of gff (or dataframe) file
     for(i in seq(1:nrow(gff_file))) {
