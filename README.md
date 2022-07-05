@@ -1,10 +1,33 @@
 # genfuncR
 A home for R functions I use myself to visualize genomic features. Will grow over time. Should serve as a starting point for own representations and compilations (multi panel plots).
+<br>
+<br>
+Each function should do three things at its core:
+-   easy to use (data.frame or string/vector as input - no fancy objects)
+-   lightweight
+-   no dependencies other than base R
 
-## gene_arrow
-Returns a `grid.polygon` object. Can be combined to a series of genes. 
+## geneset
+```r
+library(grid)
+
+# random gff file
+gff <- data.frame(seqname = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "Chr3"),
+                  source = rep("Genome",7),
+                  feature = rep("Gene",7),
+                  start = c(34, 370, 800, 1100, 1500, 2020, 2500),
+                  end = c(364,700, 950, 1250, 2000, 2200, 2700),
+                  score = rep(".", 7),
+                  strand = c("+","+","-","+","+","-","+"),
+                  frame = rep(0,7),
+                  attribute = paste0("seq", seq(1,7,1)))
+
+# example
+geneset(gff)
+```
+
 <p align="center">
-<img src="./img/genearrow.png" width="50%">
+<img src="./img/geneset.png" width="50%">
 </p>
 
 ## dna_to_img
