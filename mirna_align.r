@@ -6,7 +6,8 @@
 #' @param h_ h coordinate
 #' @param label_txt Text to be printed on that position
 #' @param gp_ Grid parameter like font, style, color, ...
-#' @example
+
+#' @examples
 #' text_label(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
 text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
@@ -51,7 +52,7 @@ mirnali <- function(mirna,
 
     # check sequence properties
     if (length(mirna) != length(target)) {
-        GetoptLong::qqcat("Error:\nmiRNA:\t@{length(mirna)}\nTarget:\t@{length(target)}\n")
+        cat("Error:\nmiRNA:\t", length(mirna), "\nTarget:\t", length(target),"\n")
         stop("Unequal number of nucleotides. Please check.")
     }
     if (length(mirna) < 15 | length(mirna) > 40) stop("Range of sequence should be between 15 and 40 nucleotides.")
@@ -70,7 +71,7 @@ mirnali <- function(mirna,
     if (!is.null(target_position_label)) {
         if (length(target_position_label) != length(mirna)) {
             warning("Range of alignment exceeds given target locations.")
-            GetoptLong::qqcat("Warning:\nRange of label: @{diff(range(target_position_label))+1}\nRange of alignment @{length(mirna)}\n")
+            cat("Warning:\nRange of label:", diff(range(target_position_label))+1, "\nRange of alignment ", length(mirna)}, "\n")
         }
     }
 
@@ -100,6 +101,8 @@ mirnali <- function(mirna,
                         width = 0.7,
                         height = 0.3,
                         just = c("center")))
+
+        
 
     # define color and alignment type
     alignment_symbol <- vector()

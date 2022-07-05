@@ -46,7 +46,6 @@ dna_to_img(seq)
 ## mirnali
 ```r
 library(grid)
-library(GetoptLong)
 
 mirna <-  "AUUCUCAGCGCCUGUAUAGAGG"
 target <- "UAGGAGUCGCGGAAUUAACACU"
