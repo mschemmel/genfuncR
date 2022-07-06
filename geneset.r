@@ -114,7 +114,7 @@ geneset <- function(gff_file) {
     text_label(x_ = 0.5, y_ = -0.5, w_ = 0.1, h_ = 0.2, label_txt = "Region (bp)")
 
     # add features of gff (or dataframe) file
-    for (i in seq(1:nrow(gff_file))) {
+    for (i in seq_len(nrow(gff_file))) {
         # downstream
         if (gff_file$strand[i] == "+") {
             genearrow(x1 = unit(relative(gff_file$start[i], max_value), "npc"),
