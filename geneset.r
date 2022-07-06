@@ -4,10 +4,9 @@
 #' @param x2 x2 coordinate
 #' @param y2 y2 coordinate
 #' @param direction Direction of the gene (upstream | downstream)
-#' return grid polygon object
-
+#' @param arrow_type Appearance of arrow head (arrow | barrow | box)
 #' @examples
-#' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, direction = "downstream")
+#' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
 # TODO: add multiple arrow head types
 genearrow <- function(x1, y1, x2, y2, direction, arrow_type = "arrow", ...) {
@@ -54,6 +53,7 @@ genearrow <- function(x1, y1, x2, y2, direction, arrow_type = "arrow", ...) {
 #' @param w_ w coordinate
 #' @param h_ h coordinate
 #' @param label_txt Text to be printed on that position
+#' @param angle Angle of text label
 #' @param gp_ Grid parameter like font, style, color, ...
 #' @examples
 #' text_label(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
@@ -68,6 +68,11 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
     grid::grid.text(label_txt, gp = gp_, rot = angle)
     grid::popViewport(1)
 }
+
+#' draw a set of genes based on data.frame or gff file
+#' @param gff_file data.frame of gff file or pure own data.frame
+#' @examples
+#' geneset(gff)
 
 geneset <- function(gff_file) {
     # create newpage to draw on
@@ -112,6 +117,7 @@ geneset <- function(gff_file) {
                         y0 = unit(s1_pos, "npc"),
                         x1 = unit(genomic_vp_width_x1, "npc"),
                         y1 = unit(s1_pos, "npc"))
+    # reverse direction
     grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"),
                         y0 = unit(s2_pos, "npc"),
                         x1 = unit(genomic_vp_width_x1, "npc"),
@@ -131,7 +137,7 @@ geneset <- function(gff_file) {
                       y2 = unit(0.9, "npc"),
                       direction = "downstream",
                       gp = gpar(fill = "darkslategray"),
-                      arrow_type = "barrow")
+                      arrow_type = "arrow")
         }
 
         # upstream
@@ -142,7 +148,7 @@ geneset <- function(gff_file) {
                       y2 = unit(0.3, "npc"),
                       direction = "upstream",
                       gp = gpar(fill = "navajowhite3"),
-                      arrow_type = "barrow")
+                      arrow_type = "arrow")
         }
         else {
            warning("Unrecognized 'strand' symbol.")
