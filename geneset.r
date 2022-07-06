@@ -74,7 +74,10 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @examples
 #' geneset(gff)
 
-geneset <- function(gff_file) {
+geneset <- function(gff_file,
+                    forward_color = "darkslategray",
+                    reverse_color = "navajowhite3") {
+
     # create newpage to draw on
     grid::grid.newpage()
 
@@ -136,7 +139,7 @@ geneset <- function(gff_file) {
                       x2 = unit(relative(gff_file$end[i], max_value), "npc"),
                       y2 = unit(0.9, "npc"),
                       direction = "downstream",
-                      gp = gpar(fill = "darkslategray"),
+                      gp = gpar(fill = forward_color),
                       arrow_type = "arrow")
         }
 
@@ -147,7 +150,7 @@ geneset <- function(gff_file) {
                       x2 = unit(relative(gff_file$end[i], max_value), "npc"),
                       y2 = unit(0.3, "npc"),
                       direction = "upstream",
-                      gp = gpar(fill = "navajowhite3"),
+                      gp = gpar(fill = reverse_color),
                       arrow_type = "arrow")
         }
         else {
