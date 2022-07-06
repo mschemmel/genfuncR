@@ -13,11 +13,15 @@
 genearrow <- function(x1, y1, x2, y2, direction, arrow_type = "arrow", ...) {
     arrsize <- x2 - x1
     arrw <- arrsize * 0.2 # TODO: make size dynamic
-
+    barrow_head_size <- 0.05
     if (direction == "downstream") {
         if (arrow_type == "arrow") {
             grid.polygon(c(x1, x1, x2 - arrw, x2, x2 - arrw),
                          c(y1, y2, y2, mean(c(y1, y2)), y1), ...)
+        }
+        else if (arrow_type == "barrow") {
+            grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
+                         c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1), ...)
         }
         else if (arrow_type == "box") {
             grid.polygon(c(x1, x1, x2, x2),
@@ -28,6 +32,10 @@ genearrow <- function(x1, y1, x2, y2, direction, arrow_type = "arrow", ...) {
         if (arrow_type == "arrow") {
             grid.polygon(c(x1 + arrw, x1, x1 + arrw, x2, x2),
                          c(y1, mean(c(y2, y1)), y2, y2, y1), ...)
+        }
+        else if (arrow_type == "barrow") {
+            grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
+                         c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1), ...)
         }
         else if (arrow_type == "box") {
             grid.polygon(c(x1, x1, x2, x2),
@@ -123,7 +131,7 @@ geneset <- function(gff_file) {
                       y2 = unit(0.9, "npc"),
                       direction = "downstream",
                       gp = gpar(fill = "darkslategray"),
-                      arrow_type = "arrow")
+                      arrow_type = "barrow")
         }
 
         # upstream
@@ -134,7 +142,7 @@ geneset <- function(gff_file) {
                       y2 = unit(0.3, "npc"),
                       direction = "upstream",
                       gp = gpar(fill = "navajowhite3"),
-                      arrow_type = "arrow")
+                      arrow_type = "barrow")
         }
         else {
            warning("Unrecognized 'strand' symbol.")
