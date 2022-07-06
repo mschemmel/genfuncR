@@ -13,14 +13,14 @@ library(grid)
 
 # random gff file
 gff <- data.frame(seqname = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "Chr3"),
-                  source = rep("Genome",7),
-                  feature = rep("Gene",7),
+                  source = rep("Genome", 7),
+                  feature = rep("Gene", 7),
                   start = c(34, 370, 800, 1100, 1500, 2020, 2500),
-                  end = c(364,700, 950, 1250, 2000, 2200, 2700),
+                  end = c(364, 700, 950, 1250, 2000, 2200, 2700),
                   score = rep(".", 7),
-                  strand = c("+","+","-","+","+","-","+"),
-                  frame = rep(0,7),
-                  attribute = paste0("seq", seq(1,7,1)))
+                  strand = c("+", "+", "-", "+", "+", "-", "+"),
+                  frame = rep(0, 7),
+                  attribute = paste0("seq", seq(1, 7, 1)))
 
 # example
 geneset(gff)
