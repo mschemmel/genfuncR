@@ -4,39 +4,39 @@
 #' @param x2 x2 coordinate
 #' @param y2 y2 coordinate
 #' @param direction Direction of the gene (upstream | downstream)
-#' @param arrow_type Appearance of arrow head (arrow | barrow | box)
+#' @param arr_type Appearance of arrow head (arrow | barrow | box)
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
 # TODO: add multiple arrow head types
-genearrow <- function(x1, y1, x2, y2, direction, arrow_type = "arrow", ...) {
+genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", ...) {
     arrsize <- x2 - x1
     arrw <- arrsize * 0.2 # TODO: make size dynamic
     barrow_head_size <- 0.05
     if (direction == "downstream") {
-        if (arrow_type == "arrow") {
+        if (arr_type == "arrow") {
             grid.polygon(c(x1, x1, x2 - arrw, x2, x2 - arrw),
                          c(y1, y2, y2, mean(c(y1, y2)), y1), ...)
         }
-        else if (arrow_type == "barrow") {
+        else if (arr_type == "barrow") {
             grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
                          c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1), ...)
         }
-        else if (arrow_type == "box") {
+        else if (arr_type == "box") {
             grid.polygon(c(x1, x1, x2, x2),
                          c(y1, y2, y2, y1), ...)
         }
     }
     else if (direction == "upstream") {
-        if (arrow_type == "arrow") {
+        if (arr_type == "arrow") {
             grid.polygon(c(x1 + arrw, x1, x1 + arrw, x2, x2),
                          c(y1, mean(c(y2, y1)), y2, y2, y1), ...)
         }
-        else if (arrow_type == "barrow") {
+        else if (arr_type == "barrow") {
             grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
                          c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1), ...)
         }
-        else if (arrow_type == "box") {
+        else if (arr_type == "box") {
             grid.polygon(c(x1, x1, x2, x2),
                          c(y1, y2, y2, y1), ...)
         }
@@ -71,12 +71,16 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 
 #' draw a set of genes based on data.frame or gff file
 #' @param gff_file data.frame of gff file or pure own data.frame
+#' @param forward_color color of genes in forward direction
+#' @param reverse_color color of genes in reverse direction
+#' @param arrow_type shape of arrow head
 #' @examples
 #' geneset(gff)
 
 geneset <- function(gff_file,
                     forward_color = "darkslategray",
-                    reverse_color = "navajowhite3") {
+                    reverse_color = "navajowhite3",
+                    arrow_type = "arrow") {
 
     # create newpage to draw on
     grid::grid.newpage()
@@ -140,7 +144,7 @@ geneset <- function(gff_file,
                       y2 = unit(0.9, "npc"),
                       direction = "downstream",
                       gp = gpar(fill = forward_color),
-                      arrow_type = "arrow")
+                      arr_type = arrow_type)
         }
 
         # upstream
@@ -151,7 +155,7 @@ geneset <- function(gff_file,
                       y2 = unit(0.3, "npc"),
                       direction = "upstream",
                       gp = gpar(fill = reverse_color),
-                      arrow_type = "arrow")
+                      arr_type = arrow_type)
         }
         else {
            warning("Unrecognized 'strand' symbol.")
