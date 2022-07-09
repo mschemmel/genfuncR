@@ -71,16 +71,20 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 
 #' draw a set of genes based on data.frame or gff file
 #' @param gff_file data.frame of gff file or pure own data.frame
-#' @param forward_color color of genes in forward direction
-#' @param reverse_color color of genes in reverse direction
-#' @param arrow_type shape of arrow head
+#' @param forward_color color of genes in forward direction (default = "darkslategray")
+#' @param reverse_color color of genes in reverse direction (default = "navajowhite3")
+#' @param arrow_type shape of arrow head (default = "arrow")
+#' @param gene_height height in percent (0-1) of gene box (default = 1)
+#' @param distance distance between forward and revers strand in percent (0-1) (default = 1)
 #' @examples
 #' geneset(gff)
 
 geneset <- function(gff_file,
                     forward_color = "darkslategray",
                     reverse_color = "navajowhite3",
-                    arrow_type = "arrow") {
+                    arrow_type = "arrow",
+                    gene_height = 1,
+                    distance = 1) {
 
     # create newpage to draw on
     grid::grid.newpage()
@@ -103,10 +107,19 @@ geneset <- function(gff_file,
     # store some constants
     max_value <- max(gff_file$start, gff_file$end)
     min_value <- min(gff_file$start, gff_file$end)
-    s1_pos <- 0.8
+    gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
+                              0.2 * gene_height,
+                              stop("Height of gene box (gene_height) not allowed to be 0."))
     s2_pos <- 0.2
+    gap <- ifelse(distance > 0 & distance <= 1,
+                  gene_box_height + ((s2_pos + gene_box_height) * distance),
+                  stop("Distance between forward and reverse strand should not exceed 1."))
+
+    s1_pos <- s2_pos + gap
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
+
+
 
     # helper function
     relative <- function(x, max_x) ((x * genomic_vp_width_x1) / max_x)
@@ -139,9 +152,9 @@ geneset <- function(gff_file,
         # downstream
         if (gff_file$strand[i] == "+") {
             genearrow(x1 = unit(relative(gff_file$start[i], max_value), "npc"),
-                      y1 = unit(0.7, "npc"),
+                      y1 = unit(s1_pos - (gene_box_height / 2), "npc"),
                       x2 = unit(relative(gff_file$end[i], max_value), "npc"),
-                      y2 = unit(0.9, "npc"),
+                      y2 = unit(s1_pos + (gene_box_height / 2), "npc"),
                       direction = "downstream",
                       gp = gpar(fill = forward_color),
                       arr_type = arrow_type)
@@ -150,9 +163,9 @@ geneset <- function(gff_file,
         # upstream
         else if (gff_file$strand[i] == "-") {
             genearrow(x1 = unit(relative(gff_file$start[i], max_value), "npc"),
-                      y1 = unit(0.1, "npc"),
+                      y1 = unit(s2_pos - (gene_box_height / 2), "npc"),
                       x2 = unit(relative(gff_file$end[i], max_value), "npc"),
-                      y2 = unit(0.3, "npc"),
+                      y2 = unit(s2_pos + (gene_box_height / 2), "npc"),
                       direction = "upstream",
                       gp = gpar(fill = reverse_color),
                       arr_type = arrow_type)
