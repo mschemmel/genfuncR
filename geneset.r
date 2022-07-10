@@ -109,11 +109,11 @@ geneset <- function(gff_file,
     min_value <- min(gff_file$start, gff_file$end)
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
                               0.2 * gene_height,
-                              stop("Height of gene box (gene_height) not allowed to be 0."))
+                              stop("Height of gene box (gene_height) have to be between 0 and 1."))
     s2_pos <- 0.2
     gap <- ifelse(distance > 0 & distance <= 1,
                   gene_box_height + ((s2_pos + gene_box_height) * distance),
-                  stop("Distance between forward and reverse strand should not exceed 1."))
+                  stop("Distance between forward and reverse strand have to be between 0 and 1."))
 
     s1_pos <- s2_pos + gap
     genomic_vp_width_x0 <- 0
