@@ -76,6 +76,9 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @param arrow_type shape of arrow head (default = "arrow")
 #' @param gene_height height in percent (0-1) of gene box (default = 1)
 #' @param distance distance between forward and revers strand in percent (0-1) (default = 1)
+#' @param show_axis show axis or not (default = TRUE)
+#' @param axis_label_text text of x axis label (default: "Region (bp)")
+#' @param axis_interval numerical interval of axis (default = NULL)
 #' @examples
 #' geneset(gff)
 
@@ -84,7 +87,10 @@ geneset <- function(gff_file,
                     reverse_color = "navajowhite3",
                     arrow_type = "arrow",
                     gene_height = 1,
-                    distance = 1) {
+                    distance = 1,
+                    show_axis = TRUE,
+                    axis_label_text = "Region (bp)",
+                    axis_interval = NULL) {
 
     # create newpage to draw on
     grid::grid.newpage()
@@ -107,6 +113,7 @@ geneset <- function(gff_file,
     # store some constants
     max_value <- max(gff_file$start, gff_file$end)
     min_value <- min(gff_file$start, gff_file$end)
+    range <- max_value - min_value
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
                               0.2 * gene_height,
                               stop("Height of gene box (gene_height) have to be between 0 and 1."))
@@ -119,7 +126,20 @@ geneset <- function(gff_file,
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
 
+    # TODO: adjust viewport width according to axis range
+    round_to <- ifelse(range > 10000 & range < 100000, 10000,
+                ifelse(range > 1000 & range < 10000, 1000,
+                ifelse(range > 100 & range < 1000, 100,
+                ifelse(range > 10 & range < 100, 10, 0),
+                ifelse(range > 0 & range < 10, 1, 0))))
 
+    if (is.null(axis_interval)) {
+        axis_interval <- round_to
+    }
+
+    min_label <- min_value - (min_value %% round_to)
+    max_label <- max_value + (round_to - max_value %% round_to)
+    axis_label <- round(seq(min_label, max_label, axis_interval), 0)
 
     # helper function
     relative <- function(x, max_x) ((x * genomic_vp_width_x1) / max_x)
@@ -128,11 +148,11 @@ geneset <- function(gff_file,
     grid::pushViewport(grid::viewport(name = "genomic",
                         x = grid::unit(0.5, "npc"),
                         y = grid::unit(0.5, "npc"),
-                        width = 0.9,
+                        width = 1,
                         height = 1,
                         just = c("center")))
 
-    # forward and reverse direction
+    # forward direction
     grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"),
                         y0 = unit(s1_pos, "npc"),
                         x1 = unit(genomic_vp_width_x1, "npc"),
@@ -143,9 +163,19 @@ geneset <- function(gff_file,
                         x1 = unit(genomic_vp_width_x1, "npc"),
                         y1 = unit(s2_pos, "npc"))
 
-    # TODO: add proper axis plus label
-    grid::grid.xaxis(label = round(seq(min_value, max_value, (max_value - min_value) / 10), 0), at = seq(0, 1, 0.1))
-    text_label(x_ = 0.5, y_ = -0.5, w_ = 0.1, h_ = 0.2, label_txt = "Region (bp)")
+    # add axis label
+    if (show_axis) {
+        # TODO: handle big ranges
+        grid::grid.xaxis(label = axis_label,
+                        at = seq(0, 1, 1 / (length(axis_label) - 1)))
+
+        # add axis label text
+        text_label(x_ = 0.5,
+                y_ = -0.5,
+                w_ = 0.1,
+                h_ = 0.2,
+                label_txt = axis_label_text)
+    }
 
     # add features of gff (or dataframe) file
     for (i in seq_len(nrow(gff_file))) {
