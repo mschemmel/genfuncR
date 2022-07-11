@@ -173,10 +173,10 @@ geneset <- function(gff_file,
 
         # add axis label text
         text_label(x_ = 0.5,
-                y_ = -0.5,
-                w_ = 0.1,
-                h_ = 0.2,
-                label_txt = axis_label_text)
+                   y_ = -0.5,
+                   w_ = 0.1,
+                   h_ = 0.2,
+                   label_txt = axis_label_text)
     }
 
     # add features of gff (or dataframe) file
