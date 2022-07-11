@@ -126,7 +126,6 @@ geneset <- function(gff_file,
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
 
-    # TODO: adjust viewport width according to axis range
     round_to <- ifelse(range > 10000 & range < 100000, 10000,
                 ifelse(range > 1000 & range < 10000, 1000,
                 ifelse(range > 100 & range < 1000, 100,
@@ -137,13 +136,16 @@ geneset <- function(gff_file,
         axis_interval <- round_to
     }
 
+    # round down to min_label
+    # round up to max_label
     min_label <- min_value - (min_value %% round_to)
     max_label <- max_value + (round_to - max_value %% round_to)
+    # set axis label
     axis_label <- round(seq(min_label, max_label, axis_interval), 0)
 
     # helper function
     relative <- function(x, max_x) ((x * genomic_vp_width_x1) / max_x)
-
+    
     # genomic viewport
     grid::pushViewport(grid::viewport(name = "genomic",
                         x = grid::unit(0.5, "npc"),
@@ -181,9 +183,9 @@ geneset <- function(gff_file,
     for (i in seq_len(nrow(gff_file))) {
         # downstream
         if (gff_file$strand[i] == "+") {
-            genearrow(x1 = unit(relative(gff_file$start[i], max_value), "npc"),
+            genearrow(x1 = unit(relative(gff_file$start[i], max_label), "npc"),
                       y1 = unit(s1_pos - (gene_box_height / 2), "npc"),
-                      x2 = unit(relative(gff_file$end[i], max_value), "npc"),
+                      x2 = unit(relative(gff_file$end[i], max_label), "npc"),
                       y2 = unit(s1_pos + (gene_box_height / 2), "npc"),
                       direction = "downstream",
                       gp = gpar(fill = forward_color),
@@ -192,9 +194,9 @@ geneset <- function(gff_file,
 
         # upstream
         else if (gff_file$strand[i] == "-") {
-            genearrow(x1 = unit(relative(gff_file$start[i], max_value), "npc"),
+            genearrow(x1 = unit(relative(gff_file$start[i], max_label), "npc"),
                       y1 = unit(s2_pos - (gene_box_height / 2), "npc"),
-                      x2 = unit(relative(gff_file$end[i], max_value), "npc"),
+                      x2 = unit(relative(gff_file$end[i], max_label), "npc"),
                       y2 = unit(s2_pos + (gene_box_height / 2), "npc"),
                       direction = "upstream",
                       gp = gpar(fill = reverse_color),
