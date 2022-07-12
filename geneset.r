@@ -9,36 +9,36 @@
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
 # TODO: add multiple arrow head types
-genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", ...) {
+genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
     arrsize <- x2 - x1
     arrw <- arrsize * 0.2 # TODO: make size dynamic
     barrow_head_size <- 0.05
     if (direction == "downstream") {
         if (arr_type == "arrow") {
-            grid.polygon(c(x1, x1, x2 - arrw, x2, x2 - arrw),
-                         c(y1, y2, y2, mean(c(y1, y2)), y1), ...)
+            grid::grid.polygon(c(x1, x1, x2 - arrw, x2, x2 - arrw),
+                               c(y1, y2, y2, mean(c(as.numeric(unlist(y1)), as.numeric(unlist(y2)))), y1), gp_)
         }
         else if (arr_type == "barrow") {
-            grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
-                         c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1), ...)
+            grid::grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
+                               c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1), gp_)
         }
         else if (arr_type == "box") {
-            grid.polygon(c(x1, x1, x2, x2),
-                         c(y1, y2, y2, y1), ...)
+            grid::grid.polygon(c(x1, x1, x2, x2),
+                               c(y1, y2, y2, y1), gp_)
         }
     }
     else if (direction == "upstream") {
         if (arr_type == "arrow") {
-            grid.polygon(c(x1 + arrw, x1, x1 + arrw, x2, x2),
-                         c(y1, mean(c(y2, y1)), y2, y2, y1), ...)
+            grid::grid.polygon(c(x1 + arrw, x1, x1 + arrw, x2, x2),
+                               c(y1, mean(c(as.numeric(unlist(y2)), as.numeric(unlist(y1)))), y2, y2, y1), gp_)
         }
         else if (arr_type == "barrow") {
-            grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
-                         c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1), ...)
+            grid::grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
+                               c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1), gp_)
         }
         else if (arr_type == "box") {
-            grid.polygon(c(x1, x1, x2, x2),
-                         c(y1, y2, y2, y1), ...)
+            grid::grid.polygon(c(x1, x1, x2, x2),
+                               c(y1, y2, y2, y1), gp_)
         }
     }
     else {
@@ -94,7 +94,7 @@ geneset <- function(gff_file,
 
     # create newpage to draw on
     grid::grid.newpage()
-
+    
     # outer viewport
     grid::pushViewport(grid::viewport(name = "outer",
                         x = grid::unit(0.5, "npc"),
@@ -169,7 +169,7 @@ geneset <- function(gff_file,
     if (show_axis) {
         # TODO: handle big ranges
         grid::grid.xaxis(label = axis_label,
-                        at = seq(0, 1, 1 / (length(axis_label) - 1)))
+                         at = seq(0, 1, 1 / (length(axis_label) - 1)))
 
         # add axis label text
         text_label(x_ = 0.5,
@@ -188,7 +188,7 @@ geneset <- function(gff_file,
                       x2 = unit(relative(gff_file$end[i], max_label), "npc"),
                       y2 = unit(s1_pos + (gene_box_height / 2), "npc"),
                       direction = "downstream",
-                      gp = gpar(fill = forward_color),
+                      gp_ = gpar(fill = forward_color),
                       arr_type = arrow_type)
         }
 
@@ -199,7 +199,7 @@ geneset <- function(gff_file,
                       x2 = unit(relative(gff_file$end[i], max_label), "npc"),
                       y2 = unit(s2_pos + (gene_box_height / 2), "npc"),
                       direction = "upstream",
-                      gp = gpar(fill = reverse_color),
+                      gp_ = gpar(fill = reverse_color),
                       arr_type = arrow_type)
         }
         else {
