@@ -21,7 +21,7 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
         } else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
                                c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1),
-                               gp =gp_)
+                               gp = gp_)
         } else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
                                c(y1, y2, y2, y1),
@@ -92,6 +92,9 @@ geneset <- function(gff_file,
                     axis_label_text = "Region (bp)",
                     axis_interval = NULL) {
 
+    # order input by start and end column
+    gff <- gff[order(gff$start, gff$end), ]
+    
     # create newpage to draw on
     grid::grid.newpage()
 
