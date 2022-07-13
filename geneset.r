@@ -16,29 +16,29 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
     if (direction == "downstream") {
         if (arr_type == "arrow") {
             grid::grid.polygon(c(x1, x1, x2 - arrw, x2, x2 - arrw),
-                               c(y1, y2, y2, mean(c(as.numeric(unlist(y1)), as.numeric(unlist(y2)))), y1), gp_)
+                               c(y1, y2, y2, mean(c(as.numeric(unlist(y1)), as.numeric(unlist(y2)))), y1), gp = gp_)
         }
         else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
-                               c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1), gp_)
+                               c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1), gp =gp_)
         }
         else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
-                               c(y1, y2, y2, y1), gp_)
+                               c(y1, y2, y2, y1), gp = gp_)
         }
     }
     else if (direction == "upstream") {
         if (arr_type == "arrow") {
             grid::grid.polygon(c(x1 + arrw, x1, x1 + arrw, x2, x2),
-                               c(y1, mean(c(as.numeric(unlist(y2)), as.numeric(unlist(y1)))), y2, y2, y1), gp_)
+                               c(y1, mean(c(as.numeric(unlist(y2)), as.numeric(unlist(y1)))), y2, y2, y1), gp = gp_)
         }
         else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
-                               c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1), gp_)
+                               c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1), gp = gp_)
         }
         else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
-                               c(y1, y2, y2, y1), gp_)
+                               c(y1, y2, y2, y1), gp = gp_)
         }
     }
     else {
