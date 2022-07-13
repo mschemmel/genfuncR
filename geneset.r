@@ -16,32 +16,32 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
     if (direction == "downstream") {
         if (arr_type == "arrow") {
             grid::grid.polygon(c(x1, x1, x2 - arrw, x2, x2 - arrw),
-                               c(y1, y2, y2, mean(c(as.numeric(unlist(y1)), as.numeric(unlist(y2)))), y1), gp = gp_)
-        }
-        else if (arr_type == "barrow") {
+                               c(y1, y2, y2, mean(c(as.numeric(unlist(y1)), as.numeric(unlist(y2)))), y1),
+                               gp = gp_)
+        } else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
-                               c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1), gp =gp_)
-        }
-        else if (arr_type == "box") {
+                               c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1),
+                               gp =gp_)
+        } else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
-                               c(y1, y2, y2, y1), gp = gp_)
+                               c(y1, y2, y2, y1),
+                               gp = gp_)
         }
-    }
-    else if (direction == "upstream") {
+    } else if (direction == "upstream") {
         if (arr_type == "arrow") {
             grid::grid.polygon(c(x1 + arrw, x1, x1 + arrw, x2, x2),
-                               c(y1, mean(c(as.numeric(unlist(y2)), as.numeric(unlist(y1)))), y2, y2, y1), gp = gp_)
-        }
-        else if (arr_type == "barrow") {
+                               c(y1, mean(c(as.numeric(unlist(y2)), as.numeric(unlist(y1)))), y2, y2, y1),
+                               gp = gp_)
+        } else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
-                               c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1), gp = gp_)
-        }
-        else if (arr_type == "box") {
+                               c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1),
+                               gp = gp_)
+        } else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
-                               c(y1, y2, y2, y1), gp = gp_)
+                               c(y1, y2, y2, y1),
+                               gp = gp_)
         }
-    }
-    else {
+    } else {
         stop("Invalid 'direction' statement")
     }
 }
@@ -94,7 +94,7 @@ geneset <- function(gff_file,
 
     # create newpage to draw on
     grid::grid.newpage()
-    
+
     # outer viewport
     grid::pushViewport(grid::viewport(name = "outer",
                         x = grid::unit(0.5, "npc"),
@@ -126,11 +126,16 @@ geneset <- function(gff_file,
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
 
-    round_to <- ifelse(range > 10000 & range < 100000, 10000,
+    # TODO: refactor!
+    round_to <- ifelse(range > 100000000 & range < 1000000000, 100000000,
+                ifelse(range > 10000000 & range < 100000000, 10000000,
+                ifelse(range > 1000000 & range < 10000000, 1000000,
+                ifelse(range > 100000 & range < 1000000, 100000,
+                ifelse(range > 10000 & range < 100000, 10000,
                 ifelse(range > 1000 & range < 10000, 1000,
                 ifelse(range > 100 & range < 1000, 100,
                 ifelse(range > 10 & range < 100, 10, 0),
-                ifelse(range > 0 & range < 10, 1, 0))))
+                ifelse(range > 0 & range < 10, 1, 0))))))))
 
     if (is.null(axis_interval)) {
         axis_interval <- round_to
@@ -145,7 +150,7 @@ geneset <- function(gff_file,
 
     # helper function
     relative <- function(x, max_x) ((x * genomic_vp_width_x1) / max_x)
-    
+
     # genomic viewport
     grid::pushViewport(grid::viewport(name = "genomic",
                         x = grid::unit(0.5, "npc"),
@@ -190,10 +195,7 @@ geneset <- function(gff_file,
                       direction = "downstream",
                       gp_ = gpar(fill = forward_color),
                       arr_type = arrow_type)
-        }
-
-        # upstream
-        else if (gff_file$strand[i] == "-") {
+        } else if (gff_file$strand[i] == "-") {
             genearrow(x1 = unit(relative(gff_file$start[i], max_label), "npc"),
                       y1 = unit(s2_pos - (gene_box_height / 2), "npc"),
                       x2 = unit(relative(gff_file$end[i], max_label), "npc"),
@@ -201,8 +203,7 @@ geneset <- function(gff_file,
                       direction = "upstream",
                       gp_ = gpar(fill = reverse_color),
                       arr_type = arrow_type)
-        }
-        else {
+        } else {
            warning("Unrecognized 'strand' symbol.")
         }
     }
