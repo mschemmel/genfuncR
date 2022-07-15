@@ -148,10 +148,11 @@ geneset <- function(gff_file,
     min_label <- min_value - (min_value %% round_to)
     max_label <- max_value + (round_to - max_value %% round_to)
     # set axis label
-    axis_label <- round(seq(min_label, max_label, axis_interval), 0)
+
+    axis_label <- round(seq(0, max_value, range / 5), 0)
 
     # helper function
-    relative <- function(x, max_x) ((x * genomic_vp_width_x1) / max_x)
+    relative <- function(x) (x - min_value) / range
 
     # genomic viewport
     grid::pushViewport(grid::viewport(name = "genomic",
@@ -190,17 +191,17 @@ geneset <- function(gff_file,
     for (i in seq_len(nrow(gff_file))) {
         # downstream
         if (gff_file$strand[i] == "+") {
-            genearrow(x1 = unit(relative(gff_file$start[i], max_label), "npc"),
+            genearrow(x1 = unit(relative(gff_file$start[i]), "npc"),
                       y1 = unit(s1_pos - (gene_box_height / 2), "npc"),
-                      x2 = unit(relative(gff_file$end[i], max_label), "npc"),
+                      x2 = unit(relative(gff_file$end[i]), "npc"),
                       y2 = unit(s1_pos + (gene_box_height / 2), "npc"),
                       direction = "downstream",
                       gp_ = gpar(fill = forward_color),
                       arr_type = arrow_type)
         } else if (gff_file$strand[i] == "-") {
-            genearrow(x1 = unit(relative(gff_file$start[i], max_label), "npc"),
+            genearrow(x1 = unit(relative(gff_file$start[i]), "npc"),
                       y1 = unit(s2_pos - (gene_box_height / 2), "npc"),
-                      x2 = unit(relative(gff_file$end[i], max_label), "npc"),
+                      x2 = unit(relative(gff_file$end[i]), "npc"),
                       y2 = unit(s2_pos + (gene_box_height / 2), "npc"),
                       direction = "upstream",
                       gp_ = gpar(fill = reverse_color),
