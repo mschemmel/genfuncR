@@ -93,8 +93,8 @@ geneset <- function(gff_file,
                     axis_interval = NULL) {
 
     # order input by start and end column
-    gff <- gff[order(gff$start, gff$end), ]
-    
+    gff_file <- gff_file[with(gff_file, order(gff_file$start, gff_file$end)), ]
+
     # create newpage to draw on
     grid::grid.newpage()
 
@@ -130,14 +130,13 @@ geneset <- function(gff_file,
     genomic_vp_width_x1 <- 1
 
     # TODO: refactor!
-    round_to <- ifelse(range > 100000000 & range < 1000000000, 100000000,
-                ifelse(range > 10000000 & range < 100000000, 10000000,
-                ifelse(range > 1000000 & range < 10000000, 1000000,
-                ifelse(range > 100000 & range < 1000000, 100000,
-                ifelse(range > 10000 & range < 100000, 10000,
-                ifelse(range > 1000 & range < 10000, 1000,
-                ifelse(range > 100 & range < 1000, 100,
-                ifelse(range > 10 & range < 100, 10, 0),
+    round_to <- ifelse(range >= 10000000 & range < 100000000, 10000000,
+                ifelse(range >= 1000000 & range < 10000000, 1000000,
+                ifelse(range >= 100000 & range < 1000000, 100000,
+                ifelse(range >= 10000 & range < 100000, 10000,
+                ifelse(range >= 1000 & range < 10000, 1000,
+                ifelse(range >= 100 & range < 1000, 100,
+                ifelse(range >= 10 & range < 100, 10,
                 ifelse(range > 0 & range < 10, 1, 0))))))))
 
     if (is.null(axis_interval)) {
