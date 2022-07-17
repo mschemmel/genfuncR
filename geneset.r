@@ -90,7 +90,7 @@ geneset <- function(gff_file,
                     distance = 1,
                     show_axis = TRUE,
                     axis_label_text = "Region (bp)",
-                    axis_interval = NULL) {
+                    axis_interval = 100) {
 
     # order input by start and end column
     gff_file <- gff_file[with(gff_file, order(gff_file$start, gff_file$end)), ]
@@ -116,7 +116,7 @@ geneset <- function(gff_file,
     # store some constants
     max_value <- max(gff_file$start, gff_file$end)
     min_value <- min(gff_file$start, gff_file$end)
-    range <- max_value - min_value
+
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
                               0.2 * gene_height,
                               stop("Height of gene box (gene_height) have to be between 0 and 1."))
@@ -129,30 +129,12 @@ geneset <- function(gff_file,
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
 
-    # TODO: refactor!
-    round_to <- ifelse(range >= 10000000 & range < 100000000, 10000000,
-                ifelse(range >= 1000000 & range < 10000000, 1000000,
-                ifelse(range >= 100000 & range < 1000000, 100000,
-                ifelse(range >= 10000 & range < 100000, 10000,
-                ifelse(range >= 1000 & range < 10000, 1000,
-                ifelse(range >= 100 & range < 1000, 100,
-                ifelse(range >= 10 & range < 100, 10,
-                ifelse(range > 0 & range < 10, 1, 0))))))))
-
-    if (is.null(axis_interval)) {
-        axis_interval <- round_to
-    }
-
-    # round down to min_label
-    # round up to max_label
-    min_label <- min_value - (min_value %% round_to)
-    max_label <- max_value + (round_to - max_value %% round_to)
-    # set axis label
-
-    axis_label <- round(seq(0, max_value, range / 5), 0)
+    # round up to max_label and set axis label
+    max_label <- max_value + (axis_interval - max_value %% axis_interval)
+    axis_label <- round(seq(0, max_label, axis_interval), 0)
 
     # helper function
-    relative <- function(x) (x - min_value) / range
+    relative <- function(x) (x - min_value) / max_label
 
     # genomic viewport
     grid::pushViewport(grid::viewport(name = "genomic",
