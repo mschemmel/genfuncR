@@ -8,7 +8,6 @@
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
-# TODO: add multiple arrow head types
 genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
     arrsize <- x2 - x1
     arrw <- arrsize * 0.2 # TODO: make size dynamic
@@ -20,7 +19,7 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
                                gp = gp_)
         } else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
-                               c(y1, y2, y2, y2 + unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - unit(barrow_head_size, "npc"), y1),
+                               c(y1, y2, y2, y2 + grid::unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - grid::unit(barrow_head_size, "npc"), y1),
                                gp = gp_)
         } else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
@@ -34,7 +33,7 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
                                gp = gp_)
         } else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
-                               c(y1, y1 - unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + unit(barrow_head_size, "npc"), y2, y2, y1),
+                               c(y1, y1 - grid::unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + grid::unit(barrow_head_size, "npc"), y2, y2, y1),
                                gp = gp_)
         } else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
@@ -84,13 +83,23 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 
 geneset <- function(gff_file,
                     forward_color = "darkslategray",
-                    reverse_color = "navajowhite3",
+                    reverse_color = "darkslategray",
                     arrow_type = "arrow",
                     gene_height = 1,
                     distance = 1,
                     show_axis = TRUE,
                     axis_label_text = "Region (bp)",
                     axis_interval = 100) {
+
+    # check if input file is valid
+    if (nrow(gff_file) == 0) {
+        stop("Input data frame is empty")
+    }
+    if (!all(c("start", "end", "strand") %in% colnames(gff_file))) {
+        cat("Input has to contain at least 'start', 'end' and 'strand' column.\n")
+        cat("Found colnames: ", colnames(gff_file), "\n")
+        stop()
+    }
 
     # order input by start and end column
     gff_file <- gff_file[with(gff_file, order(gff_file$start, gff_file$end)), ]
@@ -145,15 +154,15 @@ geneset <- function(gff_file,
                         just = c("center")))
 
     # forward direction
-    grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"),
-                        y0 = unit(s1_pos, "npc"),
-                        x1 = unit(genomic_vp_width_x1, "npc"),
-                        y1 = unit(s1_pos, "npc"))
+    grid::grid.segments(x0 = grid::unit(genomic_vp_width_x0, "npc"),
+                        y0 = grid::unit(s1_pos, "npc"),
+                        x1 = grid::unit(genomic_vp_width_x1, "npc"),
+                        y1 = grid::unit(s1_pos, "npc"))
     # reverse direction
-    grid::grid.segments(x0 = unit(genomic_vp_width_x0, "npc"),
-                        y0 = unit(s2_pos, "npc"),
-                        x1 = unit(genomic_vp_width_x1, "npc"),
-                        y1 = unit(s2_pos, "npc"))
+    grid::grid.segments(x0 = grid::unit(genomic_vp_width_x0, "npc"),
+                        y0 = grid::unit(s2_pos, "npc"),
+                        x1 = grid::unit(genomic_vp_width_x1, "npc"),
+                        y1 = grid::unit(s2_pos, "npc"))
 
     # add axis label
     if (show_axis) {
@@ -173,20 +182,20 @@ geneset <- function(gff_file,
     for (i in seq_len(nrow(gff_file))) {
         # downstream
         if (gff_file$strand[i] == "+") {
-            genearrow(x1 = unit(relative(gff_file$start[i]), "npc"),
-                      y1 = unit(s1_pos - (gene_box_height / 2), "npc"),
-                      x2 = unit(relative(gff_file$end[i]), "npc"),
-                      y2 = unit(s1_pos + (gene_box_height / 2), "npc"),
+            genearrow(x1 = grid::unit(relative(gff_file$start[i]), "npc"),
+                      y1 = grid::unit(s1_pos - (gene_box_height / 2), "npc"),
+                      x2 = grid::unit(relative(gff_file$end[i]), "npc"),
+                      y2 = grid::unit(s1_pos + (gene_box_height / 2), "npc"),
                       direction = "downstream",
-                      gp_ = gpar(fill = forward_color),
+                      gp_ = grid::gpar(fill = forward_color),
                       arr_type = arrow_type)
         } else if (gff_file$strand[i] == "-") {
-            genearrow(x1 = unit(relative(gff_file$start[i]), "npc"),
-                      y1 = unit(s2_pos - (gene_box_height / 2), "npc"),
-                      x2 = unit(relative(gff_file$end[i]), "npc"),
-                      y2 = unit(s2_pos + (gene_box_height / 2), "npc"),
+            genearrow(x1 = grid::unit(relative(gff_file$start[i]), "npc"),
+                      y1 = grid::unit(s2_pos - (gene_box_height / 2), "npc"),
+                      x2 = grid::unit(relative(gff_file$end[i]), "npc"),
+                      y2 = grid::unit(s2_pos + (gene_box_height / 2), "npc"),
                       direction = "upstream",
-                      gp_ = gpar(fill = reverse_color),
+                      gp_ = grid::gpar(fill = reverse_color),
                       arr_type = arrow_type)
         } else {
            warning("Unrecognized 'strand' symbol.")
