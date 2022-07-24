@@ -52,10 +52,14 @@ mirnali <- function(mirna,
 
     # check sequence properties
     if (length(mirna) != length(target)) {
-        cat("Error:\nmiRNA:\t", length(mirna), "\nTarget:\t", length(target),"\n")
+        cat("Error:\n")
+        cat("miRNA:\t", length(mirna), "\n")
+        cat("Target:\t", length(target), "\n")
         stop("Unequal number of nucleotides. Please check.")
     }
-    if (length(mirna) < 15 || length(mirna) > 40) stop("Range of sequence should be between 15 and 40 nucleotides.")
+    if (length(mirna) < 15 || length(mirna) > 40) {
+        stop("Range of sequence should be between 15 and 40 nucleotides.")
+    }
 
     # define and calculate some constants
     cells <- length(mirna) + 2
@@ -71,7 +75,9 @@ mirnali <- function(mirna,
     if (!is.null(target_position_label)) {
         if (length(target_position_label) != length(mirna)) {
             warning("Range of alignment exceeds given target locations.")
-            cat("Warning:\nRange of label:", diff(range(target_position_label))+1, "\nRange of alignment ", length(mirna), "\n")
+            cat("Warning:\n")
+            cat("Range of label:", diff(range(target_position_label)) + 1, "\n")
+            cat("Range of alignment ", length(mirna), "\n")
         }
     }
 
@@ -88,10 +94,18 @@ mirnali <- function(mirna,
 
     # add sequence name label
     if (!is.null(mirna_name)) {
-        text_label(x_ = 0.08, y_ = 0.44, w_ = 0.4, h_ = 0.7, label_txt = mirna_name)
+        text_label(x_ = 0.08,
+                   y_ = 0.44,
+                   w_ = 0.4,
+                   h_ = 0.7,
+                   label_txt = mirna_name)
     }
     if (!is.null(target_name)) {
-        text_label(x_ = 0.08, y_ = 0.56, w_ = 0.4, h_ = 0.7, label_txt = target_name)
+        text_label(x_ = 0.08,
+                   y_ = 0.56,
+                   w_ = 0.4,
+                   h_ = 0.7,
+                   label_txt = target_name)
     }
 
     # main viewport
@@ -111,7 +125,7 @@ mirnali <- function(mirna,
         # 2. G-C | C-G      complement G-C
         # 3. U-G | G-U
         # 4. U-C | C-U
-        # 5. (ATGC)-(ATGC)   same nucleotides, no difference
+        # 5. (ATGC)-(ATGC)   same nucleotide, no difference
         # 6. No complementary
 
         # 1. U - A | A -U -> true complementary
@@ -134,7 +148,7 @@ mirnali <- function(mirna,
             symb <- ifelse(alignment_type == ":", " ", " ")
             colr <- mismatch_color
         }
-        # 5. same nucleotides, no difference
+        # 5. same nucleotide, no difference
         else if (mirna[i] == target[i]) {
             symb <- ifelse(alignment_type == ":", " ", " ")
             colr <- mismatch_color
@@ -159,7 +173,9 @@ mirnali <- function(mirna,
                        w_ = x_step,
                        h_ = 0.15,
                        label_txt = orientations[j],
-                       gp_ = grid::gpar(fontsize = 10, fontface = "bold", col = "black"))
+                       gp_ = grid::gpar(fontsize = 10,
+                                        fontface = "bold",
+                                        col = "black"))
         }
     }
 
@@ -169,12 +185,14 @@ mirnali <- function(mirna,
     # add highlight region
     if (!is.null(highlight_area)) {
         for (i in names(highlight_area)) {
-            h_start <- positions[unname(unlist(highlight_area[i]))[1]] - (x_step / 2)
-            h_end <- positions[unname(unlist(highlight_area[i]))[2]] + (x_step / 2)
+            h_start <- positions[unname(unlist(highlight_area[i]))[1]] - x_start
+            h_end <- positions[unname(unlist(highlight_area[i]))[2]] + x_start
             grid::grid.rect(x = h_start,
                             y = 0.5,
                             width = h_end - h_start,
-                            height = 0.55, gp = grid::gpar(fill = unname(unlist(highlight_color[i])), col = "white"),
+                            height = 0.55,
+                            gp = grid::gpar(fill = unname(unlist(highlight_color[i])),
+                                            col = "white"),
                             just = c("left"))
         }
     }
@@ -187,7 +205,9 @@ mirnali <- function(mirna,
                        w_ = x_step,
                        h_ = 0.15,
                        label_txt = ifelse(i == s2_height, target[j], mirna[j]),
-                       gp_ = grid::gpar(fontsize = 12, fontface = "bold", col = nucl_color[j]))
+                       gp_ = grid::gpar(fontsize = 12,
+                                        fontface = "bold",
+                                        col = nucl_color[j]))
         }
     }
 
@@ -199,9 +219,13 @@ mirnali <- function(mirna,
                            y_ = i,
                            w_ = x_step,
                            h_ = 0.15,
-                           label_txt = ifelse(i == s1_pos_height, target_position_label[j], seq(1, length(mirna), 1)[j]),
+                           label_txt = ifelse(i == s1_pos_height,
+                                              target_position_label[j],
+                                              seq(1, length(mirna), 1)[j]),
                            gp_ = grid::gpar(fontsize = 8, col = "black"),
-                           angle = ifelse(i == s1_pos_height, target_position_label_rot, 0))
+                           angle = ifelse(i == s1_pos_height,
+                                          target_position_label_rot,
+                                          0))
                 }
         }
     }
@@ -213,8 +237,8 @@ mirnali <- function(mirna,
                    w_ = x_step,
                    h_ = 0.2,
                    label_txt = alignment_symbol[i],
-                   gp_ = grid::gpar(fontsize = 16, col = "black"))
+                   gp_ = grid::gpar(fontsize = 16,
+                                    col = "black"))
     }
-
     grid::popViewport(1)
 }
