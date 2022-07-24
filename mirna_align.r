@@ -71,7 +71,7 @@ mirnali <- function(mirna,
     if (!is.null(target_position_label)) {
         if (length(target_position_label) != length(mirna)) {
             warning("Range of alignment exceeds given target locations.")
-            cat("Warning:\nRange of label:", diff(range(target_position_label))+1, "\nRange of alignment ", length(mirna)}, "\n")
+            cat("Warning:\nRange of label:", diff(range(target_position_label))+1, "\nRange of alignment ", length(mirna), "\n")
         }
     }
 
