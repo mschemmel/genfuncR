@@ -55,7 +55,7 @@ mirnali <- function(mirna,
         cat("Error:\nmiRNA:\t", length(mirna), "\nTarget:\t", length(target),"\n")
         stop("Unequal number of nucleotides. Please check.")
     }
-    if (length(mirna) < 15 | length(mirna) > 40) stop("Range of sequence should be between 15 and 40 nucleotides.")
+    if (length(mirna) < 15 || length(mirna) > 40) stop("Range of sequence should be between 15 and 40 nucleotides.")
 
     # define and calculate some constants
     cells <- length(mirna) + 2
@@ -101,8 +101,6 @@ mirnali <- function(mirna,
                         width = 0.7,
                         height = 0.3,
                         just = c("center")))
-
-        
 
     # define color and alignment type
     alignment_symbol <- vector()
