@@ -47,8 +47,8 @@ mirnali <- function(mirna,
                     target_position_label = NULL,
                     target_position_label_rot = 90) {
 
-    mirna <- unlist(strsplit(mirna, split = ""))
-    target <- unlist(strsplit(target, split = ""))
+    mirna <- toupper(unlist(strsplit(mirna, split = "")))
+    target <- toupper(unlist(strsplit(target, split = "")))
 
     # check sequence properties
     if (length(mirna) != length(target)) {
