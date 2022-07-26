@@ -8,7 +8,7 @@ Each function should do three things at its core:
 3.    no dependencies - plain base R
 
 Single functions can be sourced directly using:
-```
+```r
 # geneset example
 library(devtools)
 source_url("https://github.com/mschemmel/genfuncR/blob/main/geneset.r?raw=TRUE")
