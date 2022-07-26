@@ -3,9 +3,16 @@ A home for R functions I use myself to visualize genomic features. Will grow ove
 <br>
 <br>
 Each function should do three things at its core:
--   easy to use (data.frame or string/vector as input - no fancy objects)
--   lightweight
--   no dependencies - plain base R
+1.    easy to use (data.frame or string/vector as input - no fancy objects)
+2.    lightweight
+3.    no dependencies - plain base R
+
+Single functions can be sourced directly using:
+```
+# geneset example
+library(devtools)
+source_url("https://github.com/mschemmel/genfuncR/blob/main/geneset.r?raw=TRUE")
+```
 
 ## geneset
 ```r
