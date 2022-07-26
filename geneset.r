@@ -134,7 +134,7 @@ geneset <- function(gff_file,
                               0.2 * gene_height,
                               stop("Height of gene box (gene_height) have to be between 0 and 1."))
     s2_pos <- 0.2
-    gap <- ifelse(distance > 0 & distance <= 1,
+    gap <- ifelse(distance >= 0 & distance <= 1,
                   gene_box_height + ((s2_pos + gene_box_height) * distance),
                   stop("Distance between forward and reverse strand have to be between 0 and 1."))
 
