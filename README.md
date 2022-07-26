@@ -12,6 +12,7 @@ Each function should do three things at its core:
 library(grid)
 
 # random gff file
+# data frame needs at least 'start', 'end' and 'strand' column
 gff <- data.frame(seqname = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "Chr3"),
                   source = rep("Genome", 7),
                   feature = rep("Gene", 7),
@@ -35,8 +36,7 @@ geneset(gff)
 library(grid)
 
 # example
-seq <-  "TCAGCTAGCTATCTAGCTAGCTAGCTACTACGA"
-dna_to_img(seq)
+dna_to_img("TCAGCTAGCTATCTAGCTAGCTAGCTACTACGA")
 ```
 
 <p align="center">
