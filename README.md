@@ -31,7 +31,7 @@ gff <- data.frame(seqname = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "C
                   attribute = paste0("seq", seq(1, 7, 1)))
 
 # example
-geneset(gff)
+geneset(gff, range = c(0,3000), axis_interval = 500)
 ```
 
 <p align="center">
