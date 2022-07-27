@@ -75,7 +75,7 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' draw a set of genes based on data.frame or gff file
 #' @param gff_file data.frame of gff file or pure own data.frame
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
-#' @param reverse_color color of genes in reverse direction (default = "navajowhite3")
+#' @param reverse_color color of genes in reverse direction (default = "darkslategray")
 #' @param arrow_type shape of arrow head (default = "arrow")
 #' @param gene_height height in percent (0-1) of gene box (default = 1)
 #' @param distance distance between forward and revers strand in percent (0-1) (default = 1)
@@ -93,7 +93,8 @@ geneset <- function(gff_file,
                     distance = 1,
                     show_axis = TRUE,
                     axis_label_text = "Region (bp)",
-                    axis_interval = 100) {
+                    axis_interval = NULL,
+                    range = NULL) {
 
     # check if input file is valid
     if (nrow(gff_file) == 0) {
@@ -108,7 +109,8 @@ geneset <- function(gff_file,
     # order input by start and end column
     gff_file <- gff_file[with(gff_file, order(gff_file$start, gff_file$end)), ]
 
-    # create newpage to draw on
+    # create new device and newpage
+    dev.new(width = 12, height = 6, unit = "in")
     grid::grid.newpage()
 
     # outer viewport
@@ -124,11 +126,12 @@ geneset <- function(gff_file,
                         y = grid::unit(0.5, "npc"),
                         width = 0.7,
                         height = 0.3,
-                        just = c("center")))
+                        just = c("center"),
+                        clip = TRUE))
 
     # store some constants
-    min_value <- min(gff_file$start, gff_file$end)
-    max_value <- max(gff_file$start, gff_file$end)
+    min_value <- range[1]
+    max_value <- range[2]
 
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
                               0.2 * gene_height,
@@ -142,20 +145,12 @@ geneset <- function(gff_file,
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
 
-    # round up to max_label and set axis label
-    max_label <- max_value + (axis_interval - max_value %% axis_interval)
-    axis_label <- round(seq(0, max_label, axis_interval), 0)
+    # set axis label
+    # TODO: solve axis intervals
+    axis_label <- round(seq(min_value, max_value, 100), 0)
 
     # helper function
-    relative <- function(x) x / max_label
-
-    # genomic viewport
-    grid::pushViewport(grid::viewport(name = "genomic",
-                        x = grid::unit(0.5, "npc"),
-                        y = grid::unit(0.5, "npc"),
-                        width = 1,
-                        height = 1,
-                        just = c("center")))
+    relative <- function(x) (x - min_value) / (max_value - min_value)
 
     # forward direction
     grid::grid.segments(x0 = grid::unit(genomic_vp_width_x0, "npc"),
@@ -167,20 +162,6 @@ geneset <- function(gff_file,
                         y0 = grid::unit(s2_pos, "npc"),
                         x1 = grid::unit(genomic_vp_width_x1, "npc"),
                         y1 = grid::unit(s2_pos, "npc"))
-
-    # add axis label
-    if (show_axis) {
-        # TODO: handle big ranges
-        grid::grid.xaxis(label = axis_label,
-                         at = seq(0, 1, 1 / (length(axis_label) - 1)))
-
-        # add axis label text
-        text_label(x_ = 0.5,
-                   y_ = -0.3,
-                   w_ = 0.1,
-                   h_ = 0.2,
-                   label_txt = axis_label_text)
-    }
 
     # add features of gff (or dataframe) file
     for (i in seq_len(nrow(gff_file))) {
@@ -204,6 +185,29 @@ geneset <- function(gff_file,
         } else {
            warning("Unrecognized 'strand' symbol.")
         }
+    }
+    grid::popViewport(1)
+
+    # overlay viewport to get area back after clipping
+    grid::pushViewport(grid::viewport(name = "main",
+                    x = grid::unit(0.5, "npc"),
+                    y = grid::unit(0.5, "npc"),
+                    width = 0.7,
+                    height = 0.3,
+                    just = c("center")))
+
+    # add axis label
+    if (show_axis) {
+        # TODO: handle big ranges
+        grid::grid.xaxis(label = axis_label,
+                         at = seq(0, 1, 1 / (length(axis_label) - 1)))
+
+        # add axis label text
+        text_label(x_ = 0.5,
+                   y_ = -0.3,
+                   w_ = 0.1,
+                   h_ = 0.2,
+                   label_txt = axis_label_text)
     }
     grid::popViewport(1)
 }
