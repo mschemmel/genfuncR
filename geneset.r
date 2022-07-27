@@ -145,10 +145,6 @@ geneset <- function(gff_file,
     genomic_vp_width_x0 <- 0
     genomic_vp_width_x1 <- 1
 
-    # set axis label
-    # TODO: solve axis intervals
-    axis_label <- round(seq(min_value, max_value, 100), 0)
-
     # helper function
     relative <- function(x) (x - min_value) / (max_value - min_value)
 
@@ -198,7 +194,18 @@ geneset <- function(gff_file,
 
     # add axis label
     if (show_axis) {
-        # TODO: handle big ranges
+        # TODO: solve axis intervals properly
+        # check for proper axis interval value
+        interval <- max_value - min_value
+        if (interval %% axis_interval != 0) {
+            stop("Please provide a multiple of your specified region for proper axis style.")
+        }
+        if (interval / axis_interval > 100) {
+            stop("Provided axis interval will result in more than 100 labels.")
+        }
+        # set axis label
+        axis_label <- round(seq(min_value, max_value, axis_interval), 0)
+
         grid::grid.xaxis(label = axis_label,
                          at = seq(0, 1, 1 / (length(axis_label) - 1)))
 
