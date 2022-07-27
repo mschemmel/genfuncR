@@ -127,8 +127,8 @@ geneset <- function(gff_file,
                         just = c("center")))
 
     # store some constants
-    max_value <- max(gff_file$start, gff_file$end)
     min_value <- min(gff_file$start, gff_file$end)
+    max_value <- max(gff_file$start, gff_file$end)
 
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
                               0.2 * gene_height,
@@ -147,7 +147,7 @@ geneset <- function(gff_file,
     axis_label <- round(seq(0, max_label, axis_interval), 0)
 
     # helper function
-    relative <- function(x) (x - min_value) / max_label
+    relative <- function(x) x / max_label
 
     # genomic viewport
     grid::pushViewport(grid::viewport(name = "genomic",
@@ -176,7 +176,7 @@ geneset <- function(gff_file,
 
         # add axis label text
         text_label(x_ = 0.5,
-                   y_ = -0.5,
+                   y_ = -0.3,
                    w_ = 0.1,
                    h_ = 0.2,
                    label_txt = axis_label_text)
