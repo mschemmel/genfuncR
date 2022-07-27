@@ -82,6 +82,8 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @param show_axis show axis or not (default = TRUE)
 #' @param axis_label_text text of x axis label (default: "Region (bp)")
 #' @param axis_interval numerical interval of axis (default = NULL)
+#' @param range vector of start and end of region of interest (default = NULL)
+#' @param border boolean if border visible (default = FALSE)
 #' @examples
 #' geneset(gff)
 
@@ -94,7 +96,8 @@ geneset <- function(gff_file,
                     show_axis = TRUE,
                     axis_label_text = "Region (bp)",
                     axis_interval = NULL,
-                    range = NULL) {
+                    range = NULL,
+                    border = FALSE) {
 
     # check if input file is valid
     if (nrow(gff_file) == 0) {
@@ -129,6 +132,8 @@ geneset <- function(gff_file,
                         just = c("center"),
                         clip = TRUE))
 
+    if (border) grid::grid.rect()
+    
     # store some constants
     min_value <- range[1]
     max_value <- range[2]
