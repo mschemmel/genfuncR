@@ -90,6 +90,7 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 geneset <- function(gff_file,
                     forward_color = "darkslategray",
                     reverse_color = "darkslategray",
+                    transparency = 1,
                     arrow_type = "arrow",
                     gene_height = 1,
                     distance = 1,
@@ -133,7 +134,7 @@ geneset <- function(gff_file,
                         clip = TRUE))
 
     if (border) grid::grid.rect()
-    
+
     # store some constants
     min_value <- range[1]
     max_value <- range[2]
@@ -173,7 +174,8 @@ geneset <- function(gff_file,
                       x2 = grid::unit(relative(gff_file$end[i]), "npc"),
                       y2 = grid::unit(s1_pos + (gene_box_height / 2), "npc"),
                       direction = "downstream",
-                      gp_ = grid::gpar(fill = forward_color),
+                      gp_ = grid::gpar(fill = forward_color,
+                                       alpha = transparency),
                       arr_type = arrow_type)
         } else if (gff_file$strand[i] == "-") {
             genearrow(x1 = grid::unit(relative(gff_file$start[i]), "npc"),
@@ -181,7 +183,8 @@ geneset <- function(gff_file,
                       x2 = grid::unit(relative(gff_file$end[i]), "npc"),
                       y2 = grid::unit(s2_pos + (gene_box_height / 2), "npc"),
                       direction = "upstream",
-                      gp_ = grid::gpar(fill = reverse_color),
+                      gp_ = grid::gpar(fill = reverse_color, 
+                                       alpha = transparency),
                       arr_type = arrow_type)
         } else {
            warning("Unrecognized 'strand' symbol.")
