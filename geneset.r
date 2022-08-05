@@ -76,6 +76,7 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @param gff_file data.frame of gff file or pure own data.frame
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
 #' @param reverse_color color of genes in reverse direction (default = "darkslategray")
+#' @param transparency alpha value of gene annotation box
 #' @param arrow_type shape of arrow head (default = "arrow")
 #' @param gene_height height in percent (0-1) of gene box (default = 1)
 #' @param distance distance between forward and revers strand in percent (0-1) (default = 1)
@@ -98,7 +99,8 @@ geneset <- function(gff_file,
                     axis_label_text = "Region (bp)",
                     axis_interval = NULL,
                     range = NULL,
-                    border = FALSE) {
+                    border = FALSE,
+                    annotation = NULL) {
 
     # check if input file is valid
     if (nrow(gff_file) == 0) {
@@ -164,6 +166,14 @@ geneset <- function(gff_file,
                         y0 = grid::unit(s2_pos, "npc"),
                         x1 = grid::unit(genomic_vp_width_x1, "npc"),
                         y1 = grid::unit(s2_pos, "npc"))
+
+    for (annot in annotation) {
+        grid::grid.segments(x0 = grid::unit(relative(annot), "npc"),
+                            y0 = grid::unit(s1_pos, "npc"),
+                            x1 = grid::unit(relative(annot), "npc"),
+                            y1 = grid::unit(s2_pos, "npc"),
+                            gp = grid::gpar(fill = "red", col = "red", lwd = 1))
+        }
 
     # add features of gff (or dataframe) file
     for (i in seq_len(nrow(gff_file))) {
