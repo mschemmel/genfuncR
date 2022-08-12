@@ -112,8 +112,23 @@ geneset <- function(gff_file,
         stop()
     }
 
-    # order input by start and end column
+    # order input by start and end column and filter
     gff_file <- gff_file[with(gff_file, order(gff_file$start, gff_file$end)), ]
+    gff_file <- gff_file[gff_file$start > range[1] & gff_file$end < range[2], ]
+
+    # store some constants
+    min_value <- range[1]
+    max_value <- range[2]
+
+    # TODO: solve axis intervals properly
+    # check for proper axis interval value
+    interval <- max_value - min_value
+    if (interval %% axis_interval != 0) {
+        stop("Please provide a multiple of your specified region for proper axis style.")
+    }
+    if (interval / axis_interval > 100) {
+        stop("Provided axis interval will result in more than 100 labels.")
+    }
 
     # create new device and newpage
     dev.new(width = 12, height = 6, unit = "in")
@@ -132,9 +147,9 @@ geneset <- function(gff_file,
                         y = grid::unit(0.5, "npc"),
                         width = 0.7,
                         height = 0.3,
-                        just = c("center"),
-                        clip = TRUE))
+                        just = c("center")))
 
+    # draw border if requested
     if (border) grid::grid.rect()
 
     # store some constants
@@ -193,34 +208,16 @@ geneset <- function(gff_file,
                       x2 = grid::unit(relative(gff_file$end[i]), "npc"),
                       y2 = grid::unit(s2_pos + (gene_box_height / 2), "npc"),
                       direction = "upstream",
-                      gp_ = grid::gpar(fill = reverse_color, 
+                      gp_ = grid::gpar(fill = reverse_color,
                                        alpha = transparency),
                       arr_type = arrow_type)
         } else {
            warning("Unrecognized 'strand' symbol.")
         }
     }
-    grid::popViewport(1)
-
-    # overlay viewport to get area back after clipping
-    grid::pushViewport(grid::viewport(name = "main",
-                    x = grid::unit(0.5, "npc"),
-                    y = grid::unit(0.5, "npc"),
-                    width = 0.7,
-                    height = 0.3,
-                    just = c("center")))
 
     # add axis label
     if (show_axis) {
-        # TODO: solve axis intervals properly
-        # check for proper axis interval value
-        interval <- max_value - min_value
-        if (interval %% axis_interval != 0) {
-            stop("Please provide a multiple of your specified region for proper axis style.")
-        }
-        if (interval / axis_interval > 100) {
-            stop("Provided axis interval will result in more than 100 labels.")
-        }
         # set axis label
         axis_label <- round(seq(min_value, max_value, axis_interval), 0)
 
