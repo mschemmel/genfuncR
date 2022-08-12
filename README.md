@@ -43,7 +43,7 @@ geneset(gff, range = c(0,3000), axis_interval = 500)
 library(grid)
 
 # example
-dna_to_img("TCAGCTAGCTATCTAGCTAGCTAGCTACTACGA")
+dna_to_img("TCAGCTAGCTATCTAGCTAGCTAGCTACTACGAATCGTTATCGCGCTATACGTATCG")
 ```
 
 <p align="center">
