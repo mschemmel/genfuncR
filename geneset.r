@@ -19,7 +19,7 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
                                gp = gp_)
         } else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
-                               c(y1, y2, y2, y2 + grid::unit(barrow_head_size, "npc"), mean(c(y1, y2)), y1 - grid::unit(barrow_head_size, "npc"), y1),
+                               c(y1, y2, y2, y2 + barrow_head_size, mean(c(y1, y2)), y1 - barrow_head_size, y1),
                                gp = gp_)
         } else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
@@ -35,7 +35,7 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
                                gp = gp_)
         } else if (arr_type == "barrow") {
             grid::grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
-                               c(y1, y1 - grid::unit(barrow_head_size, "npc"), mean(c(y1, y2)), y2 + grid::unit(barrow_head_size, "npc"), y2, y2, y1),
+                               c(y1, y1 - barrow_head_size, mean(c(y1, y2)), y2 + barrow_head_size, y2, y2, y1),
                                gp = gp_)
         } else if (arr_type == "box") {
             grid::grid.polygon(c(x1, x1, x2, x2),
@@ -85,6 +85,8 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @param axis_interval numerical interval of axis (default = NULL)
 #' @param range vector of start and end of region of interest (default = NULL)
 #' @param border boolean if border visible (default = FALSE)
+#' @param show_values boolean if displayed range should also be printed
+#' @param annotation vector of locations where to draw line annotations
 #' @examples
 #' geneset(gff)
 
@@ -100,6 +102,7 @@ geneset <- function(gff_file,
                     axis_interval = NULL,
                     range = NULL,
                     border = FALSE,
+                    show_values = FALSE,
                     annotation = NULL) {
 
     # check if input file is valid
@@ -115,6 +118,8 @@ geneset <- function(gff_file,
     # order input by start and end column and filter
     gff_file <- gff_file[with(gff_file, order(gff_file$start, gff_file$end)), ]
     gff_file <- gff_file[gff_file$start > range[1] & gff_file$end < range[2], ]
+
+    if(show_values) print(gff_file[which(gff_file$start > range[1] & gff_file$end < range[2]), ])
 
     # store some constants
     min_value <- range[1]
@@ -182,6 +187,7 @@ geneset <- function(gff_file,
                         x1 = grid::unit(genomic_vp_width_x1, "npc"),
                         y1 = grid::unit(s2_pos, "npc"))
 
+    # add line annotations
     for (annot in annotation) {
         grid::grid.segments(x0 = grid::unit(relative(annot), "npc"),
                             y0 = grid::unit(s1_pos, "npc"),
