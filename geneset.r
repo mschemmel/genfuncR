@@ -204,7 +204,7 @@ geneset <- function(gff_file,
                   x2 = grid::unit(relative(gff_file$end[i]), "npc"),
                   y2 = ifelse(gff_file$strand[i] == "+", grid::unit(s1_pos + (gene_box_height / 2), "npc"),
                                                          grid::unit(s2_pos + (gene_box_height / 2), "npc")),
-                  direction = "downstream",
+                  direction = ifelse(gff_file$strand[i] == "+", "downstream", "upstream"),
                   gp_ = grid::gpar(fill = forward_color,
                                    alpha = transparency),
                   arr_type = arrow_type)
