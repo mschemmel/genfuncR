@@ -190,30 +190,18 @@ geneset <- function(gff_file,
                             gp = grid::gpar(fill = "red", col = "red", lwd = 1))
         }
 
-    # add features of gff (or dataframe) file
+    # add features of gff
     for (i in seq_len(nrow(gff_file))) {
-        # downstream
-        if (gff_file$strand[i] == "+") {
-            genearrow(x1 = grid::unit(relative(gff_file$start[i]), "npc"),
-                      y1 = grid::unit(s1_pos - (gene_box_height / 2), "npc"),
-                      x2 = grid::unit(relative(gff_file$end[i]), "npc"),
-                      y2 = grid::unit(s1_pos + (gene_box_height / 2), "npc"),
-                      direction = "downstream",
-                      gp_ = grid::gpar(fill = forward_color,
-                                       alpha = transparency),
-                      arr_type = arrow_type)
-        } else if (gff_file$strand[i] == "-") {
-            genearrow(x1 = grid::unit(relative(gff_file$start[i]), "npc"),
-                      y1 = grid::unit(s2_pos - (gene_box_height / 2), "npc"),
-                      x2 = grid::unit(relative(gff_file$end[i]), "npc"),
-                      y2 = grid::unit(s2_pos + (gene_box_height / 2), "npc"),
-                      direction = "upstream",
-                      gp_ = grid::gpar(fill = reverse_color,
-                                       alpha = transparency),
-                      arr_type = arrow_type)
-        } else {
-           warning("Unrecognized 'strand' symbol.")
-        }
+        genearrow(x1 = grid::unit(relative(gff_file$start[i]), "npc"),
+                  y1 = ifelse(gff_file$strand[i] == "+", grid::unit(s1_pos - (gene_box_height / 2), "npc"),
+                                                         grid::unit(s2_pos - (gene_box_height / 2), "npc")),
+                  x2 = grid::unit(relative(gff_file$end[i]), "npc"),
+                  y2 = ifelse(gff_file$strand[i] == "+", grid::unit(s1_pos + (gene_box_height / 2), "npc"),
+                                                         grid::unit(s2_pos + (gene_box_height / 2), "npc")),
+                  direction = "downstream",
+                  gp_ = grid::gpar(fill = forward_color,
+                                   alpha = transparency),
+                  arr_type = arrow_type)
     }
 
     # add axis label
