@@ -187,14 +187,6 @@ geneset <- function(gff_file,
                         x1 = grid::unit(genomic_vp_width_x1, "npc"),
                         y1 = grid::unit(s2_pos, "npc"))
 
-    # add line annotations
-    for (annot in annotation) {
-        grid::grid.segments(x0 = grid::unit(relative(annot), "npc"),
-                            y0 = grid::unit(s1_pos, "npc"),
-                            x1 = grid::unit(relative(annot), "npc"),
-                            y1 = grid::unit(s2_pos, "npc"),
-                            gp = grid::gpar(fill = "red", col = "red", lwd = 1))
-        }
 
     # add features of gff
     for (i in seq_len(nrow(gff_file))) {
@@ -205,7 +197,7 @@ geneset <- function(gff_file,
                   y2 = ifelse(gff_file$strand[i] == "+", grid::unit(s1_pos + (gene_box_height / 2), "npc"),
                                                          grid::unit(s2_pos + (gene_box_height / 2), "npc")),
                   direction = ifelse(gff_file$strand[i] == "+", "downstream", "upstream"),
-                  gp_ = grid::gpar(fill = forward_color,
+                  gp_ = grid::gpar(fill = ifelse(gff_file$strand[i] == "+", forward_color, reverse_color),
                                    alpha = transparency),
                   arr_type = arrow_type)
     }
@@ -225,5 +217,15 @@ geneset <- function(gff_file,
                    h_ = 0.2,
                    label_txt = axis_label_text)
     }
+
+    # add line annotations
+    for (annot in annotation) {
+        grid::grid.segments(x0 = grid::unit(relative(annot), "npc"),
+                            y0 = grid::unit(s1_pos + (gene_box_height / 2), "npc"),
+                            x1 = grid::unit(relative(annot), "npc"),
+                            y1 = grid::unit(s2_pos - (gene_box_height / 2), "npc"),
+                            gp = grid::gpar(fill = "red", col = "red", lwd = 1))
+    }
+
     grid::popViewport(1)
 }
