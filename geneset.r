@@ -141,18 +141,18 @@ geneset <- function(gff_file,
 
     # outer viewport
     grid::pushViewport(grid::viewport(name = "outer",
-                        x = grid::unit(0.5, "npc"),
-                        y = grid::unit(0.5, "npc"),
-                        width = 1,
-                        height = 1))
+                                      x = grid::unit(0.5, "npc"),
+                                      y = grid::unit(0.5, "npc"),
+                                      width = 1,
+                                      height = 1))
 
     # main viewport
     grid::pushViewport(grid::viewport(name = "main",
-                        x = grid::unit(0.5, "npc"),
-                        y = grid::unit(0.5, "npc"),
-                        width = 0.7,
-                        height = 0.3,
-                        just = c("center")))
+                                      x = grid::unit(0.5, "npc"),
+                                      y = grid::unit(0.5, "npc"),
+                                      width = 0.7,
+                                      height = 0.3,
+                                      just = c("center")))
 
     # draw border if requested
     if (border) grid::grid.rect()
