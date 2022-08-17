@@ -74,6 +74,7 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 
 #' draw a set of genes based on data.frame or gff file
 #' @param gff_file data.frame of gff file or pure own data.frame
+#' @param cov_file data.frame of genomice coverage
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
 #' @param reverse_color color of genes in reverse direction (default = "darkslategray")
 #' @param transparency alpha value of gene annotation box
@@ -91,6 +92,7 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' geneset(gff)
 
 geneset <- function(gff_file,
+                    cov_file = NULL,
                     forward_color = "darkslategray",
                     reverse_color = "darkslategray",
                     transparency = 1,
@@ -149,7 +151,7 @@ geneset <- function(gff_file,
     # main viewport
     grid::pushViewport(grid::viewport(name = "main",
                         x = grid::unit(0.5, "npc"),
-                        y = grid::unit(0.5, "npc"),
+                        y = grid::unit(0.3, "npc"),
                         width = 0.7,
                         height = 0.3,
                         just = c("center")))
@@ -228,4 +230,30 @@ geneset <- function(gff_file,
     }
 
     grid::popViewport(1)
+
+    if (!is.null(cov_file)) {
+        # coverage viewport
+        grid::pushViewport(grid::viewport(name = "main",
+                            x = grid::unit(0.5, "npc"),
+                            y = grid::unit(0.65, "npc"),
+                            width = 0.7,
+                            height = 0.3,
+                            just = c("center")))
+        grid::grid.rect()
+
+        # add coverage of gff
+        cov_file <- cov_file[cov_file$start >= range[1] & cov_file$start <= range[2], ]
+        max_in_range <- max(cov_file$cov)
+
+        for (i in seq_len(nrow(cov_file))) {
+            if(cov_file$cov[i] != 0) {
+                grid::grid.segments(x0 = grid::unit(relative(cov_file$start[i]), "npc"),
+                                    y0 = grid::unit(0, "npc"),
+                                    x1 = grid::unit(relative(cov_file$start[i]), "npc"),
+                                    y1 = grid::unit((cov_file$cov[i] / max_in_range), "npc"),
+                                    gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
+            }    
+        }
+        grid::popViewport(1)
+    }
 }
