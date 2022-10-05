@@ -91,7 +91,7 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @examples
 #' geneset(gff)
 
-geneset <- function(gff_file,
+geneset <- function(gff_file = NULL,
                     cov_file = NULL,
                     forward_color = "darkslategray",
                     reverse_color = "darkslategray",
@@ -108,13 +108,15 @@ geneset <- function(gff_file,
                     annotation = NULL) {
 
     # check if input file is valid
-    if (nrow(gff_file) == 0) {
-        stop("Input data frame is empty")
-    }
-    if (!all(c("start", "end", "strand") %in% colnames(gff_file))) {
-        cat("Input has to contain at least 'start', 'end' and 'strand' column.\n")
-        cat("Found colnames: ", colnames(gff_file), "\n")
-        stop()
+    if (!is.null(gff_file)) {
+        if (nrow(gff_file) == 0) {
+            stop("Input data frame is empty")
+        }
+        if (!all(c("chr", "start", "end", "strand") %in% colnames(gff_file))) {
+            cat("Input has to contain at least 'start', 'end' and 'strand' column.\n")
+            cat("Found colnames: ", colnames(gff_file), "\n")
+            stop()
+        }
     }
 
     # order input by start and end column and filter
@@ -234,25 +236,27 @@ geneset <- function(gff_file,
     if (!is.null(cov_file)) {
         # coverage viewport
         grid::pushViewport(grid::viewport(name = "main",
-                            x = grid::unit(0.5, "npc"),
-                            y = grid::unit(0.65, "npc"),
-                            width = 0.7,
-                            height = 0.3,
-                            just = c("center")))
+                           x = grid::unit(0.5, "npc"),
+                           y = grid::unit(0.625, "npc"),
+                           width = 0.7,
+                           height = 0.15,
+                           just = c("center")))
         grid::grid.rect()
 
+
+        
         # add coverage of gff
         cov_file <- cov_file[cov_file$start >= range[1] & cov_file$start <= range[2], ]
         max_in_range <- max(cov_file$cov)
 
         for (i in seq_len(nrow(cov_file))) {
-            if(cov_file$cov[i] != 0) {
+            if (cov_file$cov[i] != 0) {
                 grid::grid.segments(x0 = grid::unit(relative(cov_file$start[i]), "npc"),
                                     y0 = grid::unit(0, "npc"),
                                     x1 = grid::unit(relative(cov_file$start[i]), "npc"),
                                     y1 = grid::unit((cov_file$cov[i] / max_in_range), "npc"),
-                                    gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
-            }    
+                                    gp = grid::gpar(fill = "cornflowerblue", col = "cornflowerblue", lwd = 0.1))
+            }
         }
         grid::popViewport(1)
     }
