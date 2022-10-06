@@ -79,7 +79,7 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @param transparency alpha value of gene annotation box
 #' @param arrow_type shape of arrow head (default = "arrow")
 #' @param gene_height height in percent (0-1) of gene box (default = 1)
-#' @param distance distance between forward and revers strand in percent (0-1) (default = 1)
+#' @param distance distance between forward and reverse strand in percent (0-1) (default = 1)
 #' @param show_axis show axis or not (default = TRUE)
 #' @param axis_label_text text of x axis label (default: "Region (bp)")
 #' @param axis_interval numerical interval of axis (default = NULL)
