@@ -74,7 +74,6 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 
 #' draw a set of genes based on data.frame or gff file
 #' @param gff_file data.frame of gff file or pure own data.frame
-#' @param cov_file data.frame of genomice coverage
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
 #' @param reverse_color color of genes in reverse direction (default = "darkslategray")
 #' @param transparency alpha value of gene annotation box
@@ -87,12 +86,10 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @param range vector of start and end of region of interest (default = NULL)
 #' @param border boolean if border visible (default = FALSE)
 #' @param show_values boolean if displayed range should also be printed
-#' @param annotation vector of locations where to draw line annotations
 #' @examples
 #' geneset(gff)
 
 geneset <- function(gff_file = NULL,
-                    cov_file = NULL,
                     forward_color = "darkslategray",
                     reverse_color = "darkslategray",
                     transparency = 1,
@@ -104,8 +101,7 @@ geneset <- function(gff_file = NULL,
                     axis_interval = NULL,
                     range = NULL,
                     border = FALSE,
-                    show_values = FALSE,
-                    annotation = NULL) {
+                    show_values = FALSE) {
 
     # check if input file is valid
     if (!is.null(gff_file)) {
@@ -153,7 +149,7 @@ geneset <- function(gff_file = NULL,
     # main viewport
     grid::pushViewport(grid::viewport(name = "main",
                         x = grid::unit(0.5, "npc"),
-                        y = grid::unit(0.3, "npc"),
+                        y = grid::unit(0.5, "npc"),
                         width = 0.7,
                         height = 0.3,
                         just = c("center")))
@@ -195,13 +191,19 @@ geneset <- function(gff_file = NULL,
     # add features of gff
     for (i in seq_len(nrow(gff_file))) {
         genearrow(x1 = grid::unit(relative(gff_file$start[i]), "npc"),
-                  y1 = ifelse(gff_file$strand[i] == "+", grid::unit(s1_pos - (gene_box_height / 2), "npc"),
-                                                         grid::unit(s2_pos - (gene_box_height / 2), "npc")),
+                  y1 = ifelse(gff_file$strand[i] == "+",
+                              grid::unit(s1_pos - (gene_box_height / 2), "npc"),
+                              grid::unit(s2_pos - (gene_box_height / 2), "npc")),
                   x2 = grid::unit(relative(gff_file$end[i]), "npc"),
-                  y2 = ifelse(gff_file$strand[i] == "+", grid::unit(s1_pos + (gene_box_height / 2), "npc"),
-                                                         grid::unit(s2_pos + (gene_box_height / 2), "npc")),
-                  direction = ifelse(gff_file$strand[i] == "+", "downstream", "upstream"),
-                  gp_ = grid::gpar(fill = ifelse(gff_file$strand[i] == "+", forward_color, reverse_color),
+                  y2 = ifelse(gff_file$strand[i] == "+",
+                              grid::unit(s1_pos + (gene_box_height / 2), "npc"),
+                              grid::unit(s2_pos + (gene_box_height / 2), "npc")),
+                  direction = ifelse(gff_file$strand[i] == "+",
+                                     "downstream",
+                                     "upstream"),
+                  gp_ = grid::gpar(fill = ifelse(gff_file$strand[i] == "+",
+                                                 forward_color,
+                                                 reverse_color),
                                    alpha = transparency),
                   arr_type = arrow_type)
     }
@@ -221,43 +223,5 @@ geneset <- function(gff_file = NULL,
                    h_ = 0.2,
                    label_txt = axis_label_text)
     }
-
-    # add line annotations
-    for (annot in annotation) {
-        grid::grid.segments(x0 = grid::unit(relative(annot), "npc"),
-                            y0 = grid::unit(s1_pos + (gene_box_height / 2), "npc"),
-                            x1 = grid::unit(relative(annot), "npc"),
-                            y1 = grid::unit(s2_pos - (gene_box_height / 2), "npc"),
-                            gp = grid::gpar(fill = "red", col = "red", lwd = 1))
-    }
-
     grid::popViewport(1)
-
-    if (!is.null(cov_file)) {
-        # coverage viewport
-        grid::pushViewport(grid::viewport(name = "main",
-                           x = grid::unit(0.5, "npc"),
-                           y = grid::unit(0.625, "npc"),
-                           width = 0.7,
-                           height = 0.15,
-                           just = c("center")))
-        grid::grid.rect()
-
-
-        
-        # add coverage of gff
-        cov_file <- cov_file[cov_file$start >= range[1] & cov_file$start <= range[2], ]
-        max_in_range <- max(cov_file$cov)
-
-        for (i in seq_len(nrow(cov_file))) {
-            if (cov_file$cov[i] != 0) {
-                grid::grid.segments(x0 = grid::unit(relative(cov_file$start[i]), "npc"),
-                                    y0 = grid::unit(0, "npc"),
-                                    x1 = grid::unit(relative(cov_file$start[i]), "npc"),
-                                    y1 = grid::unit((cov_file$cov[i] / max_in_range), "npc"),
-                                    gp = grid::gpar(fill = "cornflowerblue", col = "cornflowerblue", lwd = 0.1))
-            }
-        }
-        grid::popViewport(1)
-    }
 }
