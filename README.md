@@ -20,7 +20,7 @@ library(grid)
 
 # random gff file
 # data frame needs at least 'start', 'end' and 'strand' column
-gff <- data.frame(seqname = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "Chr3"),
+gff <- data.frame(chr = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "Chr3"),
                   source = rep("Genome", 7),
                   feature = rep("Gene", 7),
                   start = c(34, 370, 800, 1100, 1500, 2020, 2500),
