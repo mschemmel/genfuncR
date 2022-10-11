@@ -257,5 +257,3 @@ setMethod(f = "show",
             }
             grid::popViewport(1)
             })
-
-geneset(gff, range = c(0,3000), axis_interval = 500)
