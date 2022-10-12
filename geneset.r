@@ -72,6 +72,26 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
     grid::popViewport(1)
 }
 
+#' prepare (order and subset) input data
+#' @param dataset data.frame of input
+#' @param chromosome target chromosome
+#' @param st start coordinate of target region
+#' @param en end coordinate of target region
+#' @param transparency alpha value of gene an
+#' @examples
+#' prepare(gff, "Chr1A", 1000, 2000)
+
+prepare <- function(dataset,
+                    chromosome,
+                    st,
+                    en) {
+
+    # order input by start and end column and filter
+    dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ]
+    dataset <- dataset[dataset$chrom == chromosome & dataset$start >= st & dataset$end <= en, ]
+    return(dataset)
+}
+
 #' draw a set of genes based on data.frame or gff file
 #' @param gff_file data.frame of gff file
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
@@ -97,6 +117,7 @@ geneset = setClass("geneset",
                    ))
 
 geneset <- function(gff_file = NULL,
+                    chromosome = NULL,
                     forward_color = "darkslategray",
                     reverse_color = "darkslategray",
                     transparency = 1,
@@ -113,28 +134,32 @@ geneset <- function(gff_file = NULL,
 
     .Object = new("geneset")
 
+
+    if (!is.null(chromosome)) {
+        .Object@gene_param$chromosome = chromosome
+    }
+
+    # order input by start and end column and filter
+    min_value <- range[1]
+    max_value <- range[2]
+
+    gff_file <- prepare(gff_file, chromosome, min_value, max_value)
+    
     # check if input file is valid
     if (!is.null(gff_file)) {
         if (nrow(gff_file) == 0) {
             stop("Input data frame is empty")
         }
-        if (!all(c("chr", "start", "end", "strand") %in% colnames(gff_file))) {
+        if (!all(c("chrom", "start", "end", "strand") %in% colnames(gff_file))) {
             cat("Input has to contain at least 'start', 'end' and 'strand' column.\n")
             cat("Found colnames: ", colnames(gff_file), "\n")
             stop()
         }
     }
-
-    # order input by start and end column and filter
-    gff_file <- gff_file[with(gff_file, order(gff_file$start, gff_file$end)), ]
-    gff_file <- gff_file[gff_file$start > range[1] & gff_file$end < range[2], ]
+    
     .Object@gff_file = gff_file
 
-    if(show_values) print(gff_file[which(gff_file$start > range[1] & gff_file$end < range[2]), ])
-
-    # store some constants
-    min_value <- range[1]
-    max_value <- range[2]
+    if(show_values) print(gff_file)
 
     # TODO: solve axis intervals properly
     # check for proper axis interval value
@@ -159,19 +184,18 @@ geneset <- function(gff_file = NULL,
                          stop("Distance between forward and reverse strand have to be between 0 and 1."))
     reverse_strand_pos <- forward_strand_pos + strand_gap
 
+    # default params
     .Object@gene_param$forward_strand_pos = forward_strand_pos
     .Object@gene_param$strand_gap = strand_gap
     .Object@gene_param$reverse_strand_pos = reverse_strand_pos
     .Object@gene_param$distance = distance
-
-    # define default params
-    .Object@plot_param$min_value = min_value
-    .Object@plot_param$max_value = max_value
     .Object@gene_param$forward_color = forward_color
     .Object@gene_param$reverse_color = reverse_color
     .Object@gene_param$transparency = transparency
     .Object@gene_param$arrow_type = arrow_type
     .Object@gene_param$gene_height = gene_height
+    .Object@plot_param$min_value = min_value
+    .Object@plot_param$max_value = max_value
     .Object@plot_param$interval = interval
     .Object@plot_param$show_axis = show_axis
     .Object@plot_param$axis_label_text = axis_label_text
@@ -189,6 +213,7 @@ setMethod(f = "show",
           definition = function(object) {
             # helper function
             relative <- function(x) (x - object@plot_param$min_value) / (object@plot_param$max_value - object@plot_param$min_value)
+           
             # create new device and newpage
             dev.new(width = 12, height = 6, unit = "in")
             grid::grid.newpage()
@@ -281,17 +306,24 @@ setMethod(f = "show",
                                                       height = size_per_vp - 0.025,
                                                       just = c("bottom")))
 
-                    max_in_range <- max(object@plot_param$tracks[[x]]$value)
+                    dframe <- prepare(object@plot_param$tracks[[x]],
+                                      object@gene_param$chromosome,  
+                                      object@plot_param$min_value, 
+                                      object@plot_param$max_value)
 
-                    # which region should be displayed
-                    for (i in seq(1, nrow(object@plot_param$tracks[[x]]), 1)) {
-                        value <- object@plot_param$tracks[[x]]$value[i]
-                        grid::grid.segments(x0 = grid::unit(relative(object@plot_param$tracks[[x]]$start[i]), "npc"),
-                                            y0 = grid::unit(0, "npc"),
-                                            x1 = grid::unit(relative(object@plot_param$tracks[[x]]$start[i]), "npc"),
-                                            y1 = grid::unit(value / max_in_range, "npc"),
-                                            gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
+                    if (nrow(dframe) != 0) {
+                        max_in_range <- max(dframe$value)
 
+                        # which region should be displayed
+                        for (i in seq(1, nrow(dframe), 1)) {
+                            value <- dframe$value[i]
+                            grid::grid.segments(x0 = grid::unit(relative(dframe$start[i]), "npc"),
+                                                y0 = grid::unit(0, "npc"),
+                                                x1 = grid::unit(relative(dframe$start[i]), "npc"),
+                                                y1 = grid::unit(value / max_in_range, "npc"),
+                                                gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
+
+                        }
                     }            
                     grid::grid.rect()
                     grid::popViewport(1)
