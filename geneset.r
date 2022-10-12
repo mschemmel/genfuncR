@@ -155,8 +155,8 @@ geneset <- function(gff_file = NULL,
     # position of forward and reverse strand
     forward_strand_pos <- 0.2
     strand_gap <- ifelse(distance >= 0 & distance <= 1,
-                                     gene_box_height + ((forward_strand_pos + gene_box_height) * distance),
-                                     stop("Distance between forward and reverse strand have to be between 0 and 1."))
+                         gene_box_height + ((forward_strand_pos + gene_box_height) * distance),
+                         stop("Distance between forward and reverse strand have to be between 0 and 1."))
     reverse_strand_pos <- forward_strand_pos + strand_gap
 
     .Object@gene_param$forward_strand_pos = forward_strand_pos
@@ -177,6 +177,7 @@ geneset <- function(gff_file = NULL,
     .Object@plot_param$axis_label_text = axis_label_text
     .Object@plot_param$axis_interval = axis_interval
     .Object@plot_param$border = border
+    .Object@plot_param$positions = c(range[1]:range[2])
     .Object@plot_param$show_values = show_values
     .Object@plot_param$tracks = tracks
     
@@ -262,7 +263,7 @@ setMethod(f = "show",
 
                 # add axis label text
                 text_label(x_ = 0.5,
-                           y_ = -0.8,
+                           y_ = -0.5,
                            w_ = 0.1,
                            h_ = 0.2,
                            label_txt = object@plot_param$axis_label_text)
@@ -272,25 +273,25 @@ setMethod(f = "show",
             # plot annotation tracks if requested
             # TODO: refactor!
             if (object@plot_param$show_tracks) {
+                # how many tracks should be drawn
                 for(x in seq_len(length(object@plot_param$tracks))) {
-                    grid::pushViewport(grid::viewport(
-                                                x = grid::unit(0.5, "npc"),
-                                                y = grid::unit(places_of_vp[-1][x], "npc"),
-                                                width = 0.7,
-                                                height = size_per_vp - 0.025,
-                                                just = c("bottom")))
+                    grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
+                                                      y = grid::unit(places_of_vp[-1][x], "npc"),
+                                                      width = 0.7,
+                                                      height = size_per_vp - 0.025,
+                                                      just = c("bottom")))
 
-                    max_in_range <- max(unname(unlist(object@plot_param$tracks[x])))
+                    max_in_range <- max(object@plot_param$tracks[[x]]$value)
 
-                    for (i in seq_len(3000)) {
-                        value <- unname(unlist(object@plot_param$tracks[x]))[i]
-                        if (value != 0) {
-                            grid::grid.segments(x0 = grid::unit(relative(i), "npc"),
-                                                y0 = grid::unit(0, "npc"),
-                                                x1 = grid::unit(relative(i), "npc"),
-                                                y1 = grid::unit(value / max_in_range, "npc"),
-                                                gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
-                        }
+                    # which region should be displayed
+                    for (i in seq(1, nrow(object@plot_param$tracks[[x]]), 1)) {
+                        value <- object@plot_param$tracks[[x]]$value[i]
+                        grid::grid.segments(x0 = grid::unit(relative(object@plot_param$tracks[[x]]$start[i]), "npc"),
+                                            y0 = grid::unit(0, "npc"),
+                                            x1 = grid::unit(relative(object@plot_param$tracks[[x]]$start[i]), "npc"),
+                                            y1 = grid::unit(value / max_in_range, "npc"),
+                                            gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
+
                     }            
                     grid::grid.rect()
                     grid::popViewport(1)
