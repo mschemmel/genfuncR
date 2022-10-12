@@ -67,7 +67,7 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
                                       y = grid::unit(y_, "npc"),
                                       width = w_,
                                       height = h_,
-                                      just = c("center")))
+                                      just = c("bottom")))
     grid::grid.text(label_txt, gp = gp_, rot = angle)
     grid::popViewport(1)
 }
@@ -108,7 +108,8 @@ geneset <- function(gff_file = NULL,
                     axis_interval = NULL,
                     range = NULL,
                     border = FALSE,
-                    show_values = FALSE) {
+                    show_values = FALSE,
+                    tracks = NULL) {
 
     .Object = new("geneset")
 
@@ -177,7 +178,8 @@ geneset <- function(gff_file = NULL,
     .Object@plot_param$axis_interval = axis_interval
     .Object@plot_param$border = border
     .Object@plot_param$show_values = show_values
-
+    .Object@plot_param$tracks = tracks
+    
     return(.Object)
 }
 
@@ -192,22 +194,32 @@ setMethod(f = "show",
 
             # outer viewport
             grid::pushViewport(grid::viewport(name = "outer",
-                                            x = grid::unit(0.5, "npc"),
-                                            y = grid::unit(0.5, "npc"),
-                                            width = 1,
-                                            height = 1))
+                                              x = grid::unit(0.5, "npc"),
+                                              y = grid::unit(0.5, "npc"),
+                                              width = 1,
+                                              height = 1))
+
+            if (length(object@plot_param$tracks) != 0) {
+                object@plot_param$show_tracks = TRUE
+                size_per_vp <- 0.85 / (length(object@plot_param$tracks) + 1) # always show the genebox (+1)
+                places_of_vp <- head(seq(0.15, 1, size_per_vp), -1)
+            }
+            else {
+                object@plot_param$show_tracks = FALSE
+                size_per_vp <- 0.3
+                places_of_vp <- 0.5
+            }
 
             # main viewport
             grid::pushViewport(grid::viewport(name = "main",
-                                            x = grid::unit(0.5, "npc"),
-                                            y = grid::unit(0.5, "npc"),
-                                            width = 0.7,
-                                            height = 0.3,
-                                            just = c("center")))
+                                              x = grid::unit(0.5, "npc"),
+                                              y = grid::unit(places_of_vp[1], "npc"),
+                                              width = 0.7,
+                                              height = size_per_vp,
+                                              just = c("bottom")))
 
             # draw border if requested
             if (object@plot_param$border) grid::grid.rect()
-
 
             # forward direction
             grid::grid.segments(x0 = grid::unit(0, "npc"),
@@ -250,10 +262,38 @@ setMethod(f = "show",
 
                 # add axis label text
                 text_label(x_ = 0.5,
-                           y_ = -0.3,
+                           y_ = -0.8,
                            w_ = 0.1,
                            h_ = 0.2,
                            label_txt = object@plot_param$axis_label_text)
             }
             grid::popViewport(1)
-            })
+
+            # plot annotation tracks if requested
+            # TODO: refactor!
+            if (object@plot_param$show_tracks) {
+                for(x in seq_len(length(object@plot_param$tracks))) {
+                    grid::pushViewport(grid::viewport(
+                                                x = grid::unit(0.5, "npc"),
+                                                y = grid::unit(places_of_vp[-1][x], "npc"),
+                                                width = 0.7,
+                                                height = size_per_vp - 0.025,
+                                                just = c("bottom")))
+
+                    max_in_range <- max(unname(unlist(object@plot_param$tracks[x])))
+
+                    for (i in seq_len(3000)) {
+                        value <- unname(unlist(object@plot_param$tracks[x]))[i]
+                        if (value != 0) {
+                            grid::grid.segments(x0 = grid::unit(relative(i), "npc"),
+                                                y0 = grid::unit(0, "npc"),
+                                                x1 = grid::unit(relative(i), "npc"),
+                                                y1 = grid::unit(value / max_in_range, "npc"),
+                                                gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
+                        }
+                    }            
+                    grid::grid.rect()
+                    grid::popViewport(1)
+                }
+            }
+})
