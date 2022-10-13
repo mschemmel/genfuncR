@@ -99,7 +99,8 @@ prepare <- function(dataset,
     dataset <- dataset[dataset$chr == chromosome & dataset$start >= st & dataset$end <= en, ]
 
     if (nrow(dataset) == 0) {
-        stop("Input data frame is empty after filtering")
+        cat("Input data frame is empty after filtering (", chromosome, ":", st, "-", en, ")\n", sep = "")
+        stop()
     }
     return(dataset)
 }
