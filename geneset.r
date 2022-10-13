@@ -123,6 +123,27 @@ prepare <- function(dataset,
 #' @examples
 #' geneset(gff)
 
+
+annoTrack = setClass("annoTrack",
+                     slots = list(
+                       track_param = "list"
+                    ))
+
+annoTrack <- function(track_file = NULL,
+                      label = "character",
+                      type = "character",
+                      color = "character"
+                      ) {
+
+    .Object = new("annoTrack")
+
+    .Object@track_param$track_file = track_file
+    .Object@track_param$label = label
+    .Object@track_param$type = type
+    .Object@track_param$color = color
+    return(.Object)
+}
+
 geneset = setClass("geneset",
                    slots = list(
                         gff_file = "ANY",
@@ -160,7 +181,7 @@ geneset <- function(gff_file = NULL,
 
     .Object@gff_file = gff_file
 
-    if(show_values) print(gff_file)
+    if (show_values) print(gff_file)
 
     # TODO: solve axis intervals properly
     # check for proper axis interval value
@@ -307,13 +328,14 @@ setMethod(f = "show",
                                                       height = size_per_vp - 0.025,
                                                       just = c("bottom")))
 
-                    dframe <- prepare(object@plot_param$tracks[[x]],
+                    dframe <- prepare(object@plot_param$tracks[[x]]@track_param$track_file,
                                       object@gene_param$chromosome,
                                       object@plot_param$min_value,
                                       object@plot_param$max_value)
+                    dframe$color <- object@plot_param$tracks[[x]]@track_param$color
 
                     # add track label
-                    grid::grid.text(names(object@plot_param$tracks[x]), x = -0.05, y = 0.5, just = "right")
+                    grid::grid.text(object@plot_param$tracks[[x]]@track_param$label, x = -0.05, y = 0.5, just = "right")
 
                     if (nrow(dframe) != 0) {
                         max_in_range <- max(dframe$value)
@@ -325,8 +347,7 @@ setMethod(f = "show",
                                                 y0 = grid::unit(0, "npc"),
                                                 x1 = grid::unit(relative(dframe$start[i]), "npc"),
                                                 y1 = grid::unit(value / max_in_range, "npc"),
-                                                gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
-
+                                                gp = grid::gpar(fill = dframe$color, col = dframe$color, lwd = 0.1))
                         }
                     }
                     grid::grid.rect()
