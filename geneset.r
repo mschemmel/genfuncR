@@ -299,7 +299,7 @@ setMethod(f = "show",
             # TODO: refactor!
             if (object@plot_param$show_tracks) {
                 # how many tracks should be drawn
-                for(x in seq_len(length(object@plot_param$tracks))) {
+                for (x in seq_len(length(object@plot_param$tracks))) {
                     grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
                                                       y = grid::unit(places_of_vp[-1][x], "npc"),
                                                       width = 0.7,
@@ -307,9 +307,12 @@ setMethod(f = "show",
                                                       just = c("bottom")))
 
                     dframe <- prepare(object@plot_param$tracks[[x]],
-                                      object@gene_param$chromosome,  
-                                      object@plot_param$min_value, 
+                                      object@gene_param$chromosome,
+                                      object@plot_param$min_value,
                                       object@plot_param$max_value)
+
+                    # add track label
+                    grid::grid.text(names(object@plot_param$tracks[x]), x = -0.05, y = 0.5, just = "right")
 
                     if (nrow(dframe) != 0) {
                         max_in_range <- max(dframe$value)
