@@ -86,9 +86,21 @@ prepare <- function(dataset,
                     st,
                     en) {
 
+    # check if input file is valid
+    if (!is.null(dataset)) {
+        if (!all(c("chr", "start", "end", "strand") %in% colnames(dataset))) {
+            cat("Input has to contain at least 'chr', 'start', 'end' and 'strand' column.\n")
+            cat("Found colnames: ", colnames(dataset), "\n")
+            stop()
+        }
+    }
     # order input by start and end column and filter
     dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ]
-    dataset <- dataset[dataset$chrom == chromosome & dataset$start >= st & dataset$end <= en, ]
+    dataset <- dataset[dataset$chr == chromosome & dataset$start >= st & dataset$end <= en, ]
+
+    if (nrow(dataset) == 0) {
+        stop("Input data frame is empty after filtering")
+    }
     return(dataset)
 }
 
@@ -106,6 +118,7 @@ prepare <- function(dataset,
 #' @param range vector of start and end of region of interest (default = NULL)
 #' @param border boolean if border visible (default = FALSE)
 #' @param show_values boolean if displayed range should also be printed
+#' @param tracks named list of data tracks (annotations)
 #' @examples
 #' geneset(gff)
 
@@ -134,7 +147,6 @@ geneset <- function(gff_file = NULL,
 
     .Object = new("geneset")
 
-
     if (!is.null(chromosome)) {
         .Object@gene_param$chromosome = chromosome
     }
@@ -144,19 +156,7 @@ geneset <- function(gff_file = NULL,
     max_value <- range[2]
 
     gff_file <- prepare(gff_file, chromosome, min_value, max_value)
-    
-    # check if input file is valid
-    if (!is.null(gff_file)) {
-        if (nrow(gff_file) == 0) {
-            stop("Input data frame is empty")
-        }
-        if (!all(c("chrom", "start", "end", "strand") %in% colnames(gff_file))) {
-            cat("Input has to contain at least 'start', 'end' and 'strand' column.\n")
-            cat("Found colnames: ", colnames(gff_file), "\n")
-            stop()
-        }
-    }
-    
+
     .Object@gff_file = gff_file
 
     if(show_values) print(gff_file)
@@ -176,7 +176,7 @@ geneset <- function(gff_file = NULL,
                               0.2 * gene_height,
                               stop("Height of gene box (gene_height) have to be between 0 and 1."))
     .Object@gene_param$gene_box_height = gene_box_height
-    
+
     # position of forward and reverse strand
     forward_strand_pos <- 0.2
     strand_gap <- ifelse(distance >= 0 & distance <= 1,
@@ -204,7 +204,7 @@ geneset <- function(gff_file = NULL,
     .Object@plot_param$positions = c(range[1]:range[2])
     .Object@plot_param$show_values = show_values
     .Object@plot_param$tracks = tracks
-    
+
     return(.Object)
 }
 
@@ -213,7 +213,7 @@ setMethod(f = "show",
           definition = function(object) {
             # helper function
             relative <- function(x) (x - object@plot_param$min_value) / (object@plot_param$max_value - object@plot_param$min_value)
-           
+
             # create new device and newpage
             dev.new(width = 12, height = 6, unit = "in")
             grid::grid.newpage()
@@ -324,7 +324,7 @@ setMethod(f = "show",
                                                 gp = grid::gpar(fill = "gold3", col = "gold3", lwd = 0.1))
 
                         }
-                    }            
+                    }
                     grid::grid.rect()
                     grid::popViewport(1)
                 }
