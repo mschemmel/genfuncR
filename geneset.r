@@ -105,24 +105,13 @@ prepare <- function(dataset,
     return(dataset)
 }
 
-#' draw a set of genes based on data.frame or gff file
-#' @param gff_file data.frame of gff file
-#' @param forward_color color of genes in forward direction (default = "darkslategray")
-#' @param reverse_color color of genes in reverse direction (default = "darkslategray")
-#' @param transparency alpha value of gene annotation box
-#' @param arrow_type shape of arrow head (default = "arrow")
-#' @param gene_height height in percent (0-1) of gene box (default = 1)
-#' @param distance distance between forward and reverse strand in percent (0-1) (default = 1)
-#' @param show_axis show axis or not (default = TRUE)
-#' @param axis_label_text text of x axis label (default: "Region (bp)")
-#' @param axis_interval numerical interval of axis (default = NULL)
-#' @param range vector of start and end of region of interest (default = NULL)
-#' @param border boolean if border visible (default = FALSE)
-#' @param show_values boolean if displayed range should also be printed
-#' @param tracks named list of data tracks (annotations)
+#' draw a data track based on data.frame or gff file
+#' @param track_file data.frame of gff file
+#' @param label name of the track
+#' @param type type of the track (default: line)
+#' @param color color of the track
 #' @examples
-#' geneset(gff)
-
+#' annoTrack(gff, "Coverage", "line", "firebrick")
 
 annoTrack = setClass("annoTrack",
                      slots = list(
@@ -143,6 +132,24 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$color = color
     return(.Object)
 }
+
+#' draw a set of genes based on data.frame or gff file
+#' @param gff_file data.frame of gff file
+#' @param forward_color color of genes in forward direction (default = "darkslategray")
+#' @param reverse_color color of genes in reverse direction (default = "darkslategray")
+#' @param transparency alpha value of gene annotation box
+#' @param arrow_type shape of arrow head (default = "arrow")
+#' @param gene_height height in percent (0-1) of gene box (default = 1)
+#' @param distance distance between forward and reverse strand in percent (0-1) (default = 1)
+#' @param show_axis show axis or not (default = TRUE)
+#' @param axis_label_text text of x axis label (default: "Region (bp)")
+#' @param axis_interval numerical interval of axis (default = NULL)
+#' @param range vector of start and end of region of interest (default = NULL)
+#' @param border boolean if border visible (default = FALSE)
+#' @param show_values boolean if displayed range should also be printed
+#' @param tracks named list of data tracks (annotations)
+#' @examples
+#' geneset(gff)
 
 geneset = setClass("geneset",
                    slots = list(
