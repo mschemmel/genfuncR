@@ -21,9 +21,9 @@ library(grid)
 # random gff file
 # data frame needs at least 'start', 'end' and 'strand' column
 genes <- data.frame(chr = c("Chr1", "Chr1", "Chr1", "Chr1", "Chr1", "Chr1", "Chr1"),
-                  start = c(34, 370, 800, 1100, 1500, 2020, 2500),
-                  end = c(364, 700, 950, 1250, 2000, 2200, 2700),
-                  strand = c("+", "+", "-", "+", "+", "-", "+"))
+                    start = c(34, 370, 800, 1100, 1500, 2020, 2500),
+                    end = c(364, 700, 950, 1250, 2000, 2200, 2700),
+                    strand = c("+", "+", "-", "+", "+", "-", "+"))
 
 # example
 geneset(genes, range = c(0,3000), axis_interval = 500, chromosome = "Chr1")
