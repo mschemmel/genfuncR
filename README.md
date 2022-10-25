@@ -20,18 +20,13 @@ library(grid)
 
 # random gff file
 # data frame needs at least 'start', 'end' and 'strand' column
-gff <- data.frame(chr = c("Chr1", "Chr1", "Chr2", "Chr2", "Chr2", "Chr3", "Chr3"),
-                  source = rep("Genome", 7),
-                  feature = rep("Gene", 7),
+genes <- data.frame(chr = c("Chr1", "Chr1", "Chr1", "Chr1", "Chr1", "Chr1", "Chr1"),
                   start = c(34, 370, 800, 1100, 1500, 2020, 2500),
                   end = c(364, 700, 950, 1250, 2000, 2200, 2700),
-                  score = rep(".", 7),
-                  strand = c("+", "+", "-", "+", "+", "-", "+"),
-                  frame = rep(0, 7),
-                  attribute = paste0("seq", seq(1, 7, 1)))
+                  strand = c("+", "+", "-", "+", "+", "-", "+"))
 
 # example
-geneset(gff, range = c(0,3000), axis_interval = 500)
+geneset(genes, range = c(0,3000), axis_interval = 500, chromosome = "Chr1")
 ```
 
 <p align="center">
