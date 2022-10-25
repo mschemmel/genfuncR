@@ -121,7 +121,8 @@ annoTrack = setClass("annoTrack",
 annoTrack <- function(track_file = NULL,
                       label = "character",
                       type = "character",
-                      color = "character"
+                      color = "character",
+                      ymax = "numeric"
                       ) {
 
     .Object = new("annoTrack")
@@ -130,6 +131,7 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$label = label
     .Object@track_param$type = type
     .Object@track_param$color = color
+    .Object@track_param$ymax = ymax
     return(.Object)
 }
 
@@ -244,7 +246,7 @@ setMethod(f = "show",
             relative <- function(x) (x - object@plot_param$min_value) / (object@plot_param$max_value - object@plot_param$min_value)
 
             # create new device and newpage
-            dev.new(width = 12, height = 6, unit = "in")
+            #dev.new(width = 12, height = 6, unit = "in")
             grid::grid.newpage()
 
             # outer viewport
@@ -317,11 +319,12 @@ setMethod(f = "show",
 
                 # add axis label text
                 text_label(x_ = 0.5,
-                           y_ = -0.5,
+                           y_ = -1,
                            w_ = 0.1,
                            h_ = 0.2,
                            label_txt = object@plot_param$axis_label_text)
             }
+                    
             grid::popViewport(1)
 
             # plot annotation tracks if requested
@@ -334,30 +337,32 @@ setMethod(f = "show",
                                                       width = 0.7,
                                                       height = size_per_vp - 0.025,
                                                       just = c("bottom")))
-
+                    grid::grid.rect()
+                                                      
                     dframe <- prepare(object@plot_param$tracks[[x]]@track_param$track_file,
                                       object@gene_param$chromosome,
                                       object@plot_param$min_value,
                                       object@plot_param$max_value)
                     dframe$color <- object@plot_param$tracks[[x]]@track_param$color
-
                     # add track label
                     grid::grid.text(object@plot_param$tracks[[x]]@track_param$label, x = -0.05, y = 0.5, just = "right")
 
                     if (nrow(dframe) != 0) {
-                        max_in_range <- max(dframe$value)
+                        max_in_range <- object@plot_param$tracks[[x]]@track_param$ymax
+                        
 
                         # which region should be displayed
                         for (i in seq(1, nrow(dframe), 1)) {
-                            value <- dframe$value[i]
+                            value <- dframe$strand[i] / max_in_range
+                            value <- ifelse(value > 1, 1, value)
+
                             grid::grid.segments(x0 = grid::unit(relative(dframe$start[i]), "npc"),
                                                 y0 = grid::unit(0, "npc"),
                                                 x1 = grid::unit(relative(dframe$start[i]), "npc"),
-                                                y1 = grid::unit(value / max_in_range, "npc"),
+                                                y1 = grid::unit(value, "npc"),
                                                 gp = grid::gpar(fill = dframe$color, col = dframe$color, lwd = 0.1))
                         }
                     }
-                    grid::grid.rect()
                     grid::popViewport(1)
                 }
             }
