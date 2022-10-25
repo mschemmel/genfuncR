@@ -100,7 +100,6 @@ prepare <- function(dataset,
 
     if (nrow(dataset) == 0) {
         cat("Input data frame is empty after filtering (", chromosome, ":", st, "-", en, ")\n", sep = "")
-        stop()
     }
     return(dataset)
 }
@@ -338,16 +337,23 @@ setMethod(f = "show",
                                                       height = size_per_vp - 0.025,
                                                       just = c("bottom")))
                     grid::grid.rect()
-                                                      
+                              
                     dframe <- prepare(object@plot_param$tracks[[x]]@track_param$track_file,
                                       object@gene_param$chromosome,
                                       object@plot_param$min_value,
                                       object@plot_param$max_value)
-                    dframe$color <- object@plot_param$tracks[[x]]@track_param$color
                     # add track label
-                    grid::grid.text(object@plot_param$tracks[[x]]@track_param$label, x = -0.05, y = 0.5, just = "right")
+                    grid::grid.text(object@plot_param$tracks[[x]]@track_param$label, x = -0.075, y = 0.5, just = "right")
+                    
+                    # add yaxis
+                    grid::grid.yaxis(label = seq(0, 1, 0.2),
+                                at = seq(0, 1, 0.2),
+                                gp = grid::gpar(fontsize = 8))
+                    
 
                     if (nrow(dframe) != 0) {
+                        dframe$color <- object@plot_param$tracks[[x]]@track_param$color
+                        # get maximum value of data as reference
                         max_in_range <- object@plot_param$tracks[[x]]@track_param$ymax
                         
 
