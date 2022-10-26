@@ -168,7 +168,7 @@ geneset <- function(gff_file = NULL,
                     gene_height = 1,
                     distance = 1,
                     show_axis = TRUE,
-                    axis_label_text = "Region (bp)",
+                    axis_label_text = NULL,
                     axis_interval = NULL,
                     range = NULL,
                     border = FALSE,
@@ -214,6 +214,13 @@ geneset <- function(gff_file = NULL,
                          stop("Distance between forward and reverse strand have to be between 0 and 1."))
     reverse_strand_pos <- forward_strand_pos + strand_gap
 
+    if(!is.null(axis_label_text)) {
+        .Object@plot_param$axis_label_text = axis_label_text
+    }
+    else {
+        .Object@plot_param$axis_label_text = paste(.Object@gene_param$chromosome, "(bp)")
+    }
+
     # default params
     .Object@gene_param$forward_strand_pos = forward_strand_pos
     .Object@gene_param$strand_gap = strand_gap
@@ -228,7 +235,6 @@ geneset <- function(gff_file = NULL,
     .Object@plot_param$max_value = max_value
     .Object@plot_param$interval = interval
     .Object@plot_param$show_axis = show_axis
-    .Object@plot_param$axis_label_text = axis_label_text
     .Object@plot_param$axis_interval = axis_interval
     .Object@plot_param$border = border
     .Object@plot_param$positions = c(range[1]:range[2])
@@ -334,7 +340,7 @@ setMethod(f = "show",
                     grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
                                                       y = grid::unit(places_of_vp[-1][x], "npc"),
                                                       width = 0.7,
-                                                      height = size_per_vp - 0.025,
+                                                      height = size_per_vp - 0.02,
                                                       just = c("bottom")))
                     grid::grid.rect()
                               
@@ -343,7 +349,10 @@ setMethod(f = "show",
                                       object@plot_param$min_value,
                                       object@plot_param$max_value)
                     # add track label
-                    grid::grid.text(object@plot_param$tracks[[x]]@track_param$label, x = -0.075, y = 0.5, just = "right")
+                    grid::grid.text(object@plot_param$tracks[[x]]@track_param$label,
+                                    x = -0.06,
+                                    y = 0.5,
+                                    just = "right")
                     
                     # add yaxis
                     grid::grid.yaxis(label = seq(0, 1, 0.2),
