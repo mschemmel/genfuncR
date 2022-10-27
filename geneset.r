@@ -121,7 +121,8 @@ annoTrack <- function(track_file = NULL,
                       label = "character",
                       type = "character",
                       color = "character",
-                      ymax = "numeric"
+                      ymax = "numeric",
+                      label_gp = grid::gpar(fontsize = 10, color = "black")
                       ) {
 
     .Object = new("annoTrack")
@@ -131,6 +132,8 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$type = type
     .Object@track_param$color = color
     .Object@track_param$ymax = ymax
+    .Object@track_param$label_gp = label_gp
+
     return(.Object)
 }
 
@@ -324,7 +327,7 @@ setMethod(f = "show",
 
                 # add axis label text
                 text_label(x_ = 0.5,
-                           y_ = -1,
+                           y_ = -0.7,
                            w_ = 0.1,
                            h_ = 0.2,
                            label_txt = object@plot_param$axis_label_text)
@@ -352,20 +355,19 @@ setMethod(f = "show",
                     grid::grid.text(object@plot_param$tracks[[x]]@track_param$label,
                                     x = -0.06,
                                     y = 0.5,
-                                    just = "right")
+                                    just = "right",
+                                    gp = object@plot_param$tracks[[x]]@track_param$label_gp)
                     
                     # add yaxis
                     grid::grid.yaxis(label = seq(0, 1, 0.2),
-                                at = seq(0, 1, 0.2),
-                                gp = grid::gpar(fontsize = 8))
+                                     at = seq(0, 1, 0.2),
+                                     gp = grid::gpar(fontsize = 8))
                     
-
                     if (nrow(dframe) != 0) {
                         dframe$color <- object@plot_param$tracks[[x]]@track_param$color
                         # get maximum value of data as reference
                         max_in_range <- object@plot_param$tracks[[x]]@track_param$ymax
                         
-
                         # which region should be displayed
                         for (i in seq(1, nrow(dframe), 1)) {
                             value <- dframe$strand[i] / max_in_range
