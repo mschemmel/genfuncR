@@ -47,8 +47,8 @@ mirnali <- function(mirna,
                     target_position_label = NULL,
                     target_position_label_rot = 90) {
 
-    mirna <- toupper(unlist(strsplit(mirna, split = "")))
-    target <- toupper(unlist(strsplit(target, split = "")))
+    mirna <- toupper(unlist(strsplit(gsub("T", "U", mirna), split = "")))
+    target <- toupper(unlist(strsplit(gsub("T", "U", target), split = "")))
 
     # check sequence properties
     if (length(mirna) != length(target)) {
@@ -60,7 +60,7 @@ mirnali <- function(mirna,
     if (length(mirna) < 15 || length(mirna) > 40) {
         stop("Range of sequence should be between 15 and 40 nucleotides.")
     }
-    if (mirna == target) {
+    if (identical(mirna,target)) {
         stop("miRNA and target sequences are equal, wrong orientation?")
     }
 
