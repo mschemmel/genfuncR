@@ -60,6 +60,9 @@ mirnali <- function(mirna,
     if (length(mirna) < 15 || length(mirna) > 40) {
         stop("Range of sequence should be between 15 and 40 nucleotides.")
     }
+    if (mirna == target) {
+        stop("miRNA and target sequences are equal, wrong orientation?")
+    }
 
     # define and calculate some constants
     cells <- length(mirna) + 2
