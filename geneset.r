@@ -382,7 +382,7 @@ setMethod(f = "show",
 
                         # which region should be displayed
                         for (i in seq(1, nrow(dframe), 1)) {
-                            value <- dframe$strand[i] / max_in_range
+                            value <- dframe$value[i] / max_in_range
                             value <- ifelse(value > 1, 1, value)
 
                             grid::grid.segments(x0 = grid::unit(relative(dframe$start[i]), "npc"),
