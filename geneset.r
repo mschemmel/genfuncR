@@ -109,6 +109,9 @@ prepare <- function(dataset,
 #' @param label name of the track
 #' @param type type of the track (default: line)
 #' @param color color of the track
+#' @param ymax max data value for y axis label
+#' @param label_gp gp object to edit label style
+#' @param label_orientation text orientation of track label
 #' @examples
 #' annoTrack(gff, "Coverage", "line", "firebrick")
 
@@ -118,11 +121,12 @@ annoTrack = setClass("annoTrack",
                     ))
 
 annoTrack <- function(track_file = NULL,
-                      label = "character",
-                      type = "character",
-                      color = "character",
-                      ymax = "numeric",
-                      label_gp = grid::gpar(fontsize = 10, color = "black")
+                      label = "Track",
+                      type = "s",
+                      color = "gray80",
+                      ymax = "100",
+                      label_gp = grid::gpar(fontsize = 10, color = "black"),
+                      label_orientation = "horizontal"
                       ) {
 
     .Object = new("annoTrack")
@@ -133,6 +137,12 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$color = color
     .Object@track_param$ymax = ymax
     .Object@track_param$label_gp = label_gp
+    .Object@track_param$label_orientation = label_orientation
+
+    if (!(label_orientation %in% c("vertical", "horizontal"))) {
+        .Object@track_param$label_orientation = "horizontal"
+        cat("DataTrack: ", unname(deparse(substitute(track_file))), " Unknown label_orientation value. Set to 'horizontal'")
+    }
 
     return(.Object)
 }
@@ -346,28 +356,30 @@ setMethod(f = "show",
                                                       height = size_per_vp - 0.02,
                                                       just = c("bottom")))
                     grid::grid.rect()
-                              
+
                     dframe <- prepare(object@plot_param$tracks[[x]]@track_param$track_file,
                                       object@gene_param$chromosome,
                                       object@plot_param$min_value,
                                       object@plot_param$max_value)
                     # add track label
                     grid::grid.text(object@plot_param$tracks[[x]]@track_param$label,
-                                    x = -0.06,
+                                    x = ifelse(object@plot_param$tracks[[x]]@track_param$label_orientation == "horizontal", -0.05, -0.1),
                                     y = 0.5,
-                                    just = "right",
+                                    just = ifelse(object@plot_param$tracks[[x]]@track_param$label_orientation == "horizontal", "right", "center"),
+                                    rot = ifelse(object@plot_param$tracks[[x]]@track_param$label_orientation == "horizontal", 0, 90),
                                     gp = object@plot_param$tracks[[x]]@track_param$label_gp)
-                    
+
                     # add yaxis
                     grid::grid.yaxis(label = seq(0, 1, 0.2),
                                      at = seq(0, 1, 0.2),
                                      gp = grid::gpar(fontsize = 8))
-                    
+
                     if (nrow(dframe) != 0) {
                         dframe$color <- object@plot_param$tracks[[x]]@track_param$color
+
                         # get maximum value of data as reference
                         max_in_range <- object@plot_param$tracks[[x]]@track_param$ymax
-                        
+
                         # which region should be displayed
                         for (i in seq(1, nrow(dframe), 1)) {
                             value <- dframe$strand[i] / max_in_range
