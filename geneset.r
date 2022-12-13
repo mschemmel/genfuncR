@@ -124,13 +124,15 @@ annoTrack <- function(track_file = NULL,
                       label = "Track",
                       type = "s",
                       color = "gray80",
-                      ymax = "100",
+                      values = "value",
+                      ymax = 100,
                       label_gp = grid::gpar(fontsize = 10, color = "black"),
                       label_orientation = "horizontal"
                       ) {
 
     .Object = new("annoTrack")
 
+    names(track_file)[names(track_file) == values] <- "value"
     .Object@track_param$track_file = track_file
     .Object@track_param$label = label
     .Object@track_param$type = type
@@ -337,7 +339,7 @@ setMethod(f = "show",
 
                 # add axis label text
                 text_label(x_ = 0.5,
-                           y_ = -0.7,
+                           y_ = -1.5,
                            w_ = 0.1,
                            h_ = 0.2,
                            label_txt = object@plot_param$axis_label_text)
@@ -361,6 +363,7 @@ setMethod(f = "show",
                                       object@gene_param$chromosome,
                                       object@plot_param$min_value,
                                       object@plot_param$max_value)
+                    
                     # add track label
                     grid::grid.text(object@plot_param$tracks[[x]]@track_param$label,
                                     x = ifelse(object@plot_param$tracks[[x]]@track_param$label_orientation == "horizontal", -0.05, -0.1),
