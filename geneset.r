@@ -132,7 +132,13 @@ annoTrack <- function(track_file = NULL,
 
     .Object = new("annoTrack")
 
-    names(track_file)[names(track_file) == values] <- "value"
+    if (values %in% names(track_file)) {
+        names(track_file)[names(track_file) == values] <- "value"
+    }
+    else {
+        cat("Column ", values, " not present in track file.\n")
+        stop()
+    }
     .Object@track_param$track_file = track_file
     .Object@track_param$label = label
     .Object@track_param$type = type
@@ -387,12 +393,11 @@ setMethod(f = "show",
                         for (i in seq(1, nrow(dframe), 1)) {
                             value <- dframe$value[i] / max_in_range
                             value <- ifelse(value > 1, 1, value)
-
                             grid::grid.segments(x0 = grid::unit(relative(dframe$start[i]), "npc"),
                                                 y0 = grid::unit(0, "npc"),
-                                                x1 = grid::unit(relative(dframe$start[i]), "npc"),
-                                                y1 = grid::unit(value, "npc"),
-                                                gp = grid::gpar(fill = dframe$color, col = dframe$color, lwd = 0.1))
+                                                x1 = grid::unit(relative(dframe$end[i]), "npc"),
+                                                y1 = grid::unit(value,  "npc"),
+                                                gp = grid::gpar(fill = dframe$color, col = dframe$color, lwd = 1))
                         }
                     }
                     grid::popViewport(1)
