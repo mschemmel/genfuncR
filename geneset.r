@@ -109,8 +109,10 @@ prepare <- function(dataset,
 #' @param label name of the track
 #' @param type type of the track (default: line)
 #' @param color color of the track
+#' @param values column where actual data is stored (default: value)
 #' @param ymax max data value for y axis label
 #' @param label_gp gp object to edit label style
+#' @param track_gp gp object to edit track appearence
 #' @param label_orientation text orientation of track label
 #' @examples
 #' annoTrack(gff, "Coverage", "line", "firebrick")
@@ -127,6 +129,7 @@ annoTrack <- function(track_file = NULL,
                       values = "value",
                       ymax = 100,
                       label_gp = grid::gpar(fontsize = 10, color = "black"),
+                      track_gp = grid::gpar(col = "gray40", lwd = 1),
                       label_orientation = "horizontal"
                       ) {
 
@@ -145,6 +148,7 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$color = color
     .Object@track_param$ymax = ymax
     .Object@track_param$label_gp = label_gp
+    .Object@track_param$track_gp = track_gp
     .Object@track_param$label_orientation = label_orientation
 
     if (!(label_orientation %in% c("vertical", "horizontal"))) {
@@ -388,16 +392,20 @@ setMethod(f = "show",
 
                         # get maximum value of data as reference
                         max_in_range <- object@plot_param$tracks[[x]]@track_param$ymax
+			start_y = 0
+			if (!all(dframe$value > 0)) {
+			    max_in_range <- max_in_range / 2
+			    start_y <-  0.5
+			}
 
                         # which region should be displayed
                         for (i in seq(1, nrow(dframe), 1)) {
                             value <- dframe$value[i] / max_in_range
-                            value <- ifelse(value > 1, 1, value)
                             grid::grid.segments(x0 = grid::unit(relative(dframe$start[i]), "npc"),
-                                                y0 = grid::unit(0, "npc"),
+                                                y0 = grid::unit(start_y, "npc"),
                                                 x1 = grid::unit(relative(dframe$end[i]), "npc"),
-                                                y1 = grid::unit(value,  "npc"),
-                                                gp = grid::gpar(fill = dframe$color, col = dframe$color, lwd = 1))
+                                                y1 = grid::unit(start_y + value,  "npc"),
+                                                gp = object@plot_param$tracks[[x]]@track_param$track_gp)
                         }
                     }
                     grid::popViewport(1)
