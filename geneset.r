@@ -108,7 +108,6 @@ prepare <- function(dataset,
 #' @param track_file data.frame of gff file
 #' @param label name of the track
 #' @param type type of the track (default: line)
-#' @param color color of the track
 #' @param values column where actual data is stored (default: value)
 #' @param ymax max data value for y axis label
 #' @param label_gp gp object to edit label style
@@ -125,7 +124,6 @@ annoTrack = setClass("annoTrack",
 annoTrack <- function(track_file = NULL,
                       label = "Track",
                       type = "s",
-                      color = "gray80",
                       values = "value",
                       ymax = 100,
                       label_gp = grid::gpar(fontsize = 10, color = "black"),
@@ -388,15 +386,14 @@ setMethod(f = "show",
                                      gp = grid::gpar(fontsize = 8))
 
                     if (nrow(dframe) != 0) {
-                        dframe$color <- object@plot_param$tracks[[x]]@track_param$color
-
                         # get maximum value of data as reference
+                        start_y <- 0
                         max_in_range <- object@plot_param$tracks[[x]]@track_param$ymax
-			start_y = 0
-			if (!all(dframe$value > 0)) {
-			    max_in_range <- max_in_range / 2
-			    start_y <-  0.5
-			}
+                        
+                        if (!all(dframe$value > 0)) {
+                            max_in_range <- max_in_range / 2
+                            start_y <-  0.5
+                        }
 
                         # which region should be displayed
                         for (i in seq(1, nrow(dframe), 1)) {
