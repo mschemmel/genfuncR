@@ -146,13 +146,14 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$ymax = ymax
     .Object@track_param$label_gp = label_gp
     .Object@track_param$track_gp = track_gp
-    .Object@track_param$label_orientation = label_orientation
 
     if (!(label_orientation %in% c("vertical", "horizontal"))) {
         .Object@track_param$label_orientation = "horizontal"
-        cat("DataTrack: ", unname(deparse(substitute(track_file))), " Unknown label_orientation value. Set to 'horizontal'")
+        cat("DataTrack: ", label, " Unknown label_orientation value. Set to 'horizontal'")
     }
-
+    else {
+        .Object@track_param$label_orientation = label_orientation
+    }
     return(.Object)
 }
 
