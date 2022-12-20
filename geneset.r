@@ -393,6 +393,11 @@ setMethod(f = "show",
                         if (!all(dframe$value > 0)) {
                             max_in_range <- max_in_range / 2
                             start_y <-  0.5
+                            grid::grid.segments(x0 = grid::unit(0, "npc"),
+                                                y0 = grid::unit(start_y, "npc"),
+                                                x1 = grid::unit(1, "npc"),
+                                                y1 = grid::unit(start_y,  "npc"),
+                                                gp = gpar(col = "gray30"))
                         }
 
                         # which region should be displayed
