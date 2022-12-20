@@ -126,7 +126,7 @@ annoTrack <- function(track_file = NULL,
                       type = "s",
                       values = "value",
                       ymax = 100,
-                      label_gp = grid::gpar(fontsize = 10, color = "black"),
+                      label_gp = grid::gpar(fontsize = 10, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
                       label_orientation = "horizontal"
                       ) {
@@ -143,7 +143,6 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$track_file = track_file
     .Object@track_param$label = label
     .Object@track_param$type = type
-    .Object@track_param$color = color
     .Object@track_param$ymax = ymax
     .Object@track_param$label_gp = label_gp
     .Object@track_param$track_gp = track_gp
