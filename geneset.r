@@ -196,7 +196,8 @@ geneset <- function(gff_file = NULL,
                     range = NULL,
                     border = FALSE,
                     show_values = FALSE,
-                    tracks = NULL) {
+                    tracks = NULL,
+		    marker = NULL) {
 
     .Object = new("geneset")
 
@@ -263,6 +264,7 @@ geneset <- function(gff_file = NULL,
     .Object@plot_param$positions = c(range[1]:range[2])
     .Object@plot_param$show_values = show_values
     .Object@plot_param$tracks = tracks
+    .Object@plot_param$marker = marker
 
     return(.Object)
 }
@@ -347,7 +349,7 @@ setMethod(f = "show",
 
                 # add axis label text
                 text_label(x_ = 0.5,
-                           y_ = -1.5,
+                           y_ = -0.6,
                            w_ = 0.1,
                            h_ = 0.2,
                            label_txt = object@plot_param$axis_label_text)
@@ -365,14 +367,15 @@ setMethod(f = "show",
                                                       width = 0.7,
                                                       height = size_per_vp - 0.02,
                                                       just = c("bottom")))
-                    grid::grid.rect()
 
                     dframe <- prepare(object@plot_param$tracks[[x]]@track_param$track_file,
                                       object@gene_param$chromosome,
                                       object@plot_param$min_value,
                                       object@plot_param$max_value)
                     
-                    # add track label
+                    grid::grid.rect()
+                    
+		    # add track label
                     grid::grid.text(object@plot_param$tracks[[x]]@track_param$label,
                                     x = ifelse(object@plot_param$tracks[[x]]@track_param$label_orientation == "horizontal", -0.05, -0.1),
                                     y = 0.5,
@@ -385,6 +388,16 @@ setMethod(f = "show",
                                      at = seq(0, 1, 0.2),
                                      gp = grid::gpar(fontsize = 8))
 
+		    if (!is.null(object@plot_param$marker)) {
+			    mark = object@plot_param$marker
+                            grid::grid.rect(x = grid::unit(relative(mark[1]), "npc"),
+                                            y = grid::unit(0.5, "npc"),
+                                            width = grid::unit(relative(mark[2]) - relative(mark[1]), "npc"),
+                                            height = grid::unit(1,  "npc"),
+                                            gp = grid::gpar(col = "red", lwd = 1),
+					    just = "left")
+			
+	            }
                     if (nrow(dframe) != 0) {
                         # get maximum value of data as reference
                         start_y <- 0
