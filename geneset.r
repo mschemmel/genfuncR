@@ -192,6 +192,7 @@ geneset <- function(gff_file = NULL,
                     distance = 1,
                     show_axis = TRUE,
                     axis_label_text = NULL,
+                    axis_label_gp = NULL,
                     axis_interval = NULL,
                     range = NULL,
                     border = FALSE,
@@ -260,6 +261,7 @@ geneset <- function(gff_file = NULL,
     .Object@plot_param$interval = interval
     .Object@plot_param$show_axis = show_axis
     .Object@plot_param$axis_interval = axis_interval
+    .Object@plot_param$axis_label_gp = axis_label_gp
     .Object@plot_param$border = border
     .Object@plot_param$positions = c(range[1]:range[2])
     .Object@plot_param$show_values = show_values
@@ -352,7 +354,8 @@ setMethod(f = "show",
                            y_ = -0.6,
                            w_ = 0.1,
                            h_ = 0.2,
-                           label_txt = object@plot_param$axis_label_text)
+                           label_txt = object@plot_param$axis_label_text,
+                           gp_ = object@plot_param$axis_label_gp)
             }
                     
             grid::popViewport(1)
