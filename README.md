@@ -18,21 +18,22 @@ source_url("https://github.com/mschemmel/genfuncR/blob/main/geneset.r?raw=TRUE")
 ```r
 library(grid)
 
-# data frame needs at least 'chr', 'start', 'end' and 'strand' column
 genes <- data.frame(chr = c("Chr1", "Chr1", "Chr1", "Chr1", "Chr1", "Chr1", "Chr1"),
                     start = c(34, 370, 800, 1100, 1500, 2020, 2500),
                     end = c(364, 700, 950, 1250, 2000, 2200, 2700),
                     strand = c("+", "+", "-", "+", "+", "-", "+"))
 
+# basic example
 geneset(genes, range = c(0,3000), axis_interval = 500, chromosome = "Chr1")
 ```
 
 <p align="center"> Basic example </p>
 <p align="center">
-<img src="./img/geneset.png" width="50%">
+<img src="./img/geneset.png" width="80%">
 </p>
 
 ```r
+# more advanced example
 geneset(gff,
         range = c(0, 3000),
         axis_interval = 500,
@@ -49,13 +50,14 @@ geneset(gff,
 
 <p align="center"> More advanced example using data tracks</p>
 <p align="center">
-<img src="./img/geneset_data_tracks.png" width="50%">
+<img src="./img/geneset_data_tracks.png" width="80%">
 </p>
 
 ## dna_to_img
 ```r
 library(grid)
 
+# basic example
 dna_to_img("TCAGCTAGCTATCTAGCTAGCTAGCTACTACGAATCGTTATCGCGCTATACGTATCG")
 ```
 <p align="center"> Basic example </p>
@@ -79,6 +81,7 @@ mirnali(mirna, target)
 </p>
 
 ```r
+# more advanced example
 mirnali(mirna,
         target,
         mirna_name = "miRNA 1",
@@ -93,5 +96,5 @@ mirnali(mirna,
 ```
 <p align="center"> More advanced example</p>
 <p align="center">
-<img src="./img/mirnali_adv.png" width="60%">
+<img src="./img/mirnali_adv.png" width="70%">
 </p>
