@@ -140,6 +140,8 @@ annoTrack <- function(track_file = NULL,
         cat("Column ", values, " not present in track file.\n")
         stop()
     }
+
+
     .Object@track_param$track_file = track_file
     .Object@track_param$label = label
     .Object@track_param$type = type
@@ -376,6 +378,8 @@ setMethod(f = "show",
                                       object@plot_param$min_value,
                                       object@plot_param$max_value)
                     
+                    if(object@plot_param$show_values) print(dframe)
+
                     grid::grid.rect()
                     
 		    # add track label
@@ -419,6 +423,8 @@ setMethod(f = "show",
                         # which region should be displayed
                         for (i in seq(1, nrow(dframe), 1)) {
                             value <- dframe$value[i] / max_in_range
+                            value <- ifelse(value > 1, 1, value)
+
                             grid::grid.segments(x0 = grid::unit(relative(dframe$start[i]), "npc"),
                                                 y0 = grid::unit(start_y, "npc"),
                                                 x1 = grid::unit(relative(dframe$end[i]), "npc"),
