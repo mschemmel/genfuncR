@@ -179,13 +179,12 @@ annoTrack <- function(track_file = NULL,
 
 geneset = setClass("geneset",
                    slots = list(
-                        gff_file = "ANY",
+                        #gff_file = "ANY",
                         gene_param = "list",
                         plot_param = "list"
                    ))
 
 geneset <- function(gff_file = NULL,
-                    chromosome = NULL,
                     forward_color = "darkslategray",
                     reverse_color = "darkslategray",
                     transparency = 1,
@@ -202,21 +201,28 @@ geneset <- function(gff_file = NULL,
 
     .Object = new("geneset")
 
-    if (!is.null(chromosome)) {
-        .Object@gene_param$chromosome = chromosome
-    }
-
-    axis_label <- pretty(c(min(gff_file$start):max(gff_file$end)))
-    cat("axis_label: ", axis_label, "\n")
-
-    min_value <- axis_label[1]
-    max_value <- tail(axis_label, n = 1)
-    cat("min_value: ", min_value, "\n")
-    cat("max_value: ", max_value, "\n")
-
-    .Object@gff_file = gff_file
+    # assign data to object
+    .Object@gene_param$gff_file = gff_file
     if (show_values) print(gff_file)
 
+    # check for unique chromosome label
+    given_chromosome <- unique(.Object@gene_param$gff_file$chr)
+    print(given_chromosome)
+    if (!is.null(given_chromosome)) {
+      if (length(given_chromosome) > 1) {
+        warning("Found more than one chromosome identifier, use first provided.")
+        .Object@gene_param$chromosome = given_chromosome[1] 
+      }
+    }
+    else {
+      warning("No chromosome specified in input data.")
+    }
+
+    # determine axis label
+    axis_label <- pretty(c(min(.Object@gene_param$gff_file$start):max(.Object@gene_param$gff_file$end)))
+    min_value <- axis_label[1]
+    max_value <- tail(axis_label, n = 1)
+    
     # overall size of genebox
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
                               0.2 * gene_height,
@@ -238,6 +244,7 @@ geneset <- function(gff_file = NULL,
     }
 
     # default params
+    #.Object@gene_param$gff_file = gff_file
     .Object@gene_param$forward_strand_pos = forward_strand_pos
     .Object@gene_param$strand_gap = strand_gap
     .Object@gene_param$reverse_strand_pos = reverse_strand_pos
@@ -312,19 +319,19 @@ setMethod(f = "show",
                                 y1 = grid::unit(object@gene_param$forward_strand_pos, "npc"))
 
             # add features of gff
-            for (i in seq_len(nrow(object@gff_file))) {
-                genearrow(x1 = grid::unit(relative(object@gff_file$start[i]), "npc"),
-                          y1 = ifelse(object@gff_file$strand[i] == "+",
+            for (i in seq_len(nrow(object@gene_param$gff_file))) {
+                genearrow(x1 = grid::unit(relative(object@gene_param$gff_file$start[i]), "npc"),
+                          y1 = ifelse(object@gene_param$gff_file$strand[i] == "+",
                                       grid::unit(object@gene_param$reverse_strand_pos - (object@gene_param$gene_box_height / 2), "npc"),
                                       grid::unit(object@gene_param$forward_strand_pos - (object@gene_param$gene_box_height / 2), "npc")),
-                          x2 = grid::unit(relative(object@gff_file$end[i]), "npc"),
-                          y2 = ifelse(object@gff_file$strand[i] == "+",
+                          x2 = grid::unit(relative(object@gene_param$gff_file$end[i]), "npc"),
+                          y2 = ifelse(object@gene_param$gff_file$strand[i] == "+",
                                       grid::unit(object@gene_param$reverse_strand_pos + (object@gene_param$gene_box_height / 2), "npc"),
                                       grid::unit(object@gene_param$forward_strand_pos + (object@gene_param$gene_box_height / 2), "npc")),
-                          direction = ifelse(object@gff_file$strand[i] == "+",
+                          direction = ifelse(object@gene_param$gff_file$strand[i] == "+",
                                              "downstream",
                                              "upstream"),
-                          gp_ = grid::gpar(fill = ifelse(object@gff_file$strand[i] == "+",
+                          gp_ = grid::gpar(fill = ifelse(object@gene_param$gff_file$strand[i] == "+",
                                                          object@gene_param$forward_color,
                                                          object@gene_param$reverse_color),
                                           alpha = object@gene_param$transparency),
