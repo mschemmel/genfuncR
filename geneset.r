@@ -95,9 +95,10 @@ prepare <- function(dataset,
         }
     }
     # order input by start and end column and filter
-    dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ]
+    dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ] 
     dataset <- dataset[dataset$chr == chromosome & dataset$start >= st & dataset$end <= en, ]
-
+    
+    # check if data frame not empty
     if (nrow(dataset) == 0) {
         cat("Input data frame is empty after filtering (", chromosome, ":", st, "-", en, ")\n", sep = "")
     }
@@ -141,7 +142,6 @@ annoTrack <- function(track_file = NULL,
         stop()
     }
 
-
     .Object@track_param$track_file = track_file
     .Object@track_param$label = label
     .Object@track_param$type = type
@@ -169,11 +169,11 @@ annoTrack <- function(track_file = NULL,
 #' @param distance distance between forward and reverse strand in percent (0-1) (default = 1)
 #' @param show_axis show axis or not (default = TRUE)
 #' @param axis_label_text text of x axis label (default: "Region (bp)")
-#' @param axis_interval numerical interval of axis (default = NULL)
-#' @param range vector of start and end of region of interest (default = NULL)
+#' @param axis_label_gp gp object of x axis label
 #' @param border boolean if border visible (default = FALSE)
 #' @param show_values boolean if displayed range should also be printed
 #' @param tracks named list of data tracks (annotations)
+#' @param marker position of highlight annotation
 #' @examples
 #' geneset(gff)
 
@@ -195,12 +195,10 @@ geneset <- function(gff_file = NULL,
                     show_axis = TRUE,
                     axis_label_text = NULL,
                     axis_label_gp = NULL,
-                    axis_interval = NULL,
-                    range = NULL,
                     border = FALSE,
                     show_values = FALSE,
                     tracks = NULL,
-		    marker = NULL) {
+		                marker = NULL) {
 
     .Object = new("geneset")
 
@@ -208,25 +206,16 @@ geneset <- function(gff_file = NULL,
         .Object@gene_param$chromosome = chromosome
     }
 
-    # order input by start and end column and filter
-    min_value <- range[1]
-    max_value <- range[2]
+    axis_label <- pretty(c(min(gff_file$start):max(gff_file$end)))
+    cat("axis_label: ", axis_label, "\n")
 
-    gff_file <- prepare(gff_file, chromosome, min_value, max_value)
+    min_value <- axis_label[1]
+    max_value <- tail(axis_label, n = 1)
+    cat("min_value: ", min_value, "\n")
+    cat("max_value: ", max_value, "\n")
 
     .Object@gff_file = gff_file
-
     if (show_values) print(gff_file)
-
-    # TODO: solve axis intervals properly
-    # check for proper axis interval value
-    interval <- max_value - min_value
-    if (interval %% axis_interval != 0) {
-        stop("Please provide a multiple of your specified region for proper axis style.")
-    }
-    if (interval / axis_interval > 100) {
-        stop("Provided axis interval will result in more than 100 labels.")
-    }
 
     # overall size of genebox
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
@@ -260,12 +249,10 @@ geneset <- function(gff_file = NULL,
     .Object@gene_param$gene_height = gene_height
     .Object@plot_param$min_value = min_value
     .Object@plot_param$max_value = max_value
-    .Object@plot_param$interval = interval
     .Object@plot_param$show_axis = show_axis
-    .Object@plot_param$axis_interval = axis_interval
+    .Object@plot_param$axis_label = axis_label
     .Object@plot_param$axis_label_gp = axis_label_gp
     .Object@plot_param$border = border
-    .Object@plot_param$positions = c(range[1]:range[2])
     .Object@plot_param$show_values = show_values
     .Object@plot_param$tracks = tracks
     .Object@plot_param$marker = marker
@@ -289,7 +276,8 @@ setMethod(f = "show",
                                               y = grid::unit(0.5, "npc"),
                                               width = 1,
                                               height = 1))
-
+            
+            # placement of track if requested
             if (length(object@plot_param$tracks) != 0) {
                 object@plot_param$show_tracks = TRUE
                 size_per_vp <- 0.85 / (length(object@plot_param$tracks) + 1) # always show the genebox (+1)
@@ -346,8 +334,7 @@ setMethod(f = "show",
             # add axis label
             if (object@plot_param$show_axis) {
                 # set axis label
-                axis_label <- round(seq(object@plot_param$min_value, object@plot_param$max_value, object@plot_param$axis_interval), 0)
-
+                axis_label <- object@plot_param$axis_label
                 grid::grid.xaxis(label = axis_label,
                                  at = seq(0, 1, 1 / (length(axis_label) - 1)))
 
