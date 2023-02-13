@@ -179,12 +179,13 @@ annoTrack <- function(track_file = NULL,
 
 geneset = setClass("geneset",
                    slots = list(
-                        #gff_file = "ANY",
+                        gff_file = "ANY",
                         gene_param = "list",
                         plot_param = "list"
                    ))
 
-geneset <- function(gff_file = NULL,
+# constructor method
+geneset <- function(gff_file,
                     forward_color = "darkslategray",
                     reverse_color = "darkslategray",
                     transparency = 1,
@@ -202,11 +203,11 @@ geneset <- function(gff_file = NULL,
     .Object = new("geneset")
 
     # assign data to object
-    .Object@gene_param$gff_file = gff_file
-    if (show_values) print(gff_file)
+    .Object@gff_file = gff_file
+    if (show_values) print(.Object@gff_file)
 
     # check for unique chromosome label
-    given_chromosome <- unique(.Object@gene_param$gff_file$chr)
+    given_chromosome <- unique(.Object@gff_file$chr)
     print(given_chromosome)
     if (!is.null(given_chromosome)) {
       if (length(given_chromosome) > 1) {
@@ -219,7 +220,7 @@ geneset <- function(gff_file = NULL,
     }
 
     # determine axis label
-    axis_label <- pretty(c(min(.Object@gene_param$gff_file$start):max(.Object@gene_param$gff_file$end)))
+    axis_label <- pretty(c(min(.Object@gff_file$start):max(.Object@gff_file$end)))
     min_value <- axis_label[1]
     max_value <- tail(axis_label, n = 1)
     
@@ -244,7 +245,6 @@ geneset <- function(gff_file = NULL,
     }
 
     # default params
-    #.Object@gene_param$gff_file = gff_file
     .Object@gene_param$forward_strand_pos = forward_strand_pos
     .Object@gene_param$strand_gap = strand_gap
     .Object@gene_param$reverse_strand_pos = reverse_strand_pos
@@ -312,26 +312,27 @@ setMethod(f = "show",
                                 y0 = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$reverse_strand_pos, "npc"))
+            
             # reverse direction
             grid::grid.segments(x0 = grid::unit(0, "npc"),
                                 y0 = grid::unit(object@gene_param$forward_strand_pos, "npc"),
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$forward_strand_pos, "npc"))
 
-            # add features of gff
-            for (i in seq_len(nrow(object@gene_param$gff_file))) {
-                genearrow(x1 = grid::unit(relative(object@gene_param$gff_file$start[i]), "npc"),
-                          y1 = ifelse(object@gene_param$gff_file$strand[i] == "+",
+            # add features of provided data
+            for (i in seq_len(nrow(object@gff_file))) {
+                genearrow(x1 = grid::unit(relative(object@gff_file$start[i]), "npc"),
+                          y1 = ifelse(object@gff_file$strand[i] == "+",
                                       grid::unit(object@gene_param$reverse_strand_pos - (object@gene_param$gene_box_height / 2), "npc"),
                                       grid::unit(object@gene_param$forward_strand_pos - (object@gene_param$gene_box_height / 2), "npc")),
-                          x2 = grid::unit(relative(object@gene_param$gff_file$end[i]), "npc"),
-                          y2 = ifelse(object@gene_param$gff_file$strand[i] == "+",
+                          x2 = grid::unit(relative(object@gff_file$end[i]), "npc"),
+                          y2 = ifelse(object@gff_file$strand[i] == "+",
                                       grid::unit(object@gene_param$reverse_strand_pos + (object@gene_param$gene_box_height / 2), "npc"),
                                       grid::unit(object@gene_param$forward_strand_pos + (object@gene_param$gene_box_height / 2), "npc")),
-                          direction = ifelse(object@gene_param$gff_file$strand[i] == "+",
+                          direction = ifelse(object@gff_file$strand[i] == "+",
                                              "downstream",
                                              "upstream"),
-                          gp_ = grid::gpar(fill = ifelse(object@gene_param$gff_file$strand[i] == "+",
+                          gp_ = grid::gpar(fill = ifelse(object@gff_file$strand[i] == "+",
                                                          object@gene_param$forward_color,
                                                          object@gene_param$reverse_color),
                                           alpha = object@gene_param$transparency),
@@ -376,7 +377,7 @@ setMethod(f = "show",
 
                     grid::grid.rect()
                     
-		    # add track label
+		                # add track label
                     grid::grid.text(object@plot_param$tracks[[x]]@track_param$label,
                                     x = ifelse(object@plot_param$tracks[[x]]@track_param$label_orientation == "horizontal", -0.05, -0.1),
                                     y = 0.5,
@@ -396,7 +397,7 @@ setMethod(f = "show",
                                             width = grid::unit(relative(mark[2]) - relative(mark[1]), "npc"),
                                             height = grid::unit(1,  "npc"),
                                             gp = grid::gpar(col = "red", lwd = 1),
-					    just = "left")
+					                                  just = "left")
 			
 	            }
                     if (nrow(dframe) != 0) {
