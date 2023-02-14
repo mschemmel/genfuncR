@@ -126,7 +126,6 @@ annoTrack <- function(track_file = NULL,
                       label = "Track",
                       type = "s",
                       values = "value",
-                      ymax = 100,
                       label_gp = grid::gpar(fontsize = 10, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
                       label_orientation = "horizontal"
@@ -142,10 +141,16 @@ annoTrack <- function(track_file = NULL,
         stop()
     }
 
+    # get min and max of scale
+    yscale = pretty(c(0:max(track_file$value)))
+    
+    # assign parameter to object
+    .Object@track_param$scale_label = yscale
+    .Object@track_param$scale_at = head(seq(0,1,1/length(yscale)), -1)
+    .Object@track_param$ymax = tail(yscale, n = 1)
     .Object@track_param$track_file = track_file
     .Object@track_param$label = label
     .Object@track_param$type = type
-    .Object@track_param$ymax = ymax
     .Object@track_param$label_gp = label_gp
     .Object@track_param$track_gp = track_gp
 
@@ -208,7 +213,6 @@ geneset <- function(gff_file,
 
     # check for unique chromosome label
     given_chromosome <- unique(.Object@gff_file$chr)
-    print(given_chromosome)
     if (!is.null(given_chromosome)) {
       if (length(given_chromosome) > 1) {
         warning("Found more than one chromosome identifier, use first provided.")
@@ -371,6 +375,7 @@ setMethod(f = "show",
                                                       width = 0.7,
                                                       height = size_per_vp - 0.02,
                                                       just = c("bottom")))
+
                     dframe <- prepareAndFilter(object@plot_param$tracks[[x]]@track_param$track_file,
                                                object@gene_param$chromosome,
                                                object@plot_param$min_value,
@@ -389,8 +394,8 @@ setMethod(f = "show",
                                     gp = object@plot_param$tracks[[x]]@track_param$label_gp)
 
                     # add yaxis
-                    grid::grid.yaxis(label = seq(0, 1, 0.2),
-                                     at = seq(0, 1, 0.2),
+                    grid::grid.yaxis(label = object@plot_param$tracks[[x]]@track_param$scale_label,
+                                     at = object@plot_param$tracks[[x]]@track_param$scale_at,
                                      gp = grid::gpar(fontsize = 8))
 
         if (!is.null(object@plot_param$marker)) {
@@ -406,7 +411,7 @@ setMethod(f = "show",
                     if (nrow(dframe) != 0) {
                         # get maximum value of data as reference
                         start_y <- 0
-                        max_in_range <- object@plot_param$tracks[[x]]@track_param$ymax
+                        max_in_range <- max(dframe$value)
                         
                         if (!all(dframe$value >= 0)) {
                             max_in_range <- max_in_range / 2
@@ -421,12 +426,10 @@ setMethod(f = "show",
                         # which region should be displayed
                         for (i in seq(1, nrow(dframe), 1)) {
                             value <- dframe$value[i] / max_in_range
-                            value <- ifelse(value > 1, 1, value)
-
                             grid::grid.segments(x0 = grid::unit(relative(dframe$start[i]), "npc"),
                                                 y0 = grid::unit(start_y, "npc"),
                                                 x1 = grid::unit(relative(dframe$end[i]), "npc"),
-                                                y1 = grid::unit(start_y + value,  "npc"),
+                                                y1 = grid::unit(start_y + value, "npc"),
                                                 gp = object@plot_param$tracks[[x]]@track_param$track_gp)
                         }
                     }
