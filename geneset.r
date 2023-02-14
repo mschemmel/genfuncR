@@ -3,8 +3,8 @@
 #' @param y1 y1 coordinate
 #' @param x2 x2 coordinate
 #' @param y2 y2 coordinate
-#' @param direction Direction of the gene (upstream | downstream)
-#' @param arr_type Appearance of arrow head (arrow | barrow | box)
+#' @param direction direction of the gene (upstream | downstream)
+#' @param arr_type appearance of arrow head (arrow | barrow | box)
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
@@ -81,10 +81,10 @@ text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_
 #' @examples
 #' prepare(gff, "Chr1A", 1000, 2000)
 
-prepare <- function(dataset,
-                    chromosome,
-                    st,
-                    en) {
+prepareAndFilter <- function(dataset,
+                             chromosome,
+                             st,
+                             en) {
 
     # check if input file is valid
     if (!is.null(dataset)) {
@@ -109,7 +109,7 @@ prepare <- function(dataset,
 #' @param track_file data.frame of gff file
 #' @param label name of the track
 #' @param type type of the track (default: line)
-#' @param values column where actual data is stored (default: value)
+#' @param values column where the actual data is stored (default: value)
 #' @param ymax max data value for y axis label
 #' @param label_gp gp object to edit label style
 #' @param track_gp gp object to edit track appearence
@@ -198,7 +198,7 @@ geneset <- function(gff_file,
                     border = FALSE,
                     show_values = FALSE,
                     tracks = NULL,
-		                marker = NULL) {
+                    marker = NULL) {
 
     .Object = new("geneset")
 
@@ -213,6 +213,9 @@ geneset <- function(gff_file,
       if (length(given_chromosome) > 1) {
         warning("Found more than one chromosome identifier, use first provided.")
         .Object@gene_param$chromosome = given_chromosome[1] 
+      }
+      else {
+        .Object@gene_param$chromosome = given_chromosome
       }
     }
     else {
@@ -319,6 +322,7 @@ setMethod(f = "show",
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$forward_strand_pos, "npc"))
 
+
             # add features of provided data
             for (i in seq_len(nrow(object@gff_file))) {
                 genearrow(x1 = grid::unit(relative(object@gff_file$start[i]), "npc"),
@@ -367,17 +371,16 @@ setMethod(f = "show",
                                                       width = 0.7,
                                                       height = size_per_vp - 0.02,
                                                       just = c("bottom")))
-
-                    dframe <- prepare(object@plot_param$tracks[[x]]@track_param$track_file,
-                                      object@gene_param$chromosome,
-                                      object@plot_param$min_value,
-                                      object@plot_param$max_value)
+                    dframe <- prepareAndFilter(object@plot_param$tracks[[x]]@track_param$track_file,
+                                               object@gene_param$chromosome,
+                                               object@plot_param$min_value,
+                                               object@plot_param$max_value)
                     
                     if(object@plot_param$show_values) print(dframe)
 
                     grid::grid.rect()
                     
-		                # add track label
+                    # add track label
                     grid::grid.text(object@plot_param$tracks[[x]]@track_param$label,
                                     x = ifelse(object@plot_param$tracks[[x]]@track_param$label_orientation == "horizontal", -0.05, -0.1),
                                     y = 0.5,
@@ -390,16 +393,16 @@ setMethod(f = "show",
                                      at = seq(0, 1, 0.2),
                                      gp = grid::gpar(fontsize = 8))
 
-		    if (!is.null(object@plot_param$marker)) {
-			    mark = object@plot_param$marker
+        if (!is.null(object@plot_param$marker)) {
+          mark = object@plot_param$marker
                             grid::grid.rect(x = grid::unit(relative(mark[1]), "npc"),
                                             y = grid::unit(0.5, "npc"),
                                             width = grid::unit(relative(mark[2]) - relative(mark[1]), "npc"),
                                             height = grid::unit(1,  "npc"),
                                             gp = grid::gpar(col = "red", lwd = 1),
-					                                  just = "left")
-			
-	            }
+                                            just = "left")
+      
+              }
                     if (nrow(dframe) != 0) {
                         # get maximum value of data as reference
                         start_y <- 0
