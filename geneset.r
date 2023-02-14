@@ -177,6 +177,8 @@ annoTrack <- function(track_file = NULL,
 #' @param gff_file data.frame of gff file
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
 #' @param reverse_color color of genes in reverse direction (default = "darkslategray")
+#' @param upstream distance (bp) upstream
+#' @param downstream distance (bp) downstream
 #' @param transparency alpha value of gene annotation box
 #' @param arrow_type shape of arrow head (default = "arrow")
 #' @param gene_height height in percent (0-1) of gene box (default = 1)
@@ -202,6 +204,8 @@ geneset = setClass("geneset",
 geneset <- function(gff_file,
                     forward_color = "darkslategray",
                     reverse_color = "darkslategray",
+                    upstream = 0,
+                    downstream = 0,
                     transparency = 1,
                     arrow_type = "arrow",
                     gene_height = 1,
@@ -237,8 +241,8 @@ geneset <- function(gff_file,
 
     # determine axis label
     axis_label <- pretty(c(min(.Object@gff_file$start):max(.Object@gff_file$end)))
-    min_value <- axis_label[1]
-    max_value <- tail(axis_label, n = 1)
+    min_value <- axis_label[1] - upstream
+    max_value <- tail(axis_label, n = 1) + downstream
     
     # overall size of genebox
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
