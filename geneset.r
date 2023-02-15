@@ -240,10 +240,10 @@ geneset <- function(gff_file,
     }
 
     # determine axis label
-    axis_label <- pretty(c(min(.Object@gff_file$start):max(.Object@gff_file$end)))
-    min_value <- axis_label[1] - upstream
-    max_value <- tail(axis_label, n = 1) + downstream
-    
+    axis_label <- pretty(c(min(.Object@gff_file$start-upstream):max(.Object@gff_file$end+downstream)))
+    min_value <- axis_label[1]
+    max_value <- tail(axis_label, n = 1)
+   
     # overall size of genebox
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
                               0.2 * gene_height,
