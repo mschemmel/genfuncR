@@ -341,25 +341,23 @@ setMethod(f = "show",
                                 y1 = grid::unit(object@gene_param$reverse_strand_pos, "npc"))
 
 
-            # add features of provided data
-            for (i in seq_len(nrow(object@gff_file))) {
-                genearrow(x1 = grid::unit(relative(object@gff_file$start[i]), "npc"),
-                          y1 = ifelse(object@gff_file$strand[i] == "+",
-                                      grid::unit(object@gene_param$reverse_strand_pos - (object@gene_param$gene_box_height / 2), "npc"),
-                                      grid::unit(object@gene_param$forward_strand_pos - (object@gene_param$gene_box_height / 2), "npc")),
-                          x2 = grid::unit(relative(object@gff_file$end[i]), "npc"),
-                          y2 = ifelse(object@gff_file$strand[i] == "+",
-                                      grid::unit(object@gene_param$reverse_strand_pos + (object@gene_param$gene_box_height / 2), "npc"),
-                                      grid::unit(object@gene_param$forward_strand_pos + (object@gene_param$gene_box_height / 2), "npc")),
-                          direction = ifelse(object@gff_file$strand[i] == "+",
-                                             "downstream",
-                                             "upstream"),
-                          gp_ = grid::gpar(fill = ifelse(object@gff_file$strand[i] == "+",
-                                                         object@gene_param$forward_color,
-                                                         object@gene_param$reverse_color),
-                                          alpha = object@gene_param$transparency),
-                          arr_type = object@gene_param$arrow_type)
-            }
+            # add all genes/transcripts
+            genearrow(x1 = grid::unit(relative(object@gff_file$start), "npc"),
+                      y1 = ifelse(object@gff_file$strand == "+",
+                                  grid::unit(object@gene_param$reverse_strand_pos - (object@gene_param$gene_box_height / 2), "npc"),
+                                  grid::unit(object@gene_param$forward_strand_pos - (object@gene_param$gene_box_height / 2), "npc")),
+                      x2 = grid::unit(relative(object@gff_file$end), "npc"),
+                      y2 = ifelse(object@gff_file$strand == "+",
+                                  grid::unit(object@gene_param$reverse_strand_pos + (object@gene_param$gene_box_height / 2), "npc"),
+                                  grid::unit(object@gene_param$forward_strand_pos + (object@gene_param$gene_box_height / 2), "npc")),
+                      direction = ifelse(object@gff_file$strand == "+",
+                                         "downstream",
+                                         "upstream"),
+                      gp_ = grid::gpar(fill = ifelse(object@gff_file$strand == "+",
+                                                     object@gene_param$forward_color,
+                                                     object@gene_param$reverse_color),
+                                       alpha = object@gene_param$transparency),
+                      arr_type = object@gene_param$arrow_type)
 
             # add axis label
             if (object@plot_param$show_axis) {
