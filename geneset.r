@@ -9,16 +9,16 @@
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
 genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
-    arrsize <- x2 - x1
-    arrw <- arrsize * 0.2 # TODO: make size dynamic
+    arrow_width <- x2 - x1
+    arrow_head_width <- arrow_width * 0.2 # TODO: make size dynamic
     barrow_head_size <- 0.05
     if (direction == "downstream") {
         if (arr_type == "arrow") {
-            grid::grid.polygon(c(x1, x1, x2 - arrw, x2, x2 - arrw),
+            grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2, x2 - arrow_head_width),
                                c(y1, y2, y2, mean(c(y1, y2)), y1),
                                gp = gp_)
         } else if (arr_type == "barrow") {
-            grid::grid.polygon(c(x1, x1, x2 - arrw, x2 - arrw, x2, x2 - arrw, x2 - arrw),
+            grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2 - arrow_head_width, x2, x2 - arrow_head_width, x2 - arrow_head_width),
                                c(y1, y2, y2, y2 + barrow_head_size, mean(c(y1, y2)), y1 - barrow_head_size, y1),
                                gp = gp_)
         } else if (arr_type == "box") {
@@ -30,11 +30,11 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
         }
     } else if (direction == "upstream") {
         if (arr_type == "arrow") {
-            grid::grid.polygon(c(x1 + arrw, x1, x1 + arrw, x2, x2),
+            grid::grid.polygon(c(x1 + arrow_head_width, x1, x1 + arrow_head_width, x2, x2),
                                c(y1, mean(c(y2, y1)), y2, y2, y1),
                                gp = gp_)
         } else if (arr_type == "barrow") {
-            grid::grid.polygon(c(x1 + arrw, x1 + arrw, x1, x1 + arrw, x1 + arrw, x2, x2),
+            grid::grid.polygon(c(x1 + arrow_head_width, x1 + arrow_head_width, x1, x1 + arrow_head_width, x1 + arrow_head_width, x2, x2),
                                c(y1, y1 - barrow_head_size, mean(c(y1, y2)), y2 + barrow_head_size, y2, y2, y1),
                                gp = gp_)
         } else if (arr_type == "box") {
@@ -94,6 +94,7 @@ prepareAndFilter <- function(dataset,
             stop()
         }
     }
+
     # order input by start and end column and filter
     dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ] 
     dataset <- dataset[dataset$chr == chromosome & dataset$start >= st & dataset$end <= en, ]
