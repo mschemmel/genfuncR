@@ -329,15 +329,16 @@ setMethod(f = "show",
 
             # forward direction
             grid::grid.segments(x0 = grid::unit(0, "npc"),
-                                y0 = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
-                                x1 = grid::unit(1, "npc"),
-                                y1 = grid::unit(object@gene_param$reverse_strand_pos, "npc"))
-            
-            # reverse direction
-            grid::grid.segments(x0 = grid::unit(0, "npc"),
                                 y0 = grid::unit(object@gene_param$forward_strand_pos, "npc"),
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$forward_strand_pos, "npc"))
+            
+            
+            # reverse direction
+            grid::grid.segments(x0 = grid::unit(0, "npc"),
+                                y0 = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
+                                x1 = grid::unit(1, "npc"),
+                                y1 = grid::unit(object@gene_param$reverse_strand_pos, "npc"))
 
 
             # add features of provided data
