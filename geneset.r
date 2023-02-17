@@ -148,12 +148,7 @@ annoTrack <- function(track_file = NULL,
     yscale_label <- pretty(c(minscale:maxscale))
     scale_interval <- diff(range(yscale_label))
     yscale_at <- seq(0, 1, 1/(length(yscale_label)-1))
-    
-    #cat("yscale_label", "\t\t", yscale_label, "\n")
-    #cat("yscale_label length", "\t", length(yscale_label), "\n")
-    #cat("yscale_at", "\t\t", yscale_at, "\n")
-    #cat("scale_interval", "\t\t", scale_interval, "\n\n")
-    
+
     # assign parameter to object
     .Object@track_param$scale_label = yscale_label
     .Object@track_param$scale_at = yscale_at
@@ -295,7 +290,6 @@ setMethod(f = "show",
             relative <- function(x) (x - object@plot_param$min_value) / (object@plot_param$max_value - object@plot_param$min_value)
 
             # create new device and newpage
-            #dev.new(width = 12, height = 6, unit = "in")
             grid::grid.newpage()
 
             # outer viewport
