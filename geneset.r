@@ -181,6 +181,7 @@ annoTrack <- function(track_file = NULL,
 #' @param distance distance between forward and reverse strand in percent (0-1) (default = 1)
 #' @param show_axis show axis or not (default = TRUE)
 #' @param axis_label_text text of x axis label (default: "Region (bp)")
+#' @param axis_label_offset offset of label (default: -0.5)
 #' @param axis_label_gp gp object of x axis label
 #' @param border boolean if border visible (default = FALSE)
 #' @param show_values boolean if displayed range should also be printed
@@ -208,6 +209,7 @@ geneset <- function(gff_file,
                     distance = 1,
                     show_axis = TRUE,
                     axis_label_text = NULL,
+                    axis_label_offset = -0.5,
                     axis_label_gp = NULL,
                     border = FALSE,
                     show_values = FALSE,
@@ -253,12 +255,9 @@ geneset <- function(gff_file,
                          stop("Distance between forward and reverse strand have to be between 0 and 1."))
     reverse_strand_pos <- forward_strand_pos + strand_gap
 
-    if(!is.null(axis_label_text)) {
-        .Object@plot_param$axis_label_text = axis_label_text
-    }
-    else {
-        .Object@plot_param$axis_label_text = paste(.Object@gene_param$chromosome, "(bp)")
-    }
+    .Object@plot_param$axis_label_text = ifelse(!is.null(axis_label_text),
+                                                axis_label_text,
+                                                paste(.Object@gene_param$chromosome, "(bp)"))
 
     # default params
     .Object@gene_param$forward_strand_pos = forward_strand_pos
@@ -274,6 +273,7 @@ geneset <- function(gff_file,
     .Object@plot_param$max_value = max_value
     .Object@plot_param$show_axis = show_axis
     .Object@plot_param$axis_label = axis_label
+    .Object@plot_param$axis_label_offset = axis_label_offset
     .Object@plot_param$axis_label_gp = axis_label_gp
     .Object@plot_param$border = border
     .Object@plot_param$show_values = show_values
@@ -328,7 +328,6 @@ setMethod(f = "show",
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$forward_strand_pos, "npc"))
             
-            
             # reverse direction
             grid::grid.segments(x0 = grid::unit(0, "npc"),
                                 y0 = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
@@ -363,7 +362,7 @@ setMethod(f = "show",
 
                 # add axis label text
                 text_label(x_ = 0.5,
-                           y_ = -0.6,
+                           y_ = object@plot_param$axis_label_offset,
                            w_ = 0.1,
                            h_ = 0.2,
                            label_txt = object@plot_param$axis_label_text,
