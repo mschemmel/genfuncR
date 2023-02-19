@@ -220,8 +220,15 @@ geneset <- function(gff_file,
 
     # assign data to object
     .Object@gff_file = gff_file
-    if (show_values) print(.Object@gff_file)
-
+    if (show_values) {
+        if (nrow(.Object@gff_file) > 100) {
+            print(head(.Object@gff_file))
+        }
+        else {
+            print(.Object@gff_file)
+        }
+    }
+    
     # check for unique chromosome label
     given_chromosome <- unique(.Object@gff_file$chr)
     if (!is.null(given_chromosome)) {
