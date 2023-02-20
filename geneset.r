@@ -8,11 +8,15 @@
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
-genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
+genearrow <- function(x1, x2, pos, direction, arr_type = "arrow", gp_) {
     arrow_width <- x2 - x1
     arrow_head_width <- arrow_width * 0.2 # TODO: make size dynamic
     barrow_head_size <- 0.05
-    if (direction == "downstream") {
+    
+    y1 <- pos - (pos * 0.1) 
+    y2 <- pos + (pos * 0.1) 
+
+    if (direction == "+") {
         if (arr_type == "arrow") {
             grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2, x2 - arrow_head_width),
                                c(y1, y2, y2, mean(c(y1, y2)), y1),
@@ -26,9 +30,9 @@ genearrow <- function(x1, y1, x2, y2, direction, arr_type = "arrow", gp_) {
                                c(y1, y2, y2, y1),
                                gp = gp_)
         } else {
-           stop("Invalid 'arrow_type' parameter. Please choose 'arrow', 'barrow' or 'box'.")
+           stop("Invalid 'arr-' parameter. Please choose 'arrow', 'barrow' or 'box'.")
         }
-    } else if (direction == "upstream") {
+    } else if (direction == "-") {
         if (arr_type == "arrow") {
             grid::grid.polygon(c(x1 + arrow_head_width, x1, x1 + arrow_head_width, x2, x2),
                                c(y1, mean(c(y2, y1)), y2, y2, y1),
@@ -195,8 +199,8 @@ geneset = setClass("geneset",
                         gff_file = "ANY",
                         gene_param = "list",
                         plot_param = "list"
-                   ))
-
+                   )
+)
 # constructor method
 geneset <- function(gff_file,
                     forward_color = "darkslategray",
@@ -268,7 +272,6 @@ geneset <- function(gff_file,
 
     # default params
     .Object@gene_param$forward_strand_pos = forward_strand_pos
-    .Object@gene_param$strand_gap = strand_gap
     .Object@gene_param$reverse_strand_pos = reverse_strand_pos
     .Object@gene_param$distance = distance
     .Object@gene_param$forward_color = forward_color
@@ -341,22 +344,12 @@ setMethod(f = "show",
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$reverse_strand_pos, "npc"))
 
-
             # add all genes/transcripts
             genearrow(x1 = grid::unit(relative(object@gff_file$start), "npc"),
-                      y1 = ifelse(object@gff_file$strand == "+",
-                                  grid::unit(object@gene_param$reverse_strand_pos - (object@gene_param$gene_box_height / 2), "npc"),
-                                  grid::unit(object@gene_param$forward_strand_pos - (object@gene_param$gene_box_height / 2), "npc")),
                       x2 = grid::unit(relative(object@gff_file$end), "npc"),
-                      y2 = ifelse(object@gff_file$strand == "+",
-                                  grid::unit(object@gene_param$reverse_strand_pos + (object@gene_param$gene_box_height / 2), "npc"),
-                                  grid::unit(object@gene_param$forward_strand_pos + (object@gene_param$gene_box_height / 2), "npc")),
-                      direction = ifelse(object@gff_file$strand == "+",
-                                         "downstream",
-                                         "upstream"),
-                      gp_ = grid::gpar(fill = ifelse(object@gff_file$strand == "+",
-                                                     object@gene_param$forward_color,
-                                                     object@gene_param$reverse_color),
+                      pos = ifelse(object@gff_file$strand == "+", object@gene_param$forward_strand_pos, object@gene_param$reverse_strand_pos),
+                      direction = object@gff_file$strand, 
+                      gp_ = grid::gpar(fill = "red",
                                        alpha = object@gene_param$transparency),
                       arr_type = object@gene_param$arrow_type)
 
