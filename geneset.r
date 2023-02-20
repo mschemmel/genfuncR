@@ -1,10 +1,10 @@
 #' plots an arrow in an defined direction representing a single gene
 #' @param x1 x1 coordinate
-#' @param y1 y1 coordinate
 #' @param x2 x2 coordinate
-#' @param y2 y2 coordinate
+#' @param pos positional coordinates of forward and reverse strand
 #' @param direction direction of the gene (upstream | downstream)
 #' @param arr_type appearance of arrow head (arrow | barrow | box)
+#' @param gd_ grid gpar object to edit the arrow appearance
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
@@ -13,8 +13,8 @@ genearrow <- function(x1, x2, pos, direction, arr_type = "arrow", gp_) {
     arrow_head_width <- arrow_width * 0.2 # TODO: make size dynamic
     barrow_head_size <- 0.05
     
-    y1 <- pos - (pos * 0.1) 
-    y2 <- pos + (pos * 0.1) 
+    y1 <- pos - (pos * 0.25) 
+    y2 <- pos + (pos * 0.25) 
 
     if (direction == "+") {
         if (arr_type == "arrow") {
