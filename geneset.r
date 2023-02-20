@@ -3,16 +3,12 @@
 #' @param x2 x2 coordinate
 #' @param pos positional coordinates of forward and reverse strand
 #' @param direction direction of the gene (upstream | downstream)
-#' @param arr_type appearance of arrow head (arrow | barrow | box)
 #' @param gd_ grid gpar object to edit the arrow appearance
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
-genearrow <- function(x1, x2, pos, direction, arr_type = "arrow", gp_ = grid::gpar(fill = "darkslategray")) {
-    arrow_width <- x2 - x1
-    arrow_head_width <- arrow_width * 0.2 # TODO: make size dynamic
-    barrow_head_size <- 0.05
-  
+genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", reverse_color = "navajowhite3") {
+    arrow_head_width <- (x2 - x1) * 0.2 # TODO: make size dynamic
     gene_height <- 0.15
     y1 <- pos - gene_height
     y2 <- pos + gene_height
@@ -20,10 +16,10 @@ genearrow <- function(x1, x2, pos, direction, arr_type = "arrow", gp_ = grid::gp
     ifelse(direction == "+",
            grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2, x2 - arrow_head_width),
                               c(y1, y2, y2, pos, y1),
-                              gp = gp_),
+                              gp = grid::gpar(fill = forward_color)),
            grid::grid.polygon(c(x1 + arrow_head_width, x1, x1 + arrow_head_width, x2, x2),
                               c(y1, pos, y2, y2, y1),
-                              gp = gp_)
+                              gp = grid::gpar(fill = reverse_color))
     )
 }
 
@@ -178,7 +174,7 @@ geneset = setClass("geneset",
 # constructor method
 geneset <- function(gff_file,
                     forward_color = "darkslategray",
-                    reverse_color = "darkslategray",
+                    reverse_color = "navajowhite3",
                     upstream = 0,
                     downstream = 0,
                     transparency = 1,
@@ -320,10 +316,13 @@ setMethod(f = "show",
 
             # add all genes/transcripts
             mapply(genearrow,
-                   grid::unit(relative(object@gff_file$start), "npc"),
-                   grid::unit(relative(object@gff_file$end), "npc"),
-                   ifelse(object@gff_file$strand == "+", object@gene_param$reverse_strand_pos, object@gene_param$forward_strand_pos),
-                   direction = object@gff_file$strand)
+                   x1 = grid::unit(relative(object@gff_file$start), "npc"),
+                   x2 = grid::unit(relative(object@gff_file$end), "npc"),
+                   pos = ifelse(object@gff_file$strand == "+", object@gene_param$reverse_strand_pos, object@gene_param$forward_strand_pos),
+                   direction = object@gff_file$strand,
+                   forward_color = object@gene_param$forward_color,
+                   reverse_color = object@gene_param$reverse_color)
+                   
 
             # add axis label
             if (object@plot_param$show_axis) {
