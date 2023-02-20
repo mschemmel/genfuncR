@@ -8,49 +8,23 @@
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
-genearrow <- function(x1, x2, pos, direction, arr_type = "arrow", gp_) {
+genearrow <- function(x1, x2, pos, direction, arr_type = "arrow", gp_ = grid::gpar(fill = "darkslategray")) {
     arrow_width <- x2 - x1
     arrow_head_width <- arrow_width * 0.2 # TODO: make size dynamic
     barrow_head_size <- 0.05
-    
-    y1 <- pos - (pos * 0.25) 
-    y2 <- pos + (pos * 0.25) 
-
-    if (direction == "+") {
-        if (arr_type == "arrow") {
-            grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2, x2 - arrow_head_width),
-                               c(y1, y2, y2, mean(c(y1, y2)), y1),
-                               gp = gp_)
-        } else if (arr_type == "barrow") {
-            grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2 - arrow_head_width, x2, x2 - arrow_head_width, x2 - arrow_head_width),
-                               c(y1, y2, y2, y2 + barrow_head_size, mean(c(y1, y2)), y1 - barrow_head_size, y1),
-                               gp = gp_)
-        } else if (arr_type == "box") {
-            grid::grid.polygon(c(x1, x1, x2, x2),
-                               c(y1, y2, y2, y1),
-                               gp = gp_)
-        } else {
-           stop("Invalid 'arr-' parameter. Please choose 'arrow', 'barrow' or 'box'.")
-        }
-    } else if (direction == "-") {
-        if (arr_type == "arrow") {
-            grid::grid.polygon(c(x1 + arrow_head_width, x1, x1 + arrow_head_width, x2, x2),
-                               c(y1, mean(c(y2, y1)), y2, y2, y1),
-                               gp = gp_)
-        } else if (arr_type == "barrow") {
-            grid::grid.polygon(c(x1 + arrow_head_width, x1 + arrow_head_width, x1, x1 + arrow_head_width, x1 + arrow_head_width, x2, x2),
-                               c(y1, y1 - barrow_head_size, mean(c(y1, y2)), y2 + barrow_head_size, y2, y2, y1),
-                               gp = gp_)
-        } else if (arr_type == "box") {
-            grid::grid.polygon(c(x1, x1, x2, x2),
-                               c(y1, y2, y2, y1),
-                               gp = gp_)
-        } else {
-           stop("Invalid 'arrow_type' parameter. Please choose 'arrow', 'barrow' or 'box'.")
-        }
-    } else {
-        stop("Invalid 'direction' statement")
-    }
+  
+    gene_height <- 0.15
+    y1 <- pos - gene_height
+    y2 <- pos + gene_height
+   
+    ifelse(direction == "+",
+           grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2, x2 - arrow_head_width),
+                              c(y1, y2, y2, pos, y1),
+                              gp = gp_),
+           grid::grid.polygon(c(x1 + arrow_head_width, x1, x1 + arrow_head_width, x2, x2),
+                              c(y1, pos, y2, y2, y1),
+                              gp = gp_)
+    )
 }
 
 #' puts a text label on a specific position
@@ -345,13 +319,11 @@ setMethod(f = "show",
                                 y1 = grid::unit(object@gene_param$reverse_strand_pos, "npc"))
 
             # add all genes/transcripts
-            genearrow(x1 = grid::unit(relative(object@gff_file$start), "npc"),
-                      x2 = grid::unit(relative(object@gff_file$end), "npc"),
-                      pos = ifelse(object@gff_file$strand == "+", object@gene_param$forward_strand_pos, object@gene_param$reverse_strand_pos),
-                      direction = object@gff_file$strand, 
-                      gp_ = grid::gpar(fill = "red",
-                                       alpha = object@gene_param$transparency),
-                      arr_type = object@gene_param$arrow_type)
+            mapply(genearrow,
+                   grid::unit(relative(object@gff_file$start), "npc"),
+                   grid::unit(relative(object@gff_file$end), "npc"),
+                   ifelse(object@gff_file$strand == "+", object@gene_param$reverse_strand_pos, object@gene_param$forward_strand_pos),
+                   direction = object@gff_file$strand)
 
             # add axis label
             if (object@plot_param$show_axis) {
