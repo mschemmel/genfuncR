@@ -278,25 +278,15 @@ setMethod(f = "show",
                                               y = grid::unit(0.5, "npc"),
                                               width = 1,
                                               height = 1))
-
-            # placement of track if requested
-            if (length(object@plot_param$tracks) != 0) {
-                object@plot_param$show_tracks <- TRUE
-                size_per_vp <- 0.85 / (length(object@plot_param$tracks) + 1) # always show the genebox (+1)
-                places_of_vp <- head(seq(0.15, 1, size_per_vp), -1)
-            }
-            else {
-                object@plot_param$show_tracks <- FALSE
-                size_per_vp <- 0.3
-                places_of_vp <- 0.5
-            }
+            # get layout of plot
+            layout_of_plot <- get_layout(object@plot_param$tracks)
 
             # main viewport
             grid::pushViewport(grid::viewport(name = "main",
                                               x = grid::unit(0.5, "npc"),
-                                              y = grid::unit(places_of_vp[1], "npc"),
+                                              y = grid::unit(layout_of_plot$places_of_vp[1], "npc"),
                                               width = 0.7,
-                                              height = size_per_vp,
+                                              height = layout_of_plot$size_per_vp,
                                               just = c("bottom")))
 
             # draw border if requested
@@ -346,13 +336,13 @@ setMethod(f = "show",
 
             # plot annotation tracks if requested
             # TODO: refactor!
-            if (object@plot_param$show_tracks) {
+            if (length(layout_of_plot$places_of_vp > 1)) {
                 # how many tracks should be drawn
                 for (x in seq_len(length(object@plot_param$tracks))) {
                     grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
-                                                      y = grid::unit(places_of_vp[-1][x], "npc"),
+                                                      y = grid::unit(layout_of_plot$places_of_vp[-1][x], "npc"),
                                                       width = 0.7,
-                                                      height = size_per_vp - 0.02,
+                                                      height = layout_of_plot$size_per_vp - 0.02,
                                                       just = c("bottom")))
 
                     dframe <- prepareAndFilter(object@plot_param$tracks[[x]]@track_param$track_file,
@@ -413,3 +403,17 @@ setMethod(f = "show",
     }
 }
 })
+
+#' get coordinates of viewports to draw on
+#' @param object list of annoTrack objects
+#' @examples
+#' get_layout(list(annoTrack, ...))
+get_layout <- function(object) {
+  coordinates <- list("size_per_vp" = 0.3,
+                      "places_of_vp" = 0.5)
+  if (length(object) != 0) {
+      coordinates$size_per_vp <- 0.85 / (length(object) + 1)
+      coordinates$places_of_vp <- head(seq(0.15, 1, coordinates$size_per_vp), -1)
+  }
+  return (coordinates)
+}
