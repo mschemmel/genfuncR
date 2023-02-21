@@ -12,7 +12,7 @@ genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", r
     gene_height <- 0.15
     y1 <- pos - gene_height
     y2 <- pos + gene_height
-   
+
     ifelse(direction == "+",
            grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2, x2 - arrow_head_width),
                               c(y1, y2, y2, pos, y1),
@@ -35,7 +35,7 @@ genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", r
 #' @examples
 #' text_label(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
 
-text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt, angle = 0, gp_ = NULL) {
+text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
                                       x = grid::unit(x_, "npc"),
                                       y = grid::unit(y_, "npc"),
@@ -70,9 +70,9 @@ prepareAndFilter <- function(dataset,
     }
 
     # order input by start and end column and filter
-    dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ] 
+    dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ]
     dataset <- dataset[dataset$chr == chromosome & dataset$start >= st & dataset$end <= en, ]
-    
+
     # check if data frame not empty
     if (nrow(dataset) == 0) {
         cat("Input data frame is empty after filtering (", chromosome, ":", st, "-", en, ")\n", sep = "")
@@ -106,7 +106,7 @@ annoTrack <- function(track_file = NULL,
                       label_orientation = "horizontal"
                       ) {
 
-    .Object = new("annoTrack")
+    .Object <- new("annoTrack")
 
     if (values %in% names(track_file)) {
         names(track_file)[names(track_file) == values] <- "value"
@@ -121,24 +121,24 @@ annoTrack <- function(track_file = NULL,
     maxscale <- ifelse(max(track_file$value) >= 0, max(track_file$value), 0)
     yscale_label <- pretty(c(minscale:maxscale))
     scale_interval <- diff(range(yscale_label))
-    yscale_at <- seq(0, 1, 1/(length(yscale_label)-1))
+    yscale_at <- seq(0, 1, 1 / (length(yscale_label) - 1))
 
     # assign parameter to object
-    .Object@track_param$scale_label = yscale_label
-    .Object@track_param$scale_at = yscale_at
-    .Object@track_param$ymax = tail(yscale_label, n = 1)
-    .Object@track_param$track_file = track_file
-    .Object@track_param$label = label
-    .Object@track_param$type = type
-    .Object@track_param$label_gp = label_gp
-    .Object@track_param$track_gp = track_gp
+    .Object@track_param$scale_label <- yscale_label
+    .Object@track_param$scale_at <- yscale_at
+    .Object@track_param$ymax <- tail(yscale_label, n = 1)
+    .Object@track_param$track_file <- track_file
+    .Object@track_param$label <- label
+    .Object@track_param$type <- type
+    .Object@track_param$label_gp <- label_gp
+    .Object@track_param$track_gp <- track_gp
 
     if (!(label_orientation %in% c("vertical", "horizontal"))) {
-        .Object@track_param$label_orientation = "horizontal"
+        .Object@track_param$label_orientation <- "horizontal"
         cat("DataTrack: ", label, " Unknown label_orientation value. Set to 'horizontal'")
     }
     else {
-        .Object@track_param$label_orientation = label_orientation
+        .Object@track_param$label_orientation <- label_orientation
     }
     return(.Object)
 }
@@ -190,10 +190,10 @@ geneset <- function(gff_file,
                     tracks = NULL,
                     marker = NULL) {
 
-    .Object = new("geneset")
+    .Object <- new("geneset")
 
     # assign data to object
-    .Object@gff_file = gff_file
+    .Object@gff_file <- gff_file
     if (show_values) {
         if (nrow(.Object@gff_file) > 100) {
             print(head(.Object@gff_file))
@@ -202,16 +202,16 @@ geneset <- function(gff_file,
             print(.Object@gff_file)
         }
     }
-    
+
     # check for unique chromosome label
     given_chromosome <- unique(.Object@gff_file$chr)
     if (!is.null(given_chromosome)) {
       if (length(given_chromosome) > 1) {
         warning("Found more than one chromosome identifier, use first provided.")
-        .Object@gene_param$chromosome = given_chromosome[1] 
+        .Object@gene_param$chromosome <- given_chromosome[1]
       }
       else {
-        .Object@gene_param$chromosome = given_chromosome
+        .Object@gene_param$chromosome <- given_chromosome
       }
     }
     else {
@@ -219,15 +219,15 @@ geneset <- function(gff_file,
     }
 
     # determine axis label
-    axis_label <- pretty(c(min(.Object@gff_file$start-upstream):max(.Object@gff_file$end+downstream)))
+    axis_label <- pretty(c(min(.Object@gff_file$start - upstream):max(.Object@gff_file$end + downstream)))
     min_value <- axis_label[1]
     max_value <- tail(axis_label, n = 1)
-   
+
     # overall size of genebox
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
                               0.2 * gene_height,
                               stop("Height of gene box (gene_height) have to be between 0 and 1."))
-    .Object@gene_param$gene_box_height = gene_box_height
+    .Object@gene_param$gene_box_height <- gene_box_height
 
     # position of forward and reverse strand
     forward_strand_pos <- 0.2
@@ -236,29 +236,29 @@ geneset <- function(gff_file,
                          stop("Distance between forward and reverse strand have to be between 0 and 1."))
     reverse_strand_pos <- forward_strand_pos + strand_gap
 
-    .Object@plot_param$axis_label_text = ifelse(!is.null(axis_label_text),
+    .Object@plot_param$axis_label_text <- ifelse(!is.null(axis_label_text),
                                                 axis_label_text,
                                                 paste(.Object@gene_param$chromosome, "(bp)"))
 
     # default params
-    .Object@gene_param$forward_strand_pos = forward_strand_pos
-    .Object@gene_param$reverse_strand_pos = reverse_strand_pos
-    .Object@gene_param$distance = distance
-    .Object@gene_param$forward_color = forward_color
-    .Object@gene_param$reverse_color = reverse_color
-    .Object@gene_param$transparency = transparency
-    .Object@gene_param$arrow_type = arrow_type
-    .Object@gene_param$gene_height = gene_height
-    .Object@plot_param$min_value = min_value
-    .Object@plot_param$max_value = max_value
-    .Object@plot_param$show_axis = show_axis
-    .Object@plot_param$axis_label = axis_label
-    .Object@plot_param$axis_label_offset = axis_label_offset
-    .Object@plot_param$axis_label_gp = axis_label_gp
-    .Object@plot_param$border = border
-    .Object@plot_param$show_values = show_values
-    .Object@plot_param$tracks = tracks
-    .Object@plot_param$marker = marker
+    .Object@gene_param$forward_strand_pos <- forward_strand_pos
+    .Object@gene_param$reverse_strand_pos <- reverse_strand_pos
+    .Object@gene_param$distance <- distance
+    .Object@gene_param$forward_color <- forward_color
+    .Object@gene_param$reverse_color <- reverse_color
+    .Object@gene_param$transparency <- transparency
+    .Object@gene_param$arrow_type <- arrow_type
+    .Object@gene_param$gene_height <- gene_height
+    .Object@plot_param$min_value <- min_value
+    .Object@plot_param$max_value <- max_value
+    .Object@plot_param$show_axis <- show_axis
+    .Object@plot_param$axis_label <- axis_label
+    .Object@plot_param$axis_label_offset <- axis_label_offset
+    .Object@plot_param$axis_label_gp <- axis_label_gp
+    .Object@plot_param$border <- border
+    .Object@plot_param$show_values <- show_values
+    .Object@plot_param$tracks <- tracks
+    .Object@plot_param$marker <- marker
 
     return(.Object)
 }
@@ -278,15 +278,15 @@ setMethod(f = "show",
                                               y = grid::unit(0.5, "npc"),
                                               width = 1,
                                               height = 1))
-            
+
             # placement of track if requested
             if (length(object@plot_param$tracks) != 0) {
-                object@plot_param$show_tracks = TRUE
+                object@plot_param$show_tracks <- TRUE
                 size_per_vp <- 0.85 / (length(object@plot_param$tracks) + 1) # always show the genebox (+1)
                 places_of_vp <- head(seq(0.15, 1, size_per_vp), -1)
             }
             else {
-                object@plot_param$show_tracks = FALSE
+                object@plot_param$show_tracks <- FALSE
                 size_per_vp <- 0.3
                 places_of_vp <- 0.5
             }
@@ -307,7 +307,7 @@ setMethod(f = "show",
                                 y0 = grid::unit(object@gene_param$forward_strand_pos, "npc"),
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$forward_strand_pos, "npc"))
-            
+
             # reverse direction
             grid::grid.segments(x0 = grid::unit(0, "npc"),
                                 y0 = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
@@ -318,11 +318,13 @@ setMethod(f = "show",
             mapply(genearrow,
                    x1 = grid::unit(relative(object@gff_file$start), "npc"),
                    x2 = grid::unit(relative(object@gff_file$end), "npc"),
-                   pos = ifelse(object@gff_file$strand == "+", object@gene_param$reverse_strand_pos, object@gene_param$forward_strand_pos),
+                   pos = ifelse(object@gff_file$strand == "+",
+                                object@gene_param$reverse_strand_pos,
+                                object@gene_param$forward_strand_pos),
                    direction = object@gff_file$strand,
                    forward_color = object@gene_param$forward_color,
                    reverse_color = object@gene_param$reverse_color)
-                   
+
 
             # add axis label
             if (object@plot_param$show_axis) {
@@ -339,7 +341,7 @@ setMethod(f = "show",
                            label_txt = object@plot_param$axis_label_text,
                            gp_ = object@plot_param$axis_label_gp)
             }
-                    
+
             grid::popViewport(1)
 
             # plot annotation tracks if requested
@@ -357,11 +359,11 @@ setMethod(f = "show",
                                                object@gene_param$chromosome,
                                                object@plot_param$min_value,
                                                object@plot_param$max_value)
-                    
-                    if(object@plot_param$show_values) print(dframe)
+
+                    if (object@plot_param$show_values) print(dframe)
 
                     grid::grid.rect()
-                    
+
                     # add track label
                     grid::grid.text(object@plot_param$tracks[[x]]@track_param$label,
                                     x = ifelse(object@plot_param$tracks[[x]]@track_param$label_orientation == "horizontal", -0.05, -0.1),
@@ -376,39 +378,38 @@ setMethod(f = "show",
                                      gp = grid::gpar(fontsize = 8))
 
         if (!is.null(object@plot_param$marker)) {
-          mark = object@plot_param$marker
-                            grid::grid.rect(x = grid::unit(relative(mark[1]), "npc"),
-                                            y = grid::unit(0.5, "npc"),
-                                            width = grid::unit(relative(mark[2]) - relative(mark[1]), "npc"),
-                                            height = grid::unit(1,  "npc"),
-                                            gp = grid::gpar(col = "red", lwd = 1),
-                                            just = "left")
-      
-              }
-                    if (nrow(dframe) != 0) {
-                        # get maximum value of data as reference
-                        start_y <- 0
-                        max_in_range <- max(dframe$value)
-                        
-                        if (!all(dframe$value >= 0)) {
-                            max_in_range <- 2
-                            start_y <-  0.5
-                            # add middle line
-                            grid::grid.segments(x0 = grid::unit(0, "npc"),
-                                                y0 = grid::unit(start_y, "npc"),
-                                                x1 = grid::unit(1, "npc"),
-                                                y1 = grid::unit(start_y,  "npc"),
-                                                gp = grid::gpar(col = "gray30"))
-                        }
+            mark <- object@plot_param$marker
+            grid::grid.rect(x = grid::unit(relative(mark[1]), "npc"),
+                            y = grid::unit(0.5, "npc"),
+                            width = grid::unit(relative(mark[2]) - relative(mark[1]), "npc"),
+                            height = grid::unit(1,  "npc"),
+                            gp = grid::gpar(col = "red", lwd = 1),
+                            just = "left")
+        }
+        if (nrow(dframe) != 0) {
+            # get maximum value of data as reference
+            start_y <- 0
+            max_in_range <- max(dframe$value)
 
-                        # which region should be displayed
-                        grid::grid.segments(x0 = grid::unit(relative(dframe$start), "npc"),
-                                            y0 = grid::unit(start_y, "npc"),
-                                            x1 = grid::unit(relative(dframe$end), "npc"),
-                                            y1 = grid::unit(start_y + (dframe$value/max_in_range), "npc"),
-                                            gp = object@plot_param$tracks[[x]]@track_param$track_gp)
-                    }
-                    grid::popViewport(1)
-                }
+            if (!all(dframe$value >= 0)) {
+                max_in_range <- 2
+                start_y <-  0.5
+                # add middle line
+                grid::grid.segments(x0 = grid::unit(0, "npc"),
+                                    y0 = grid::unit(start_y, "npc"),
+                                    x1 = grid::unit(1, "npc"),
+                                    y1 = grid::unit(start_y,  "npc"),
+                                    gp = grid::gpar(col = "gray30"))
             }
+
+            # which region should be displayed
+            grid::grid.segments(x0 = grid::unit(relative(dframe$start), "npc"),
+                                y0 = grid::unit(start_y, "npc"),
+                                x1 = grid::unit(relative(dframe$end), "npc"),
+                                y1 = grid::unit(start_y + (dframe$value / max_in_range), "npc"),
+                                gp = object@plot_param$tracks[[x]]@track_param$track_gp)
+        }
+        grid::popViewport(1)
+    }
+}
 })
