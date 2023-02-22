@@ -109,8 +109,9 @@ geneset <- function(gTracks, aTracks = NULL) {
 
 setMethod(f = "show",
           signature = "geneset",
-          definition = function(object) { 
-            print(object@tracks$gTracks)            
+          definition = function(object) {
+            print(get_layout(object))
+            print(object@tracks$gTracks)
             print(object@tracks$aTracks)
 })
 
@@ -131,9 +132,6 @@ annoTrack = setClass("annoTrack",
                      ))
 
 annoTrack <- function(track_file = NULL,
-                      chromosome = NULL,
-                      xmin = NULL,
-                      xmax = NULL,
                       vp_places = NULL,
                       vp_height = NULL,
                       label = "Track",
@@ -162,14 +160,15 @@ annoTrack <- function(track_file = NULL,
 
     xmin <- shared$min_value
     xmax <- shared$max_value
+    chromosome <- shared$chromosome
 
-    dframe <- prepareAndFilter(track_file,
-                               chromosome,
-                               xmin,
-                               xmax)
+    track_file <- prepareAndFilter(track_file,
+                                   chromosome,
+                                   xmin,
+                                   xmax)
 
     # assign parameter to object
-    .Object@track_param$track_file <- dframe
+    .Object@track_param$track_file <- track_file
     .Object@track_param$vp_places <- vp_places
     .Object@track_param$vp_height <- vp_height
     .Object@track_param$xmin <- xmin
@@ -316,6 +315,8 @@ geneTrack <- function(gff_file,
     else {
       warning("No chromosome specified in input data.")
     }
+
+    shared$chromosome <- given_chromosome
 
     # determine axis label
     axis_label <- pretty(c(min(.Object@gff_file$start - upstream):max(.Object@gff_file$end + downstream)))
