@@ -81,7 +81,7 @@ prepareAndFilter <- function(dataset,
 }
 
 #' get coordinates of viewports to draw on
-#' @param object list of annoTrack objects
+#' @param length_of_object number of tracks to draw
 #' @examples
 #' get_layout(list(annoTrack, ...))
 get_layout <- function(length_of_object) {
@@ -95,8 +95,11 @@ get_layout <- function(length_of_object) {
   return(coordinates)
 }
 
-track = setClass("track", slots = list(vp_y_position = "numeric",
-                                       vp_height = "numeric")
+track = setClass("track",
+                 slots = list(vp_y_position = "numeric",
+                              vp_height = "numeric"),
+                 prototype = list(vp_y_position = 0,
+                                  vp_height = 0.3)
 )
 
 # make layout and plot accordingly
@@ -110,7 +113,7 @@ geneset <- function(gTracks, aTracks = NULL) {
   .Object@tracks$aTracks <- aTracks
   .Object@tracks$no_of_tracks <- as.numeric(sum(length(gTracks),
                                                 length(aTracks)))
-  
+
   return(.Object)
 }
 
@@ -118,7 +121,7 @@ setMethod(f = "show",
           signature = "geneset",
           definition = function(object) {
             layout <- get_layout(object@tracks$no_of_tracks)
-            
+
             # draw geneTrack
             object@tracks$gTracks@vp_y_position <- layout$places_of_vp[1]
             object@tracks$gTracks@vp_height <- layout$size_per_vp
@@ -128,12 +131,10 @@ setMethod(f = "show",
             counter <- 2
             lapply(object@tracks$aTracks, function(x) {
               x@vp_y_position <- layout$places_of_vp[counter]
-              print(layout$places_of_vp[counter])
               x@vp_height <- layout$size_per_vp
               print(x)
               counter <<- counter + 1
             })
-
 })
 
 #' draw a data track based on data.frame or gff file
@@ -163,7 +164,7 @@ annoTrack <- function(track_file = NULL,
                       ) {
 
     .Object <- new("annoTrack")
- 
+
     # get column with data
     if (values %in% names(track_file)) {
         names(track_file)[names(track_file) == values] <- "value"
@@ -190,8 +191,6 @@ annoTrack <- function(track_file = NULL,
 
     # assign parameter to object
     .Object@track_param$track_file <- track_file
-    .Object@vp_y_position <- 0
-    .Object@vp_height <- 0
     .Object@track_param$xmin <- xmin
     .Object@track_param$xmax <- xmax
     .Object@track_param$scale_label <- yscale_label
