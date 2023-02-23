@@ -84,15 +84,20 @@ prepareAndFilter <- function(dataset,
 #' @param object list of annoTrack objects
 #' @examples
 #' get_layout(list(annoTrack, ...))
-get_layout <- function(object) {
+get_layout <- function(length_of_object) {
   coordinates <- list("size_per_vp" = 0.3,
                       "places_of_vp" = 0.5)
-  if (length(object) != 0) {
-      coordinates$size_per_vp <- 0.85 / (length(object) + 1)
-      coordinates$places_of_vp <- head(seq(0.15, 1, coordinates$size_per_vp), -1)
+
+  if (length_of_object != 1) {
+    coordinates$size_per_vp <- 0.85 / length_of_object
+    coordinates$places_of_vp <- head(seq(0.15, 1, coordinates$size_per_vp), n = -1)
   }
-  return (coordinates)
+  return(coordinates)
 }
+
+track = setClass("track", slots = list(vp_y_position = "numeric",
+                                       vp_height = "numeric")
+)
 
 # make layout and plot accordingly
 shared <- new.env()
@@ -101,18 +106,34 @@ geneset = setClass("geneset", slots = list(tracks = "ANY"))
 # constructor method
 geneset <- function(gTracks, aTracks = NULL) {
   .Object <- new("geneset")
+  .Object@tracks$gTracks <- gTracks
+  .Object@tracks$aTracks <- aTracks
+  .Object@tracks$no_of_tracks <- as.numeric(sum(length(gTracks),
+                                                length(aTracks)))
   
-  .Object@tracks$gTracks = gTracks
-  .Object@tracks$aTracks = aTracks
   return(.Object)
 }
 
 setMethod(f = "show",
           signature = "geneset",
           definition = function(object) {
-            print(get_layout(object))
+            layout <- get_layout(object@tracks$no_of_tracks)
+            
+            # draw geneTrack
+            object@tracks$gTracks@vp_y_position <- layout$places_of_vp[1]
+            object@tracks$gTracks@vp_height <- layout$size_per_vp
             print(object@tracks$gTracks)
-            print(object@tracks$aTracks)
+
+            # draw annoTrack(s)
+            counter <- 2
+            lapply(object@tracks$aTracks, function(x) {
+              x@vp_y_position <- layout$places_of_vp[counter]
+              print(layout$places_of_vp[counter])
+              x@vp_height <- layout$size_per_vp
+              print(x)
+              counter <<- counter + 1
+            })
+
 })
 
 #' draw a data track based on data.frame or gff file
@@ -129,11 +150,11 @@ setMethod(f = "show",
 annoTrack = setClass("annoTrack",
                      slots = list(
                        track_param = "list"
-                     ))
+                     ),
+                     contains = "track"
+)
 
 annoTrack <- function(track_file = NULL,
-                      vp_places = NULL,
-                      vp_height = NULL,
                       label = "Track",
                       values = "value",
                       label_gp = grid::gpar(fontsize = 10, col = "black"),
@@ -142,7 +163,7 @@ annoTrack <- function(track_file = NULL,
                       ) {
 
     .Object <- new("annoTrack")
-
+ 
     # get column with data
     if (values %in% names(track_file)) {
         names(track_file)[names(track_file) == values] <- "value"
@@ -169,8 +190,8 @@ annoTrack <- function(track_file = NULL,
 
     # assign parameter to object
     .Object@track_param$track_file <- track_file
-    .Object@track_param$vp_places <- vp_places
-    .Object@track_param$vp_height <- vp_height
+    .Object@vp_y_position <- 0
+    .Object@vp_height <- 0
     .Object@track_param$xmin <- xmin
     .Object@track_param$xmax <- xmax
     .Object@track_param$scale_label <- yscale_label
@@ -195,9 +216,9 @@ setMethod(f = "show",
           definition = function(object) {
             relative <- function(x) (x - object@track_param$xmin) / (object@track_param$xmax - object@track_param$xmin)
             grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
-                                              y = grid::unit(0.6, "npc"),
+                                              y = grid::unit(object@vp_y_position, "npc"),
                                               width = 0.7,
-                                              height = 0.1 - 0.02,
+                                              height = object@vp_height - 0.02,
                                               just = c("bottom")))
 
             grid::grid.rect()
@@ -239,7 +260,7 @@ setMethod(f = "show",
                                 gp = object@track_param$track_gp)
         }
         grid::popViewport(1)
-    }) 
+    })
 
 
 #' draw a set of genes based on data.frame or gff file
@@ -268,7 +289,8 @@ geneTrack = setClass("geneTrack",
                         gff_file = "ANY",
                         gene_param = "list",
                         plot_param = "list"
-                   )
+                   ),
+                   contains = "track"
 )
 # constructor method
 geneTrack <- function(gff_file,
@@ -321,7 +343,7 @@ geneTrack <- function(gff_file,
     # determine axis label
     axis_label <- pretty(c(min(.Object@gff_file$start - upstream):max(.Object@gff_file$end + downstream)))
     min_value <- axis_label[1]
-    max_value <- tail(axis_label, n = 1) 
+    max_value <- tail(axis_label, n = 1)
     shared$min_value <- min_value
     shared$max_value <- max_value
 
@@ -378,15 +400,13 @@ setMethod(f = "show",
                                               y = grid::unit(0.5, "npc"),
                                               width = 1,
                                               height = 1))
-            # get layout of plot
-            layout_of_plot <- get_layout(object@plot_param$tracks)
-
+            
             # main viewport
             grid::pushViewport(grid::viewport(name = "main",
                                               x = grid::unit(0.5, "npc"),
-                                              y = grid::unit(layout_of_plot$places_of_vp[1], "npc"),
+                                              y = grid::unit(object@vp_y_position, "npc"),
                                               width = 0.7,
-                                              height = layout_of_plot$size_per_vp,
+                                              height = object@vp_height,
                                               just = c("bottom")))
 
             # draw border if requested
@@ -434,4 +454,3 @@ setMethod(f = "show",
 
             grid::popViewport(1)
 })
-
