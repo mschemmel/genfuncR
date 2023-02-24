@@ -128,13 +128,20 @@ setMethod(f = "show",
             print(object@tracks$gTracks)
 
             # draw annoTrack(s)
-            counter <- 2
-            lapply(object@tracks$aTracks, function(x) {
-              x@vp_y_position <- layout$places_of_vp[counter]
-              x@vp_height <- layout$size_per_vp
-              print(x)
-              counter <<- counter + 1
-            })
+            if (typeof(object@tracks$aTracks) != "list") {
+              object@tracks$aTracks@vp_y_position <- tail(layout$places_of_vp, n = 1)
+              object@tracks$aTracks@vp_height <- layout$size_per_vp
+              print(object@tracks$aTracks)
+            }
+            else {
+              counter <- 2
+              lapply(object@tracks$aTracks, function(x) {
+                x@vp_y_position <- layout$places_of_vp[counter]
+                x@vp_height <- layout$size_per_vp
+                print(x)
+                counter <<- counter + 1
+              })
+            }
 })
 
 #' draw a data track based on data.frame or gff file
