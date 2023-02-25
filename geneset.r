@@ -33,9 +33,9 @@ genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", r
 #' @param angle Angle of text label
 #' @param gp_ Grid parameter like font, style, color, ...
 #' @examples
-#' text_label(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
+#' textLabel(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
 
-text_label <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0, gp_ = NULL) {
+textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
                                       x = grid::unit(x_, "npc"),
                                       y = grid::unit(y_, "npc"),
@@ -83,8 +83,8 @@ prepareAndFilter <- function(dataset,
 #' get coordinates of viewports to draw on
 #' @param length_of_object number of tracks to draw
 #' @examples
-#' get_layout(list(annoTrack, ...))
-get_layout <- function(length_of_object) {
+#' getLayout(list(annoTrack, ...))
+getLayout <- function(length_of_object) {
   coordinates <- list("size_per_vp" = 0.3,
                       "places_of_vp" = 0.5)
 
@@ -111,8 +111,7 @@ geneset <- function(gTracks, aTracks = NULL) {
   .Object <- new("geneset")
   .Object@tracks$gTracks <- gTracks
   .Object@tracks$aTracks <- aTracks
-  .Object@tracks$no_of_tracks <- as.numeric(sum(length(gTracks),
-                                                length(aTracks)))
+  .Object@tracks$no_of_tracks <- sum(length(gTracks), length(aTracks))
 
   return(.Object)
 }
@@ -120,7 +119,7 @@ geneset <- function(gTracks, aTracks = NULL) {
 setMethod(f = "show",
           signature = "geneset",
           definition = function(object) {
-            layout <- get_layout(object@tracks$no_of_tracks)
+            layout <- getLayout(object@tracks$no_of_tracks)
 
             # draw geneTrack
             object@tracks$gTracks@vp_y_position <- layout$places_of_vp[1]
@@ -285,10 +284,8 @@ setMethod(f = "show",
 #' @param axis_label_gp gp object of x axis label
 #' @param border boolean if border visible (default = FALSE)
 #' @param show_values boolean if displayed range should also be printed
-#' @param tracks named list of data tracks (annotations)
-#' @param marker position of highlight annotation
 #' @examples
-#' geneset(gff)
+#' geneTrack(gff)
 
 geneTrack = setClass("geneTrack",
                    slots = list(
@@ -450,13 +447,12 @@ setMethod(f = "show",
                                  at = seq(0, 1, 1 / (length(axis_label) - 1)))
 
                 # add axis label text
-                text_label(x_ = 0.5,
-                           y_ = object@plot_param$axis_label_offset,
-                           w_ = 0.1,
-                           h_ = 0.2,
-                           label_txt = object@plot_param$axis_label_text,
-                           gp_ = object@plot_param$axis_label_gp)
+                textLabel(x_ = 0.5,
+                          y_ = object@plot_param$axis_label_offset,
+                          w_ = 0.1,
+                          h_ = 0.2,
+                          label_txt = object@plot_param$axis_label_text,
+                          gp_ = object@plot_param$axis_label_gp)
             }
-
             grid::popViewport(1)
 })
