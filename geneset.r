@@ -100,11 +100,6 @@ getLayout <- function(length_of_object) {
 #' last(c(1,2,3))
 last <- function(x) return (tail(x, n = 1))
 
-# https://stackoverflow.com/questions/9281323/zip-or-enumerate-in-r
-zip <- function(...) {
-  mapply(list, ..., SIMPLIFY = FALSE)
-}
-
 #' set track specific layout parameter
 #' @param vp_y_position y position of viewport
 #' @param vp_height height of viewport
