@@ -7,9 +7,8 @@
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
 
-genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", reverse_color = "navajowhite3") {
+genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", reverse_color = "navajowhite3", gene_height = 0.15) {
     arrow_head_width <- (x2 - x1) * 0.2 # TODO: make size dynamic
-    gene_height <- 0.15
     y1 <- pos - gene_height
     y2 <- pos + gene_height
 
@@ -52,7 +51,7 @@ textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 
 #' @param st start coordinate of target region
 #' @param en end coordinate of target region
 #' @examples
-#' prepare(gff, "Chr1A", 1000, 2000)
+#' prepareAndFilter(gff, "Chr1A", 1000, 2000)
 
 prepareAndFilter <- function(dataset,
                              chromosome,
@@ -204,18 +203,14 @@ annoTrack <- function(track_file = NULL,
     xmin <- shared$min_value
     xmax <- shared$max_value
     chromosome <- shared$chromosome
-
-    track_file <- prepareAndFilter(track_file,
-                                   chromosome,
-                                   xmin,
-                                   xmax)
+    track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
 
     # assign parameter to object
     .Object@track_param$track_file <- track_file
     .Object@track_param$xmin <- xmin
     .Object@track_param$xmax <- xmax
-    .Object@track_param$scale_label <- yscale_label
-    .Object@track_param$scale_at <- yscale_at
+    .Object@track_param$yscale_label <- yscale_label
+    .Object@track_param$yscale_at <- yscale_at
     .Object@track_param$ymax <- last(yscale_label)
     .Object@track_param$label <- label
     .Object@track_param$label_gp <- label_gp
@@ -228,7 +223,7 @@ annoTrack <- function(track_file = NULL,
     else {
         .Object@track_param$label_orientation <- label_orientation
     }
-    return(.Object)
+    return (.Object)
 }
 
 setMethod(f = "show",
@@ -245,15 +240,15 @@ setMethod(f = "show",
 
             # add track label
             grid::grid.text(object@track_param$label,
-                            x = ifelse(object@track_param$label_orientation == "horizontal", -0.05, -0.1),
+                            x = ifelse(object@track_param$label_orientation == "horizontal", -0.1, -0.1),
                             y = 0.5,
                             just = ifelse(object@track_param$label_orientation == "horizontal", "right", "center"),
                             rot = ifelse(object@track_param$label_orientation == "horizontal", 0, 90),
                             gp = object@track_param$label_gp)
 
             # add yaxis
-            grid::grid.yaxis(label = object@track_param$scale_label,
-                             at = object@track_param$scale_at,
+            grid::grid.yaxis(label = object@track_param$yscale_label,
+                             at = object@track_param$yscale_at,
                              gp = grid::gpar(fontsize = 8))
 
         if (nrow(object@track_param$track_file) != 0) {
@@ -316,7 +311,6 @@ geneTrack <- function(gff_file,
                       upstream = 0,
                       downstream = 0,
                       transparency = 1,
-                      arrow_type = "arrow",
                       gene_height = 1,
                       distance = 1,
                       show_axis = TRUE,
@@ -378,8 +372,8 @@ geneTrack <- function(gff_file,
     reverse_strand_pos <- forward_strand_pos + strand_gap
 
     .Object@plot_param$axis_label_text <- ifelse(!is.null(axis_label_text),
-                                                axis_label_text,
-                                                paste(.Object@gene_param$chromosome, "(bp)"))
+                                                 axis_label_text,
+                                                 paste(.Object@gene_param$chromosome, "(bp)"))
 
     # default params
     .Object@gene_param$forward_strand_pos <- forward_strand_pos
@@ -388,7 +382,6 @@ geneTrack <- function(gff_file,
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
     .Object@gene_param$transparency <- transparency
-    .Object@gene_param$arrow_type <- arrow_type
     .Object@gene_param$gene_height <- gene_height
     .Object@plot_param$min_value <- min_value
     .Object@plot_param$max_value <- max_value
@@ -454,10 +447,9 @@ setMethod(f = "show",
 
             # add axis label
             if (object@plot_param$show_axis) {
-                # set axis label
-                axis_label <- object@plot_param$axis_label
-                grid::grid.xaxis(label = axis_label,
-                                 at = seq(0, 1, 1 / (length(axis_label) - 1)))
+                # add axis label
+                grid::grid.xaxis(label = object@plot_param$axis_label,
+                                 at = seq(0, 1, 1 / (length(object@plot_param$axis_label) - 1)))
 
                 # add axis label text
                 textLabel(x_ = 0.5,
