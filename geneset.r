@@ -100,6 +100,12 @@ getLayout <- function(length_of_object) {
 #' last(c(1,2,3))
 last <- function(x) return (tail(x, n = 1))
 
+#' set track specific layout parameter
+#' @param vp_y_position y position of viewport
+#' @param vp_height height of viewport
+#' @examples
+#' track(...)
+
 track = setClass("track",
                  slots = list(vp_y_position = "numeric",
                               vp_height = "numeric"),
@@ -109,6 +115,12 @@ track = setClass("track",
 
 # make layout and plot accordingly
 shared <- new.env()
+
+#' draw all tracks
+#' @param gTracks geneTrack object to draw
+#' @param aTracks single or list of annotation tracks to draw
+#' @examples
+#' geneset(gTracks, aTracks)
 geneset = setClass("geneset", slots = list(tracks = "ANY"))
 
 # constructor method
