@@ -100,6 +100,11 @@ getLayout <- function(length_of_object) {
 #' last(c(1,2,3))
 last <- function(x) return (tail(x, n = 1))
 
+# https://stackoverflow.com/questions/9281323/zip-or-enumerate-in-r
+zip <- function(...) {
+  mapply(list, ..., SIMPLIFY = FALSE)
+}
+
 #' set track specific layout parameter
 #' @param vp_y_position y position of viewport
 #' @param vp_height height of viewport
@@ -113,7 +118,7 @@ track = setClass("track",
                                   vp_height = 0.3)
 )
 
-# make layout and plot accordingly
+# create new environment to exchange variables
 shared <- new.env()
 
 #' draw all tracks
@@ -150,12 +155,10 @@ setMethod(f = "show",
               print(object@tracks$aTracks)
             }
             else {
-              counter <- 2
-              lapply(object@tracks$aTracks, function(x) {
-                x@vp_y_position <- layout$places_of_vp[counter]
-                x@vp_height <- layout$size_per_vp
-                print(x)
-                counter <<- counter + 1
+              lapply(seq_along(object@tracks$aTracks), function(x) {
+                object@tracks$aTracks[[x]]@vp_y_position <- layout$places_of_vp[-1][[x]]
+                object@tracks$aTracks[[x]]@vp_height <- layout$size_per_vp
+                print(object@tracks$aTracks[[x]])
               })
             }
 })
@@ -283,7 +286,6 @@ setMethod(f = "show",
         }
         grid::popViewport(1)
     })
-
 
 #' draw a set of genes based on data.frame or gff file
 #' @param gff_file data.frame of gff file
@@ -420,7 +422,7 @@ setMethod(f = "show",
                                               y = grid::unit(0.5, "npc"),
                                               width = 1,
                                               height = 1))
-            
+
             # main viewport
             grid::pushViewport(grid::viewport(name = "main",
                                               x = grid::unit(0.5, "npc"),
@@ -454,7 +456,6 @@ setMethod(f = "show",
                    direction = object@gff_file$strand,
                    forward_color = object@gene_param$forward_color,
                    reverse_color = object@gene_param$reverse_color)
-
 
             # add axis label
             if (object@plot_param$show_axis) {
