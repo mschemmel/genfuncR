@@ -1,4 +1,4 @@
-#' plots an arrow in an defined direction representing a single gene
+#' genearrow plots an arrow in an defined direction representing a single gene
 #' @param x1 x1 coordinate
 #' @param x2 x2 coordinate
 #' @param pos positional coordinates of forward and reverse strand
@@ -46,12 +46,11 @@ textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 
     grid::popViewport(1)
 }
 
-#' prepare (order and subset) input data
+#' prepareAndFilter (order and subset) input data
 #' @param dataset data.frame of input
 #' @param chromosome target chromosome
 #' @param st start coordinate of target region
 #' @param en end coordinate of target region
-#' @param transparency alpha value of gene an
 #' @examples
 #' prepare(gff, "Chr1A", 1000, 2000)
 
@@ -77,7 +76,7 @@ prepareAndFilter <- function(dataset,
     if (nrow(dataset) == 0) {
         cat("Input data frame is empty after filtering (", chromosome, ":", st, "-", en, ")\n", sep = "")
     }
-    return(dataset)
+    return (dataset)
 }
 
 #' get coordinates of viewports to draw on
@@ -94,6 +93,12 @@ getLayout <- function(length_of_object) {
   }
   return(coordinates)
 }
+
+#' helper to retrieve last element of vector
+#' @param x vector to get the last element from
+#' @examples
+#' last(c(1,2,3))
+last <- function(x) return (tail(x, n = 1))
 
 track = setClass("track",
                  slots = list(vp_y_position = "numeric",
@@ -128,7 +133,7 @@ setMethod(f = "show",
 
             # draw annoTrack(s)
             if (typeof(object@tracks$aTracks) != "list") {
-              object@tracks$aTracks@vp_y_position <- tail(layout$places_of_vp, n = 1)
+              object@tracks$aTracks@vp_y_position <- last(layout$places_of_vp)
               object@tracks$aTracks@vp_height <- layout$size_per_vp
               print(object@tracks$aTracks)
             }
@@ -201,7 +206,7 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$xmax <- xmax
     .Object@track_param$scale_label <- yscale_label
     .Object@track_param$scale_at <- yscale_at
-    .Object@track_param$ymax <- tail(yscale_label, n = 1)
+    .Object@track_param$ymax <- last(yscale_label)
     .Object@track_param$label <- label
     .Object@track_param$label_gp <- label_gp
     .Object@track_param$track_gp <- track_gp
@@ -346,7 +351,7 @@ geneTrack <- function(gff_file,
     # determine axis label
     axis_label <- pretty(c(min(.Object@gff_file$start - upstream):max(.Object@gff_file$end + downstream)))
     min_value <- axis_label[1]
-    max_value <- tail(axis_label, n = 1)
+    max_value <- last(axis_label)
     shared$min_value <- min_value
     shared$max_value <- max_value
 
