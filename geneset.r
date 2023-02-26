@@ -99,6 +99,13 @@ getLayout <- function(length_of_object) {
 #' last(c(1,2,3))
 last <- function(x) return (tail(x, n = 1))
 
+#' helper to retrieve first element of vector
+#' @param x vector to get the first element from
+#' @examples
+#' first(c(1,2,3))
+first <- function(x) return (x[1])
+
+
 #' set track specific layout parameter
 #' @param vp_y_position y position of viewport
 #' @param vp_height height of viewport
@@ -138,7 +145,7 @@ setMethod(f = "show",
             layout <- getLayout(object@tracks$no_of_tracks)
 
             # draw geneTrack
-            object@tracks$gTracks@vp_y_position <- layout$places_of_vp[1]
+            object@tracks$gTracks@vp_y_position <- first(layout$places_of_vp)
             object@tracks$gTracks@vp_height <- layout$size_per_vp
             print(object@tracks$gTracks)
 
@@ -339,7 +346,7 @@ geneTrack <- function(gff_file,
     if (!is.null(given_chromosome)) {
       if (length(given_chromosome) > 1) {
         warning("Found more than one chromosome identifier, use first provided.")
-        .Object@gene_param$chromosome <- given_chromosome[1]
+        .Object@gene_param$chromosome <- first(given_chromosome)
       }
       else {
         .Object@gene_param$chromosome <- given_chromosome
@@ -353,7 +360,7 @@ geneTrack <- function(gff_file,
 
     # determine axis label
     axis_label <- pretty(c(min(.Object@gff_file$start - upstream):max(.Object@gff_file$end + downstream)))
-    min_value <- axis_label[1]
+    min_value <- first(axis_label)
     max_value <- last(axis_label)
     shared$min_value <- min_value
     shared$max_value <- max_value
