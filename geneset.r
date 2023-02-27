@@ -151,7 +151,7 @@ setMethod(f = "show",
             print(object@tracks$gTracks)
 
             # draw annoTrack(s)
-            if(!is.null(object@tracks$aTracks)) {
+            if (!is.null(object@tracks$aTracks)) {
               if (typeof(object@tracks$aTracks) != "list") {
                 object@tracks$aTracks@vp_y_position <- last(layout$places_of_vp)
                 object@tracks$aTracks@vp_height <- layout$size_per_vp
@@ -188,6 +188,7 @@ annoTrack = setClass("annoTrack",
 annoTrack <- function(track_file = NULL,
                       label = "Track",
                       values = "value",
+                      border = TRUE,
                       label_gp = grid::gpar(fontsize = 10, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
                       label_orientation = "horizontal"
@@ -198,8 +199,7 @@ annoTrack <- function(track_file = NULL,
     # get column with data
     if (values %in% names(track_file)) {
         names(track_file)[names(track_file) == values] <- "value"
-    }
-    else {
+    } else {
         cat("Column ", values, " not present in track file.\n")
         stop()
     }
@@ -225,15 +225,15 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$label <- label
     .Object@track_param$label_gp <- label_gp
     .Object@track_param$track_gp <- track_gp
+    .Object@track_param$border <- border
 
     if (!(label_orientation %in% c("vertical", "horizontal"))) {
         .Object@track_param$label_orientation <- "horizontal"
         cat("DataTrack: ", label, " Unknown label_orientation value. Set to 'horizontal'")
-    }
-    else {
+    } else {
         .Object@track_param$label_orientation <- label_orientation
     }
-    return (.Object)
+    return(.Object)
 }
 
 setMethod(f = "show",
@@ -246,7 +246,8 @@ setMethod(f = "show",
                                               height = object@vp_height - 0.02,
                                               just = c("bottom")))
 
-            grid::grid.rect()
+            # draw border if requested (default)
+            if (object@track_param$border) grid::grid.rect()
 
             # add track label
             grid::grid.text(object@track_param$label,
@@ -338,8 +339,7 @@ geneTrack <- function(gff_file,
     if (show_values) {
         if (nrow(.Object@gff_file) > 100) {
             print(head(.Object@gff_file))
-        }
-        else {
+        } else {
             print(.Object@gff_file)
         }
     }
@@ -348,14 +348,12 @@ geneTrack <- function(gff_file,
     given_chromosome <- unique(.Object@gff_file$chr)
     if (!is.null(given_chromosome)) {
       if (length(given_chromosome) > 1) {
-        warning("Found more than one chromosome identifier, use first provided.")
+        warning("Found more than one chromosome identifier.")
         .Object@gene_param$chromosome <- first(given_chromosome)
-      }
-      else {
+      } else {
         .Object@gene_param$chromosome <- given_chromosome
       }
-    }
-    else {
+    } else {
       warning("No chromosome specified in input data.")
     }
 
