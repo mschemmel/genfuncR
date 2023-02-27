@@ -175,6 +175,7 @@ setMethod(f = "show",
 #' @param label_gp gp object to edit label style
 #' @param track_gp gp object to edit track appearence
 #' @param label_orientation text orientation of track label
+#' @param border draw border around annoTrack viewport
 #' @examples
 #' annoTrack(gff, "Coverage", "line", "firebrick")
 
