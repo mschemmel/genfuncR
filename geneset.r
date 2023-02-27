@@ -171,11 +171,11 @@ setMethod(f = "show",
 #' @param track_file data.frame of gff file
 #' @param label name of the track
 #' @param values column where the actual data is stored (default: value)
+#' @param border draw border around annoTrack viewport
 #' @param ymax max data value for y axis label
 #' @param label_gp gp object to edit label style
 #' @param track_gp gp object to edit track appearence
 #' @param label_orientation text orientation of track label
-#' @param border draw border around annoTrack viewport
 #' @examples
 #' annoTrack(gff, "Coverage", "line", "firebrick")
 
@@ -190,6 +190,7 @@ annoTrack <- function(track_file = NULL,
                       label = "Track",
                       values = "value",
                       border = TRUE,
+                      ymax = NULL,
                       label_gp = grid::gpar(fontsize = 10, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
                       label_orientation = "horizontal"
@@ -208,6 +209,7 @@ annoTrack <- function(track_file = NULL,
     # get min and max of scale
     minscale <- ifelse(min(track_file$value) >= 0, 0, min(track_file$value))
     maxscale <- ifelse(max(track_file$value) >= 0, max(track_file$value), 0)
+    if (!is.null(ymax)) maxscale <- ymax
     yscale_label <- pretty(c(minscale:maxscale))
     yscale_at <- seq(0, 1, 1 / (length(yscale_label) - 1))
 
@@ -220,6 +222,7 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$track_file <- track_file
     .Object@track_param$xmin <- xmin
     .Object@track_param$xmax <- xmax
+    .Object@track_param$max_in_range <- ifelse(is.null(ymax), max(track_file$value), ymax)
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
     .Object@track_param$ymax <- last(yscale_label)
@@ -266,10 +269,9 @@ setMethod(f = "show",
         if (nrow(object@track_param$track_file) != 0) {
             # get maximum value of data as reference
             start_y <- 0
-            max_in_range <- max(object@track_param$track_file$value)
 
             if (!all(object@track_param$track_file$value >= 0)) {
-                max_in_range <- 2
+                object@track_param$max_in_range <- 2
                 start_y <-  0.5
                 # add middle line
                 grid::grid.segments(x0 = grid::unit(0, "npc"),
@@ -283,7 +285,7 @@ setMethod(f = "show",
             grid::grid.segments(x0 = grid::unit(relative(object@track_param$track_file$start), "npc"),
                                 y0 = grid::unit(start_y, "npc"),
                                 x1 = grid::unit(relative(object@track_param$track_file$end), "npc"),
-                                y1 = grid::unit(start_y + (object@track_param$track_file$value / max_in_range), "npc"),
+                                y1 = grid::unit(start_y + (object@track_param$track_file$value / object@track_param$max_in_range), "npc"),
                                 gp = object@track_param$track_gp)
         }
         grid::popViewport(1)
