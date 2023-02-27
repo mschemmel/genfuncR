@@ -60,8 +60,9 @@ prepareAndFilter <- function(dataset,
 
     # check if input file is valid
     if (!is.null(dataset)) {
-        if (!all(c("chr", "start", "end", "strand") %in% colnames(dataset))) {
-            cat("Input has to contain at least 'chr', 'start', 'end' and 'strand' column.\n")
+        needed_columns <- c("chr", "start", "end", "strand")
+        if (!all(needed_columns %in% colnames(dataset))) {
+            cat("Input has to contain at least ", needed_columns, "\n")
             cat("Found colnames: ", colnames(dataset), "\n")
             stop()
         }
@@ -150,17 +151,19 @@ setMethod(f = "show",
             print(object@tracks$gTracks)
 
             # draw annoTrack(s)
-            if (typeof(object@tracks$aTracks) != "list") {
-              object@tracks$aTracks@vp_y_position <- last(layout$places_of_vp)
-              object@tracks$aTracks@vp_height <- layout$size_per_vp
-              print(object@tracks$aTracks)
-            }
-            else {
-              lapply(seq_along(object@tracks$aTracks), function(x) {
-                object@tracks$aTracks[[x]]@vp_y_position <- layout$places_of_vp[-1][[x]]
-                object@tracks$aTracks[[x]]@vp_height <- layout$size_per_vp
-                print(object@tracks$aTracks[[x]])
-              })
+            if(!is.null(object@tracks$aTracks)) {
+              if (typeof(object@tracks$aTracks) != "list") {
+                object@tracks$aTracks@vp_y_position <- last(layout$places_of_vp)
+                object@tracks$aTracks@vp_height <- layout$size_per_vp
+                print(object@tracks$aTracks)
+              }
+              else {
+                lapply(seq_along(object@tracks$aTracks), function(x) {
+                  object@tracks$aTracks[[x]]@vp_y_position <- layout$places_of_vp[-1][[x]]
+                  object@tracks$aTracks[[x]]@vp_height <- layout$size_per_vp
+                  print(object@tracks$aTracks[[x]])
+                })
+              }
             }
 })
 
