@@ -24,7 +24,7 @@ genes <- data.frame(chr = c("Chr1", "Chr1", "Chr1", "Chr1", "Chr1", "Chr1", "Chr
                     strand = c("+", "+", "-", "+", "+", "-", "+"))
 
 # basic example
-geneset(genes, range = c(0,3000), axis_interval = 500, chromosome = "Chr1")
+geneset(geneTrack(genes))
 ```
 
 <p align="center"> Basic example </p>
@@ -33,25 +33,8 @@ geneset(genes, range = c(0,3000), axis_interval = 500, chromosome = "Chr1")
 </p>
 
 ```r
-# more advanced example
-geneset(gff,
-        range = c(0, 3000),
-        axis_interval = 500,
-        chromosome = "Chr1",
-        reverse_color = "gold3",
-        track = list(annoTrack(coverage, "Coverage", "l", "gold3", 100),
-                     annoTrack(mock1, "Mock 1", "l", "deepskyblue4", 100),
-                     annoTrack(mock2, "Mock 2", "l", "deepskyblue4", 100),
-                     annoTrack(mock3, "Mock 3", "l", "deepskyblue4", 100),
-                     annoTrack(treatment1, "Treatment 1", "l", "navajowhite4", 100),
-                     annoTrack(treatment2, "Treatment 2", "l", "navajowhite4", 100),
-                     annoTrack(treatment3, "Treatment 3", "l", "navajowhite4", 100)))
+# more advanced example...coming soon again
 ```
-
-<p align="center"> More advanced example using data tracks</p>
-<p align="center">
-<img src="./img/geneset_data_tracks.png" width="80%">
-</p>
 
 ## dna_to_img
 ```r
