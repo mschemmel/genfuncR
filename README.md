@@ -36,12 +36,11 @@ geneset(geneTrack(genes))
 # more advanced example...coming soon again
 ```
 
-## dna_to_img
+## dna2img
 ```r
 library(grid)
-
 # basic example
-dna_to_img("TCAGCTAGCTATCTAGCTAGCTAGCTACTACGAATCGTTATCGCGCTATACGTATCG")
+dna2img("TCAGCTAGCTATCTAGCTAGCTAGCTACTACGAATCGTTATCGCGCTATACGTATCG")
 ```
 <p align="center"> Basic example </p>
 <p align="center">
