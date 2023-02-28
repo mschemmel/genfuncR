@@ -35,7 +35,8 @@ dna2img <- function(sequence,
                                        T = "#00C0D0",
                                        G = "#FFD403",
                                        C = "#FF9356",
-                                       U = "#d83131")) {
+                                       U = "#d83131",
+                                       N = "gray60")) {
     seq_ <- unlist(strsplit(sequence, split = ""))
     
     # get coordinates for every nucleotide
@@ -46,7 +47,7 @@ dna2img <- function(sequence,
 
     # draw all nucleotides
     grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.9, height = 0.9))
-    lapply(seq_along(seq_), function(x){ 
+    lapply(seq_along(seq_), function(x){
         xpos <- coordx[x]
         ypos <- coordy[x]
         
