@@ -47,7 +47,6 @@ dna2img <- function(sequence,
     # draw all nucleotides
     grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.9, height = 0.9))
     lapply(seq_along(seq_), function(x){ 
-        bcol <- base_colors[[seq_[x]]]
         xpos <- coordx[x]
         ypos <- coordy[x]
         
