@@ -8,7 +8,7 @@
 #' @param angle Angle of text label
 #' @param gp_ Grid parameter like font, style, color, ...
 #' @examples
-#' textLabel(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
+#' textLabel(x_ = 1, y_ = 3, w_ = 1, h_ = 1, label_txt = "Test", angle = 45)
 
 textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
@@ -30,35 +30,35 @@ textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 
 #' @examples
 #' dna_to_img("TATCGATCGATC", list(A = "#9EE362", T = "#00C0D0", G = "#FFD403", C = "#FF9356", U = "#d83131"))
 
-dna2img <- function(sequence, base_colors = NULL) {
+dna2img <- function(sequence,
+                    base_colors = list(A = "#9EE362",
+                                       T = "#00C0D0",
+                                       G = "#FFD403",
+                                       C = "#FF9356",
+                                       U = "#d83131")) {
     seq_ <- unlist(strsplit(sequence, split = ""))
+    
+    # get coordinates for every nucleotide
+    ypositions <- seq(0.95, 0, -0.05)
+    letter_per_line <- 20
+    coordx <- rep(1:letter_per_line, ceiling(length(seq_)/letter_per_line))[1:length(seq_)] / letter_per_line
+    coordy <- rep(ypositions[1:ceiling(length(seq_)/letter_per_line)], each = letter_per_line)[1:length(seq_)]
 
-    if(is.null(base_colors)) {
-        base_colors <- list(A = "#9EE362", T = "#00C0D0", G = "#FFD403", C = "#FF9356", U = "#d83131")
-    }
-
-    # define some constants
-    ypos <- 0.95          # starting point
-    ypos_spacer <- 0.05    # spacer in y direction
-    xpos_spacer <- 20      # spacer in x direction
-
+    # draw all nucleotides
     grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.9, height = 0.9))
-    count <- 1
-    for (i in seq_) {
-        bcol <- unlist(unname(base_colors[i]))
-        xpos <- count / xpos_spacer
-        if (xpos == 1) {
-            count <- 1
-            xpos <- count / xpos_spacer
-            ypos <- ypos - ypos_spacer
-        }
-        textLabel(label_txt = as.character(i),
+    lapply(seq_along(seq_), function(x){ 
+        bcol <- base_colors[[seq_[x]]]
+        xpos <- coordx[x]
+        ypos <- coordy[x]
+        
+        textLabel(label_txt = seq_[x],
                   x_ = xpos,
                   y_ = ypos,
                   w_ = 0.01,
                   h_ = 0.1,
-                  gp_ = grid::gpar(fontsize = 12, fontface = "bold", col = bcol))
-        #grid::pushViewport(grid::viewport(x = x_, y = y_, width = 0.01, height = 0.1))
-        count <- count + 1
-    }
+                  gp_ = grid::gpar(fontsize = 12,
+                                   fontface = "bold",
+                                   col = base_colors[[seq_[x]]]))
+        })
+    grid::popViewport(1)
 }
