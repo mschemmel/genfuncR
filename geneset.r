@@ -124,18 +124,18 @@ track = setClass("track",
 shared <- new.env()
 
 #' draw all tracks
-#' @param gTracks geneTrack object to draw
-#' @param aTracks single or list of annotation tracks to draw
+#' @param locus geneTrack object to draw
+#' @param annotation single or list of annotation tracks to draw
 #' @examples
-#' geneset(gTracks, aTracks)
+#' geneset(locus, annotation)
 geneset = setClass("geneset", slots = list(tracks = "ANY"))
 
 # constructor method
-geneset <- function(gTracks, aTracks = NULL) {
+geneset <- function(locus, annotation = NULL) {
   .Object <- new("geneset")
-  .Object@tracks$gTracks <- gTracks
-  .Object@tracks$aTracks <- aTracks
-  .Object@tracks$no_of_tracks <- sum(length(gTracks), length(aTracks))
+  .Object@tracks$locus <- locus
+  .Object@tracks$annotation <- annotation
+  .Object@tracks$no_of_tracks <- sum(length(locus), length(annotation))
 
   return(.Object)
 }
@@ -146,22 +146,22 @@ setMethod(f = "show",
             layout <- getLayout(object@tracks$no_of_tracks)
 
             # draw geneTrack
-            object@tracks$gTracks@vp_y_position <- first(layout$places_of_vp)
-            object@tracks$gTracks@vp_height <- layout$size_per_vp
-            print(object@tracks$gTracks)
+            object@tracks$locus@vp_y_position <- first(layout$places_of_vp)
+            object@tracks$locus@vp_height <- layout$size_per_vp
+            print(object@tracks$locus)
 
             # draw annoTrack(s)
-            if (!is.null(object@tracks$aTracks)) {
-              if (typeof(object@tracks$aTracks) != "list") {
-                object@tracks$aTracks@vp_y_position <- last(layout$places_of_vp)
-                object@tracks$aTracks@vp_height <- layout$size_per_vp
-                print(object@tracks$aTracks)
+            if (!is.null(object@tracks$annotation)) {
+              if (typeof(object@tracks$annotation) != "list") {
+                object@tracks$annotation@vp_y_position <- last(layout$places_of_vp)
+                object@tracks$annotation@vp_height <- layout$size_per_vp
+                print(object@tracks$annotation)
               }
               else {
-                lapply(seq_along(object@tracks$aTracks), function(x) {
-                  object@tracks$aTracks[[x]]@vp_y_position <- layout$places_of_vp[-1][[x]]
-                  object@tracks$aTracks[[x]]@vp_height <- layout$size_per_vp
-                  print(object@tracks$aTracks[[x]])
+                lapply(seq_along(object@tracks$annotation), function(x) {
+                  object@tracks$annotation[[x]]@vp_y_position <- layout$places_of_vp[-1][[x]]
+                  object@tracks$annotation[[x]]@vp_height <- layout$size_per_vp
+                  print(object@tracks$annotation[[x]])
                 })
               }
             }
