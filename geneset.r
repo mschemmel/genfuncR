@@ -115,9 +115,13 @@ first <- function(x) return (x[1])
 
 track = setClass("track",
                  slots = list(vp_y_position = "numeric",
-                              vp_height = "numeric"),
+                              vp_height = "numeric",
+                              upstream = "numeric",
+                              downstream = "numeric"),
                  prototype = list(vp_y_position = 0,
-                                  vp_height = 0.3)
+                                  vp_height = 0.3,
+                                  upstream = 10,
+                                  downstream = 10)
 )
 
 # create new environment to exchange variables
@@ -207,15 +211,16 @@ annoTrack <- function(track_file = NULL,
     }
 
     # get min and max of scale
-    minscale <- ifelse(min(track_file$value) >= 0, 0, min(track_file$value))
-    maxscale <- ifelse(max(track_file$value) >= 0, max(track_file$value), 0)
-    if (!is.null(ymax)) maxscale <- ymax
-    yscale_label <- pretty(c(minscale:maxscale))
+    yminscale <- ifelse(min(track_file$value) >= 0, 0, min(track_file$value))
+    ymaxscale <- ifelse(max(track_file$value) >= 0, max(track_file$value), 0)
+    if (!is.null(ymax)) ymaxscale <- ymax
+    yscale_label <- pretty(c(yminscale:ymaxscale))
     yscale_at <- seq(0, 1, 1 / (length(yscale_label) - 1))
 
     xmin <- shared$min_value
     xmax <- shared$max_value
     chromosome <- shared$chromosome
+    
     track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
 
     # assign parameter to object
@@ -312,18 +317,16 @@ setMethod(f = "show",
 
 geneTrack = setClass("geneTrack",
                    slots = list(
-                        gff_file = "ANY",
+                        track_file = "ANY",
                         gene_param = "list",
                         plot_param = "list"
                    ),
                    contains = "track"
 )
 # constructor method
-geneTrack <- function(gff_file,
+geneTrack <- function(track_file,
                       forward_color = "darkslategray",
                       reverse_color = "navajowhite3",
-                      upstream = 0,
-                      downstream = 0,
                       transparency = 1,
                       gene_height = 1,
                       distance = 1,
@@ -338,17 +341,17 @@ geneTrack <- function(gff_file,
     .Object <- new("geneTrack")
 
     # assign data to object
-    .Object@gff_file <- gff_file
+    .Object@track_file <- track_file
     if (show_values) {
-        if (nrow(.Object@gff_file) > 100) {
-            print(head(.Object@gff_file))
+        if (nrow(.Object@track_file) > 100) {
+            print(head(.Object@track_file))
         } else {
-            print(.Object@gff_file)
+            print(.Object@track_file)
         }
     }
 
     # check for unique chromosome label
-    given_chromosome <- unique(.Object@gff_file$chr)
+    given_chromosome <- unique(.Object@track_file$chr)
     if (!is.null(given_chromosome)) {
       if (length(given_chromosome) > 1) {
         warning("Found more than one chromosome identifier.")
@@ -363,7 +366,7 @@ geneTrack <- function(gff_file,
     shared$chromosome <- given_chromosome
 
     # determine axis label
-    axis_label <- pretty(c(min(.Object@gff_file$start - upstream):max(.Object@gff_file$end + downstream)))
+    axis_label <- pretty(c(min(.Object@track_file$start - .Object@upstream):max(.Object@track_file$end + .Object@downstream)))
     min_value <- first(axis_label)
     max_value <- last(axis_label)
     shared$min_value <- min_value
@@ -447,12 +450,12 @@ setMethod(f = "show",
 
             # add all genes/transcripts
             mapply(genearrow,
-                   x1 = grid::unit(relative(object@gff_file$start), "npc"),
-                   x2 = grid::unit(relative(object@gff_file$end), "npc"),
-                   pos = ifelse(object@gff_file$strand == "+",
+                   x1 = grid::unit(relative(object@track_file$start), "npc"),
+                   x2 = grid::unit(relative(object@track_file$end), "npc"),
+                   pos = ifelse(object@track_file$strand == "+",
                                 object@gene_param$reverse_strand_pos,
                                 object@gene_param$forward_strand_pos),
-                   direction = object@gff_file$strand,
+                   direction = object@track_file$strand,
                    forward_color = object@gene_param$forward_color,
                    reverse_color = object@gene_param$reverse_color)
 
