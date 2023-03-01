@@ -106,6 +106,28 @@ last <- function(x) return (tail(x, n = 1))
 #' first(c(1,2,3))
 first <- function(x) return (x[1])
 
+#' calculate y scale labels of annotation tracks
+#' @param x data frame to infer max and min values from
+#' @param threshold maximal y value for reference
+#' @examples
+#' getAnnoYScale(dat, threshold = 10)
+
+getAnnoYScale <- function(x, threshold = NULL) {
+  # get min and max of y scale of annoTrack
+  yMinScale <- ifelse(min(x$value) >= 0, 0, min(x$value))
+  yMaxScale <- ifelse(max(x$value) >= 0, max(x$value), 0)
+  if (!is.null(threshold)) yMaxScale <- threshold
+  yScaleLabel <- pretty(c(yMinScale:yMaxScale))
+  return(yScaleLabel)
+}
+
+#' calculate y scale breaks of annotation tracks
+#' @param x vector of y scale labels to infer breaks
+#' @examples
+#' getAnnoYBreaks(c(0:10))
+getAnnoYBreaks <- function(x) {
+  return(seq(0, 1, 1 / (length(x) - 1)))
+}
 
 #' set track specific layout parameter
 #' @param vp_y_position y position of viewport
@@ -211,12 +233,10 @@ annoTrack <- function(track_file = NULL,
     }
 
     # get min and max of scale
-    yminscale <- ifelse(min(track_file$value) >= 0, 0, min(track_file$value))
-    ymaxscale <- ifelse(max(track_file$value) >= 0, max(track_file$value), 0)
-    if (!is.null(ymax)) ymaxscale <- ymax
-    yscale_label <- pretty(c(yminscale:ymaxscale))
-    yscale_at <- seq(0, 1, 1 / (length(yscale_label) - 1))
+    yscale_label <- getAnnoYScale(track_file, ymax)
+    yscale_at <- getAnnoYBreaks(yscale_label)
 
+    # set environment variables
     xmin <- shared$min_value
     xmax <- shared$max_value
     chromosome <- shared$chromosome
