@@ -137,13 +137,9 @@ getAnnoYBreaks <- function(x) {
 
 track = setClass("track",
                  slots = list(vp_y_position = "numeric",
-                              vp_height = "numeric",
-                              upstream = "numeric",
-                              downstream = "numeric"),
+                              vp_height = "numeric"),
                  prototype = list(vp_y_position = 0,
-                                  vp_height = 0.3,
-                                  upstream = 10,
-                                  downstream = 10)
+                                  vp_height = 0.3)
 )
 
 # create new environment to exchange variables
@@ -340,6 +336,8 @@ geneTrack = setClass("geneTrack",
 geneTrack <- function(track_file,
                       forward_color = "darkslategray",
                       reverse_color = "navajowhite3",
+                      upstream = 10,
+                      downstream = 10,
                       transparency = 1,
                       gene_height = 1,
                       distance = 1,
@@ -377,7 +375,7 @@ geneTrack <- function(track_file,
     shared$chromosome <- given_chromosome
 
     # determine axis label
-    axis_label <- pretty(c(min(.Object@track_file$start - .Object@upstream):max(.Object@track_file$end + .Object@downstream)))
+    axis_label <- pretty(c(min(.Object@track_file$start - upstream):max(.Object@track_file$end + downstream)))
     min_value <- first(axis_label)
     max_value <- last(axis_label)
     shared$min_value <- min_value
