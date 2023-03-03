@@ -80,15 +80,15 @@ prepareAndFilter <- function(dataset,
 }
 
 #' get coordinates of viewports to draw on
-#' @param x number of tracks to draw
+#' @param length_of_object number of tracks to draw
 #' @examples
 #' getLayout(list(annoTrack, ...))
-getLayout <- function(x) {
+getLayout <- function(length_of_object) {
   coordinates <- list("size_per_vp" = 0.3,
                       "places_of_vp" = 0.5)
 
-  if (x != 1) {
-    coordinates$size_per_vp <- 0.85 / x
+  if (length_of_object != 1) {
+    coordinates$size_per_vp <- 0.85 / length_of_object
     coordinates$places_of_vp <- head(seq(0.15, 1, coordinates$size_per_vp), n = -1)
   }
   return(coordinates)
@@ -141,6 +141,7 @@ track = setClass("track",
                  prototype = list(vp_y_position = 0.5,
                                   vp_height = 0.3)
 )
+
 # create new environment to exchange variables
 shared <- new.env()
 
@@ -149,7 +150,6 @@ shared <- new.env()
 #' @param annotation single or list of annoTracks to draw
 #' @examples
 #' geneset(locus, annotation)
-
 geneset = setClass("geneset", slots = list(tracks = "ANY"))
 
 # constructor method
@@ -158,6 +158,7 @@ geneset <- function(locus, annotation = NULL) {
   .Object@tracks$locus <- locus
   .Object@tracks$annotation <- annotation
   .Object@tracks$no_of_tracks <- sum(length(locus), length(annotation))
+
   return(.Object)
 }
 
@@ -227,14 +228,23 @@ annoTrack <- function(track_file = NULL,
         stop()
     }
 
+    # get min and max of scale
+    yscale_label <- getAnnoYScale(track_file, ymax)
+    yscale_at <- getAnnoYBreaks(yscale_label)
+
+    # set environment variables
+    xmin <- shared$min_value
+    xmax <- shared$max_value
+    chromosome <- shared$chromosome
+
     # assign parameter to object
-    .Object@track_param$track_file <- prepareAndFilter(track_file, shared$chromosome, shared$min_value, shared$max_value)
-    .Object@track_param$xmin <- shared$min_value
-    .Object@track_param$xmax <- shared$max_value
+    .Object@track_param$track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
+    .Object@track_param$xmin <- xmin
+    .Object@track_param$xmax <- xmax
     .Object@track_param$max_in_range <- ifelse(is.null(ymax), max(track_file$value), ymax)
-    .Object@track_param$yscale_label <- getAnnoYScale(track_file, ymax)
-    .Object@track_param$yscale_at <- getAnnoYBreaks(yscale_label)
-    .Object@track_param$ymax <- last(getAnnoYScale(track_file, ymax))
+    .Object@track_param$yscale_label <- yscale_label
+    .Object@track_param$yscale_at <- yscale_at
+    .Object@track_param$ymax <- last(yscale_label)
     .Object@track_param$start_y <- 0
     .Object@track_param$label <- label
     .Object@track_param$label_gp <- label_gp
@@ -338,6 +348,7 @@ geneTrack <- function(track_file,
                       border = FALSE,
                       show_values = FALSE
                       ) {
+
 
     .Object <- new("geneTrack")
     # assign data to object
