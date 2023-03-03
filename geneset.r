@@ -138,7 +138,7 @@ getAnnoYBreaks <- function(x) {
 track = setClass("track",
                  slots = list(vp_y_position = "numeric",
                               vp_height = "numeric"),
-                 prototype = list(vp_y_position = 0,
+                 prototype = list(vp_y_position = 0.5,
                                   vp_height = 0.3)
 )
 
@@ -289,7 +289,7 @@ setMethod(f = "show",
         if (nrow(object@track_param$track_file) != 0) {
             if (!all(object@track_param$track_file$value >= 0)) {
                 object@track_param$max_in_range <- 2
-                object@track_param$start_y <-  0.5
+                object@track_param$start_y <- 0.5
                 # add middle line
                 grid::grid.segments(x0 = grid::unit(0, "npc"),
                                     y0 = grid::unit(object@track_param$start_y, "npc"),
@@ -349,8 +349,8 @@ geneTrack <- function(track_file,
                       show_values = FALSE
                       ) {
 
-    .Object <- new("geneTrack")
 
+    .Object <- new("geneTrack")
     # assign data to object
     .Object@track_file <- track_file
     if (show_values) {
