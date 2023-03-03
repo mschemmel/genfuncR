@@ -114,8 +114,8 @@ first <- function(x) return (x[1])
 
 getAnnoYScale <- function(x, threshold = NULL) {
   # get min and max of y scale of annoTrack
-  yMinScale <- ifelse(min(x$value) >= 0, 0, min(x$value))
-  yMaxScale <- ifelse(max(x$value) >= 0, max(x$value), 0)
+  yMinScale <- ifelse(min(x) >= 0, 0, min(x))
+  yMaxScale <- ifelse(max(x) >= 0, max(x), 0)
   if (!is.null(threshold)) {
     yMaxScale <- ifelse(threshold < yMaxScale, yMaxScale,threshold)
   }
@@ -231,7 +231,7 @@ annoTrack <- function(track_file = NULL,
     }
 
     # get min and max of scale
-    yscale_label <- getAnnoYScale(track_file, ymax)
+    yscale_label <- getAnnoYScale(track_file$value, ymax)
     yscale_at <- getAnnoYBreaks(yscale_label)
 
     # get environment variables
