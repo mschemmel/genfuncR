@@ -217,7 +217,7 @@ annoTrack <- function(track_file = NULL,
                       ymax = NULL,
                       label_gp = grid::gpar(fontsize = 12, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
-                      label_orientation = "horizontal"
+                      label_orientation = "h"
                       ) {
 
     .Object <- new("annoTrack")
@@ -251,13 +251,9 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$label_gp <- label_gp
     .Object@track_param$track_gp <- track_gp
     .Object@track_param$border <- border
-
-    if (!(label_orientation %in% c("vertical", "horizontal"))) {
-        .Object@track_param$label_orientation <- "horizontal"
-        cat("DataTrack: ", label, " Unknown label_orientation value. Set to 'horizontal'")
-    } else {
-        .Object@track_param$label_orientation <- label_orientation
-    }
+    .Object@track_param$label_orientation <- ifelse(!(label_orientation %in% c("h", "v")),
+                                                    "h",
+                                                    label_orientation)
     return(.Object)
 }
 
@@ -278,8 +274,8 @@ setMethod(f = "show",
             grid::grid.text(object@track_param$label,
                             x = -0.1,
                             y = 0.5,
-                            just = ifelse(object@track_param$label_orientation == "horizontal", "right", "center"),
-                            rot = ifelse(object@track_param$label_orientation == "horizontal", 0, 90),
+                            just = ifelse(object@track_param$label_orientation == "h", "right", "center"),
+                            rot = ifelse(object@track_param$label_orientation == "h", 0, 90),
                             gp = object@track_param$label_gp)
 
             # add yaxis
