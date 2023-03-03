@@ -80,15 +80,15 @@ prepareAndFilter <- function(dataset,
 }
 
 #' get coordinates of viewports to draw on
-#' @param length_of_object number of tracks to draw
+#' @param x number of tracks to draw
 #' @examples
 #' getLayout(list(annoTrack, ...))
-getLayout <- function(length_of_object) {
+getLayout <- function(x) {
   coordinates <- list("size_per_vp" = 0.3,
                       "places_of_vp" = 0.5)
 
-  if (length_of_object != 1) {
-    coordinates$size_per_vp <- 0.85 / length_of_object
+  if (x != 1) {
+    coordinates$size_per_vp <- 0.85 / x
     coordinates$places_of_vp <- head(seq(0.15, 1, coordinates$size_per_vp), n = -1)
   }
   return(coordinates)
@@ -116,7 +116,9 @@ getAnnoYScale <- function(x, threshold = NULL) {
   # get min and max of y scale of annoTrack
   yMinScale <- ifelse(min(x$value) >= 0, 0, min(x$value))
   yMaxScale <- ifelse(max(x$value) >= 0, max(x$value), 0)
-  if (!is.null(threshold)) yMaxScale <- threshold
+  if (!is.null(threshold)) {
+    yMaxScale <- ifelse(threshold < yMaxScale, yMaxScale,threshold)
+  }
   yScaleLabel <- pretty(c(yMinScale:yMaxScale))
   return(yScaleLabel)
 }
@@ -241,7 +243,6 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
     .Object@track_param$xmin <- xmin
     .Object@track_param$xmax <- xmax
-    .Object@track_param$max_in_range <- ifelse(is.null(ymax), max(track_file$value), ymax)
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
     .Object@track_param$ymax <- last(yscale_label)
@@ -288,7 +289,6 @@ setMethod(f = "show",
 
         if (nrow(object@track_param$track_file) != 0) {
             if (!all(object@track_param$track_file$value >= 0)) {
-                object@track_param$max_in_range <- 2
                 object@track_param$start_y <- 0.5
                 # add middle line
                 grid::grid.segments(x0 = grid::unit(0, "npc"),
@@ -302,7 +302,7 @@ setMethod(f = "show",
             grid::grid.segments(x0 = grid::unit(relative(object@track_param$track_file$start), "npc"),
                                 y0 = grid::unit(object@track_param$start_y, "npc"),
                                 x1 = grid::unit(relative(object@track_param$track_file$end), "npc"),
-                                y1 = grid::unit(object@track_param$start_y + (object@track_param$track_file$value / object@track_param$max_in_range), "npc"),
+                                y1 = grid::unit(object@track_param$start_y + (object@track_param$track_file$value / object@track_param$ymax), "npc"),
                                 gp = object@track_param$track_gp)
         }
         grid::popViewport(1)
