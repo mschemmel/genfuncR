@@ -112,12 +112,23 @@ first <- function(x) return (x[1])
 #' @examples
 #' getAnnoYScale(dat, threshold = 10)
 
-getAnnoYScale <- function(x, threshold = NULL) {
+getAnnoYScale <- function(x, range_ = NULL) {
   # get min and max of y scale of annoTrack
-  yMinScale <- ifelse(min(x) >= 0, 0, min(x))
-  yMaxScale <- ifelse(max(x) >= 0, max(x), 0)
-  if (!is.null(threshold)) {
-    yMaxScale <- ifelse(threshold < yMaxScale, yMaxScale,threshold)
+  #yMinScale <- ifelse(min(x) >= 0, 0, min(x))
+  #yMaxScale <- ifelse(max(x) >= 0, max(x), 0)
+
+  if (length(x) == 1) {
+    yMinScale <- 0
+    yMaxScale <- x
+  } else { 
+    yMinScale <- min(x)
+    yMaxScale <- max(x)
+  }
+
+  # test if user provided specific range
+  if (!is.null(range_)) {
+    yMinScale <- range_[1]
+    yMaxScale <- range_[2]
   }
   yScaleLabel <- pretty(c(yMinScale:yMaxScale))
   return(yScaleLabel)
@@ -214,7 +225,7 @@ annoTrack <- function(track_file = NULL,
                       label = "Track",
                       values = "value",
                       border = TRUE,
-                      ymax = NULL,
+                      yrange = NULL,
                       label_gp = grid::gpar(fontsize = 12, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
                       label_orientation = "h"
@@ -231,7 +242,7 @@ annoTrack <- function(track_file = NULL,
     }
 
     # get min and max of scale
-    yscale_label <- getAnnoYScale(track_file$value, ymax)
+    yscale_label <- getAnnoYScale(track_file$value, yrange)
     yscale_at <- getAnnoYBreaks(yscale_label)
 
     # get environment variables
@@ -245,8 +256,8 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$xmax <- xmax
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
-    .Object@track_param$ymax <- last(yscale_label)
-    .Object@track_param$start_y <- 0
+    .Object@track_param$ymax <- diff(range(yscale_label))
+    .Object@track_param$start_y <- yscale_at[which(yscale_label == 0)]
     .Object@track_param$label <- label
     .Object@track_param$label_gp <- label_gp
     .Object@track_param$track_gp <- track_gp
@@ -284,15 +295,12 @@ setMethod(f = "show",
                              gp = grid::gpar(fontsize = 8))
 
         if (nrow(object@track_param$track_file) != 0) {
-            if (!all(object@track_param$track_file$value >= 0)) {
-                object@track_param$start_y <- 0.5
-                # add middle line
-                grid::grid.segments(x0 = grid::unit(0, "npc"),
-                                    y0 = grid::unit(object@track_param$start_y, "npc"),
-                                    x1 = grid::unit(1, "npc"),
-                                    y1 = grid::unit(object@track_param$start_y,  "npc"),
-                                    gp = grid::gpar(col = "gray30"))
-            }
+            # add middle line
+            grid::grid.segments(x0 = grid::unit(0, "npc"),
+                                y0 = grid::unit(object@track_param$start_y, "npc"),
+                                x1 = grid::unit(1, "npc"),
+                                y1 = grid::unit(object@track_param$start_y,  "npc"),
+                                gp = grid::gpar(col = "gray30"))
 
             # which region should be displayed
             grid::grid.segments(x0 = grid::unit(relative(object@track_param$track_file$start), "npc"),
