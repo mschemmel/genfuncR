@@ -234,10 +234,10 @@ annoTrack <- function(track_file = NULL,
     yscale_label <- getAnnoYScale(track_file, ymax)
     yscale_at <- getAnnoYBreaks(yscale_label)
 
-    # set environment variables
-    xmin <- shared$min_value
-    xmax <- shared$max_value
-    chromosome <- shared$chromosome
+    # get environment variables
+    xmin <- get("min_value", shared)
+    xmax <- get("max_value", shared)
+    chromosome <- get("chromosome", shared)
 
     # assign parameter to object
     .Object@track_param$track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
