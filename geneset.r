@@ -368,14 +368,14 @@ geneTrack <- function(track_file,
       }
     }
 
-    shared$chromosome <- given_chromosome
-
     # determine axis label
     axis_label <- pretty(c(min(.Object@track_file$start - upstream):max(.Object@track_file$end + downstream)))
     min_value <- first(axis_label)
     max_value <- last(axis_label)
-    shared$min_value <- min_value
-    shared$max_value <- max_value
+    
+    assign("min_value", min_value, shared)
+    assign("max_value", max_value, shared)
+    assign("chromosome", given_chromosome, shared)
 
     # overall size of genebox
     gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
