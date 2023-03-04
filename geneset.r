@@ -114,24 +114,12 @@ first <- function(x) return (x[1])
 
 getAnnoYScale <- function(x, range_ = NULL) {
   # get min and max of y scale of annoTrack
-  #yMinScale <- ifelse(min(x) >= 0, 0, min(x))
-  #yMaxScale <- ifelse(max(x) >= 0, max(x), 0)
-
-  if (length(x) == 1) {
-    yMinScale <- 0
-    yMaxScale <- x
-  } else { 
-    yMinScale <- min(x)
-    yMaxScale <- max(x)
-  }
-
+  interval <- c(min(x), max(x))
+  if (length(x) == 1) interval <- c(0, x)
+  
   # test if user provided specific range
-  if (!is.null(range_)) {
-    yMinScale <- range_[1]
-    yMaxScale <- range_[2]
-  }
-  yScaleLabel <- pretty(c(yMinScale:yMaxScale))
-  return(yScaleLabel)
+  if (!is.null(range_)) interval <- c(range_[1], range_[2])
+  return(pretty(interval))
 }
 
 #' calculate y scale breaks of annotation tracks
