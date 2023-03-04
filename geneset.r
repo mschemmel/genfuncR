@@ -130,6 +130,18 @@ getAnnoYBreaks <- function(x) {
   return(seq(0, 1, 1 / (length(x) - 1)))
 }
 
+#' print values of tracks
+#' @param object data.frame containing data
+#' @examples
+#' showValues(object)
+
+showValues <- function(object) {
+  ifelse(nrow(object) > 100,
+         print(head(object)),
+         print(object)
+  )
+}
+
 #' set track specific layout parameter
 #' @param vp_y_position y position of viewport
 #' @param vp_height height of viewport
@@ -216,7 +228,8 @@ annoTrack <- function(track_file = NULL,
                       yrange = NULL,
                       label_gp = grid::gpar(fontsize = 12, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
-                      label_orientation = "h"
+                      label_orientation = "h",
+                      show_values = FALSE
                       ) {
 
     .Object <- new("annoTrack")
@@ -240,6 +253,7 @@ annoTrack <- function(track_file = NULL,
 
     # assign parameter to object
     .Object@track_param$track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
+    if(show_values) showValues(.Object@track_param$track_file)
     .Object@track_param$xmin <- xmin
     .Object@track_param$xmax <- xmax
     .Object@track_param$yscale_label <- yscale_label
@@ -341,18 +355,12 @@ geneTrack <- function(track_file,
                       show_values = FALSE
                       ) {
 
-
     .Object <- new("geneTrack")
+    
     # assign data to object
     .Object@track_file <- track_file
-    if (show_values) {
-        if (nrow(.Object@track_file) > 100) {
-            print(head(.Object@track_file))
-        } else {
-            print(.Object@track_file)
-        }
-    }
-
+    if (show_values) showValues(.Object@track_file)
+    
     # check for unique chromosome label
     given_chromosome <- unique(.Object@track_file$chr)
     if (!is.null(given_chromosome)) {
