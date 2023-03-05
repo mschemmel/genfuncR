@@ -119,7 +119,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   
   # test if user provided specific range
   if (!is.null(range_)) {
-    if (all(inRange(x, range_[1], range_[2]))) {
+    if (inRange(x, range_[1], range_[2])) {
       interval <- c(range_[1], range_[2])
     } else {
       warning("Specified yrange does not cover all values. Apply data range")
@@ -143,7 +143,7 @@ getAnnoYBreaks <- function(x) {
 #' @examples
 #' inRange(10,5,15)
 
-inRange <- function(x, min_, max_) { return(x >= min_ & x <= max_) }
+inRange <- function(x, min_, max_) { return(all(x >= min_ & x <= max_)) }
 
 #' print values of tracks
 #' @param object data.frame containing data
