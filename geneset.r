@@ -120,7 +120,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   # test if user provided specific range
   if (!is.null(range_)) {
     if (inRange(x, range_[1], range_[2])) {
-      interval <- c(range_[1], range_[2])
+      interval <- range_
     } else {
       warning("Specified yrange does not cover all values. Apply data range")
     }
