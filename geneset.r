@@ -118,13 +118,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   if (length(x) == 1) interval <- c(0, x)
   
   # test if user provided specific range
-  if (!is.null(range_)) {
-    if (inRange(x, range_[1], range_[2])) {
-      interval <- range_
-    } else {
-      warning("Specified yrange does not cover all values. Apply data range")
-    }
-  }
+  if (!is.null(range_)) { interval <- range_  }
   return(pretty(interval))
 }
 
@@ -323,7 +317,9 @@ setMethod(f = "show",
             grid::grid.segments(x0 = grid::unit(relative(object@track_param$track_file$start), "npc"),
                                 y0 = grid::unit(object@track_param$start_y, "npc"),
                                 x1 = grid::unit(relative(object@track_param$track_file$end), "npc"),
-                                y1 = grid::unit(object@track_param$start_y + (object@track_param$track_file$value / object@track_param$ymax), "npc"),
+                                y1 = ifelse(object@track_param$track_file$value < object@track_param$ymax,
+                                            grid::unit(object@track_param$start_y + (object@track_param$track_file$value / object@track_param$ymax), "npc"),
+                                            grid::unit(1, "npc")),
                                 gp = object@track_param$track_gp)
         }
         grid::popViewport(1)
