@@ -193,7 +193,6 @@ setMethod(f = "show",
           signature = "geneset",
           definition = function(object) {
             layout <- getLayout(object@tracks$no_of_tracks)
-            
             # draw geneTrack
             object@tracks$locus@layout["vp_y_position"] <- first(layout$places_of_vp)
             object@tracks$locus@layout["vp_height"] <- layout$size_per_vp
@@ -335,8 +334,6 @@ setMethod(f = "show",
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
 #' @param reverse_color color of genes in reverse direction (default = "darkslategray")
 #' @param transparency alpha value of gene annotation box
-#' @param gene_height height in percent (0-1) of gene box (default = 1)
-#' @param distance distance between forward and reverse strand in percent (0-1) (default = 1)
 #' @param show_axis show axis or not (default = TRUE)
 #' @param axis_label_text text of x axis label (default: "Region (bp)")
 #' @param axis_label_offset offset of label (default: -0.5)
@@ -361,8 +358,6 @@ geneTrack <- function(track_file,
                       upstream = 10,
                       downstream = 10,
                       transparency = 1,
-                      gene_height = 1,
-                      distance = 1,
                       show_axis = TRUE,
                       axis_label_text = NULL,
                       axis_label_offset = -0.5,
@@ -397,17 +392,9 @@ geneTrack <- function(track_file,
     assign("max_value", max_value, shared)
     assign("chromosome", given_chromosome, shared)
 
-    # overall size of genebox
-    gene_box_height <- ifelse(gene_height > 0 & gene_height <= 1,
-                              0.2 * gene_height,
-                              stop("Height of gene box (gene_height) have to be between 0 and 1."))
-    .Object@gene_param$gene_box_height <- gene_box_height
-
     # position of forward and reverse strand
     forward_strand_pos <- 0.2
-    strand_gap <- ifelse(distance >= 0 & distance <= 1,
-                         gene_box_height + ((forward_strand_pos + gene_box_height) * distance),
-                         stop("Distance between forward and reverse strand have to be between 0 and 1."))
+    strand_gap <- 0.6
     reverse_strand_pos <- forward_strand_pos + strand_gap
 
     .Object@plot_param$axis_label_text <- ifelse(!is.null(axis_label_text),
@@ -417,11 +404,9 @@ geneTrack <- function(track_file,
     # default params
     .Object@gene_param$forward_strand_pos <- forward_strand_pos
     .Object@gene_param$reverse_strand_pos <- reverse_strand_pos
-    .Object@gene_param$distance <- distance
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
     .Object@gene_param$transparency <- transparency
-    .Object@gene_param$gene_height <- gene_height
     .Object@plot_param$min_value <- min_value
     .Object@plot_param$max_value <- max_value
     .Object@plot_param$show_axis <- show_axis
