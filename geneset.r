@@ -158,10 +158,15 @@ showValues <- function(object) {
 #' track(...)
 
 track = setClass("track",
-                 slots = list(vp_y_position = "numeric",
-                              vp_height = "numeric"),
-                 prototype = list(vp_y_position = 0.5,
-                                  vp_height = 0.3)
+                 slots = list(
+                            layout = "list"
+                 ),
+                 prototype = list(
+                              layout = list(
+                                          vp_y_position = 0.5, 
+                                          vp_height = 0.3
+                              )
+                 )
 )
 
 # create new environment to exchange variables
@@ -188,23 +193,23 @@ setMethod(f = "show",
           signature = "geneset",
           definition = function(object) {
             layout <- getLayout(object@tracks$no_of_tracks)
-
+            
             # draw geneTrack
-            object@tracks$locus@vp_y_position <- first(layout$places_of_vp)
-            object@tracks$locus@vp_height <- layout$size_per_vp
+            object@tracks$locus@layout["vp_y_position"] <- first(layout$places_of_vp)
+            object@tracks$locus@layout["vp_height"] <- layout$size_per_vp
             print(object@tracks$locus)
 
             # draw annoTrack(s)
             if (!is.null(object@tracks$annotation)) {
               if (typeof(object@tracks$annotation) != "list") {
-                object@tracks$annotation@vp_y_position <- last(layout$places_of_vp)
-                object@tracks$annotation@vp_height <- layout$size_per_vp
+                object@tracks$annotation@layout["vp_y_position"] <- last(layout$places_of_vp)
+                object@tracks$annotation@layout["vp_height"] <- layout$size_per_vp
                 print(object@tracks$annotation)
               }
               else {
                 lapply(seq_along(object@tracks$annotation), function(x) {
-                  object@tracks$annotation[[x]]@vp_y_position <- layout$places_of_vp[-1][[x]]
-                  object@tracks$annotation[[x]]@vp_height <- layout$size_per_vp
+                  object@tracks$annotation[[x]]@layout["vp_y_position"] <- layout$places_of_vp[-1][[x]]
+                  object@tracks$annotation[[x]]@layout["vp_height"] <- layout$size_per_vp
                   print(object@tracks$annotation[[x]])
                 })
               }
@@ -284,9 +289,9 @@ setMethod(f = "show",
           definition = function(object) {
             relative <- function(x) (x - object@track_param$xmin) / (object@track_param$xmax - object@track_param$xmin)
             grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
-                                              y = grid::unit(object@vp_y_position, "npc"),
+                                              y = grid::unit(object@layout["vp_y_position"], "npc"),
                                               width = 0.7,
-                                              height = object@vp_height - 0.02,
+                                              height = as.numeric(object@layout["vp_height"]) - 0.02,
                                               just = c("bottom")))
 
             # draw border if requested (default)
@@ -448,9 +453,9 @@ setMethod(f = "show",
             # main viewport
             grid::pushViewport(grid::viewport(name = "main",
                                               x = grid::unit(0.5, "npc"),
-                                              y = grid::unit(object@vp_y_position, "npc"),
+                                              y = grid::unit(object@layout["vp_y_position"], "npc"),
                                               width = 0.7,
-                                              height = object@vp_height,
+                                              height = object@layout["vp_height"],
                                               just = c("bottom")))
 
             # draw border if requested
