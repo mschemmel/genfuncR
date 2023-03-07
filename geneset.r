@@ -173,10 +173,10 @@ track = setClass("track",
                  prototype = list(
                       layout = list(
                                   vp_y_position = 0.5,
-                                  vp_height = 0.3,
-                                  xmin = 0,
-                                  xmax = 0
-                      )
+                                  vp_height = 0.3
+                      ),
+                      xmin = 0,
+                      xmax = 0
                  )
 )
 
