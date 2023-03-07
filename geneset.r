@@ -203,7 +203,19 @@ geneset <- function(locus, annotation = NULL) {
 setMethod(f = "show",
           signature = "geneset",
           definition = function(object) {
+            # get layout of plot
             layout <- getLayout(object@tracks$no_of_tracks)
+
+            # create new device and newpage
+            grid::grid.newpage()
+
+            # outer viewport
+            grid::pushViewport(grid::viewport(name = "outer",
+                                              x = grid::unit(0.5, "npc"),
+                                              y = grid::unit(0.5, "npc"),
+                                              width = 1,
+                                              height = 1))
+
             # draw geneTrack
             object@tracks$locus@layout["vp_y_position"] <- first(layout$places_of_vp)
             object@tracks$locus@layout["vp_height"] <- layout$size_per_vp
@@ -430,16 +442,6 @@ geneTrack <- function(track_file,
 setMethod(f = "show",
           signature = "geneTrack",
           definition = function(object) {
-            # create new device and newpage
-            grid::grid.newpage()
-
-            # outer viewport
-            grid::pushViewport(grid::viewport(name = "outer",
-                                              x = grid::unit(0.5, "npc"),
-                                              y = grid::unit(0.5, "npc"),
-                                              width = 1,
-                                              height = 1))
-
             # main viewport
             grid::pushViewport(grid::viewport(name = "main",
                                               x = grid::unit(0.5, "npc"),
