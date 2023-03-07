@@ -151,6 +151,15 @@ showValues <- function(object) {
   )
 }
 
+#' calculate relative x position of feauture
+#' @param x numeric absolute numeric value
+#' @examples
+#' relativePosition(100,50,150)
+
+relativePosition <- function(x, xmin, xmax) {
+  return((x - xmin) / (xmax - xmin))
+}
+
 #' set track specific layout parameter
 #' @param vp_y_position y position of viewport
 #' @param vp_height height of viewport
@@ -288,7 +297,6 @@ annoTrack <- function(track_file = NULL,
 setMethod(f = "show",
           signature = "annoTrack",
           definition = function(object) {
-            relative <- function(x) (x - object@xmin) / (object@xmax - object@xmin)
             grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
                                               y = grid::unit(object@layout["vp_y_position"], "npc"),
                                               width = 0.7,
@@ -320,9 +328,9 @@ setMethod(f = "show",
                                 gp = grid::gpar(col = "gray30"))
 
             # which region should be displayed
-            grid::grid.segments(x0 = grid::unit(relative(object@track_param$track_file$start), "npc"),
+            grid::grid.segments(x0 = grid::unit(relativePosition(object@track_param$track_file$start, object@xmin, object@xmax), "npc"),
                                 y0 = grid::unit(object@track_param$start_y, "npc"),
-                                x1 = grid::unit(relative(object@track_param$track_file$end), "npc"),
+                                x1 = grid::unit(relativePosition(object@track_param$track_file$end, object@xmin, object@xmax), "npc"),
                                 y1 = ifelse(object@track_param$track_file$value < object@track_param$ymax,
                                             grid::unit(object@track_param$start_y + (object@track_param$track_file$value / object@track_param$ymax), "npc"),
                                             grid::unit(1, "npc")),
@@ -422,9 +430,6 @@ geneTrack <- function(track_file,
 setMethod(f = "show",
           signature = "geneTrack",
           definition = function(object) {
-            # helper function
-            relative <- function(x) (x - object@xmin) / (object@xmax - object@xmin)
-
             # create new device and newpage
             grid::grid.newpage()
 
@@ -460,8 +465,8 @@ setMethod(f = "show",
 
             # add all genes/transcripts
             mapply(genearrow,
-                   x1 = grid::unit(relative(object@track_file$start), "npc"),
-                   x2 = grid::unit(relative(object@track_file$end), "npc"),
+                   x1 = grid::unit(relativePosition(object@track_file$start, object@xmin, object@xmax), "npc"),
+                   x2 = grid::unit(relativePosition(object@track_file$end, object@xmin, object@xmax), "npc"),
                    pos = ifelse(object@track_file$strand == "+",
                                 object@gene_param$reverse_strand_pos,
                                 object@gene_param$forward_strand_pos),
