@@ -118,7 +118,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   if (length(x) == 1) interval <- c(0, x)
   
   # test if user provided specific range
-  if (!is.null(range_)) { interval <- range_  }
+  if (!is.null(range_)) { interval <- range_ }
   return(pretty(interval))
 }
 
@@ -158,14 +158,16 @@ showValues <- function(object) {
 #' track(...)
 
 track = setClass("track",
-                 slots = list(
-                            layout = "list"
-                 ),
+                 slots = list(layout = "list",
+                              xmin = "numeric",
+                              xmax = "numeric"),
                  prototype = list(
-                              layout = list(
-                                          vp_y_position = 0.5, 
-                                          vp_height = 0.3
-                              )
+                      layout = list(
+                                  vp_y_position = 0.5,
+                                  vp_height = 0.3,
+                                  xmin = 0,
+                                  xmax = 0
+                      )
                  )
 )
 
@@ -260,15 +262,15 @@ annoTrack <- function(track_file = NULL,
     yscale_at <- getAnnoYBreaks(yscale_label)
 
     # get environment variables
-    xmin <- get("min_value", shared)
-    xmax <- get("max_value", shared)
+    xmin <- get("xmin", shared)
+    xmax <- get("xmax", shared)
     chromosome <- get("chromosome", shared)
 
     # assign parameter to object
     .Object@track_param$track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
     if(show_values) showValues(.Object@track_param$track_file)
-    .Object@track_param$xmin <- xmin
-    .Object@track_param$xmax <- xmax
+    .Object@xmin <- xmin
+    .Object@xmax <- xmax
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
     .Object@track_param$ymax <- diff(range(yscale_label))
@@ -286,7 +288,7 @@ annoTrack <- function(track_file = NULL,
 setMethod(f = "show",
           signature = "annoTrack",
           definition = function(object) {
-            relative <- function(x) (x - object@track_param$xmin) / (object@track_param$xmax - object@track_param$xmin)
+            relative <- function(x) (x - object@xmin) / (object@xmax - object@xmin)
             grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
                                               y = grid::unit(object@layout["vp_y_position"], "npc"),
                                               width = 0.7,
@@ -298,7 +300,7 @@ setMethod(f = "show",
 
             # add track label
             grid::grid.text(object@track_param$label,
-                            x = -0.1,
+                            x = -0.05,
                             y = 0.5,
                             just = ifelse(object@track_param$label_orientation == "h", "right", "center"),
                             rot = ifelse(object@track_param$label_orientation == "h", 0, 90),
@@ -385,12 +387,12 @@ geneTrack <- function(track_file,
 
     # determine axis label
     axis_label <- pretty(c(min(.Object@track_file$start - upstream):max(.Object@track_file$end + downstream)))
-    min_value <- first(axis_label)
-    max_value <- last(axis_label)
+    .Object@xmin <- first(axis_label)
+    .Object@xmax <- last(axis_label)
     
-    assign("min_value", min_value, shared)
-    assign("max_value", max_value, shared)
-    assign("chromosome", given_chromosome, shared)
+    assign("xmin", .Object@xmin, shared)
+    assign("xmax", .Object@xmax, shared)
+    assign("chromosome", .Object@gene_param$chromosome, shared)
 
     # position of forward and reverse strand
     forward_strand_pos <- 0.2
@@ -407,8 +409,6 @@ geneTrack <- function(track_file,
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
     .Object@gene_param$transparency <- transparency
-    .Object@plot_param$min_value <- min_value
-    .Object@plot_param$max_value <- max_value
     .Object@plot_param$show_axis <- show_axis
     .Object@plot_param$axis_label <- axis_label
     .Object@plot_param$axis_label_offset <- axis_label_offset
@@ -423,7 +423,7 @@ setMethod(f = "show",
           signature = "geneTrack",
           definition = function(object) {
             # helper function
-            relative <- function(x) (x - object@plot_param$min_value) / (object@plot_param$max_value - object@plot_param$min_value)
+            relative <- function(x) (x - object@xmin) / (object@xmax - object@xmin)
 
             # create new device and newpage
             grid::grid.newpage()
