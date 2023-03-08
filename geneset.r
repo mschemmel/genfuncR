@@ -391,7 +391,7 @@ geneTrack <- function(track_file,
     }
 
     # determine axis label
-    axis_label <- getXLabel(.Object@track_file$start, .Object@track_file$end, upstream, downstream) 
+    axis_label <- getXLabel(.Object@track_file$start, .Object@track_file$end, .Object@upstream, .Object@downstream)
     .Object@xmin <- first(axis_label)
     .Object@xmax <- last(axis_label)
     
