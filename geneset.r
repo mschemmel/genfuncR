@@ -423,14 +423,15 @@ geneTrack <- function(track_file,
     .Object@plot_param$axis_label_text <- ifelse(!is.null(axis_label_text),
                                                  axis_label_text,
                                                  paste(.Object@gene_param$chromosome, "(bp)"))
-
+    if(!is.null(features)) {
+      .Object@gene_param$features <- prepareAndFilter(features, given_chromosome, .Object@xmin, .Object@xmax)
+    }
     # default params
     .Object@gene_param$forward_strand_pos <- forward_strand_pos
     .Object@gene_param$reverse_strand_pos <- reverse_strand_pos
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
     .Object@gene_param$transparency <- transparency
-    .Object@gene_param$features <- features
     .Object@plot_param$show_axis <- show_axis
     .Object@plot_param$axis_label <- axis_label
     .Object@plot_param$axis_label_offset <- axis_label_offset
@@ -479,13 +480,10 @@ setMethod(f = "show",
                    reverse_color = object@gene_param$reverse_color)
 
             if (!is.null(object@gene_param$features)) {
-              prep <- object@gene_param$features[object@gene_param$features$chr == object@gene_param$chromosome, ]
-              for (f in prep) {
-                grid::grid.circle(x = grid::unit(relativePosition(prep$start, object@xmin, object@xmax), "npc"),
+                grid::grid.circle(x = grid::unit(relativePosition(object@gene_param$features$start, object@xmin, object@xmax), "npc"),
                                   y = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
-                                  r = grid::unit(abs(prep$value) * 0.1, "npc"),
+                                  r = grid::unit(abs(object@gene_param$features$value) * 0.1, "npc"),
                                   gp = grid::gpar(fill = "red"))
-              }
             }
 
             # add axis label
