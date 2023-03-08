@@ -6,7 +6,6 @@
 #' @param gd_ grid gpar object to edit the arrow appearance
 #' @examples
 #' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
-
 genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", reverse_color = "navajowhite3", gene_height = 0.15) {
     arrow_head_width <- (x2 - x1) * 0.2 # TODO: make size dynamic
     y1 <- pos - gene_height
@@ -33,7 +32,6 @@ genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", r
 #' @param gp_ Grid parameter like font, style, color, ...
 #' @examples
 #' textLabel(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
-
 textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
                                       x = grid::unit(x_, "npc"),
@@ -52,7 +50,6 @@ textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 
 #' @param en end coordinate of target region
 #' @examples
 #' prepareAndFilter(gff, "Chr1A", 1000, 2000)
-
 prepareAndFilter <- function(dataset,
                              chromosome,
                              st,
@@ -111,7 +108,6 @@ first <- function(x) return (x[1])
 #' @param threshold maximal y value for reference
 #' @examples
 #' getAnnoYScale(dat, threshold = 10)
-
 getAnnoYScale <- function(x, range_ = NULL) {
   # get min and max of y scale of annoTrack
   interval <- c(min(x), max(x))
@@ -130,20 +126,29 @@ getAnnoYBreaks <- function(x) {
   return(seq(0, 1, 1 / (length(x) - 1)))
 }
 
+#' calculate x scale label
+#' @param start vector of x start values
+#' @param end vector of x end values
+#' @param upstream integer of bp upstream
+#' @param downstream integer of bp downstream
+#' @examples
+#' getXLabel(10,100,20,20)
+getXLabel <- function(start, end, upstream, downstream) {
+  return(pretty(c(min(start-upstream):max(end+downstream))))
+}
+
 #' test if value is in specific range
 #' @param x single value to test
 #' @param min_ minimal allowed value
 #' @param max_ maximal allowed value
 #' @examples
 #' inRange(10,5,15)
-
 inRange <- function(x, min_, max_) { return(all(x >= min_ & x <= max_)) }
 
 #' print values of tracks
 #' @param object data.frame containing data
 #' @examples
 #' showValues(object)
-
 showValues <- function(object) {
   ifelse(nrow(object) > 100,
          print(head(object)),
@@ -155,7 +160,6 @@ showValues <- function(object) {
 #' @param x numeric absolute numeric value
 #' @examples
 #' relativePosition(100,50,150)
-
 relativePosition <- function(x, xmin, xmax) {
   return((x - xmin) / (xmax - xmin))
 }
@@ -165,7 +169,6 @@ relativePosition <- function(x, xmin, xmax) {
 #' @param vp_height height of viewport
 #' @examples
 #' track(...)
-
 track = setClass("track",
                  slots = list(layout = "list",
                               xmin = "numeric",
@@ -230,7 +233,6 @@ setMethod(f = "show",
 #' @param label_orientation text orientation of track label
 #' @examples
 #' annoTrack(gff, "Coverage", "line", "firebrick")
-
 annoTrack = setClass("annoTrack",
                      slots = list(
                        track_param = "list"
@@ -344,8 +346,7 @@ setMethod(f = "show",
 #' @param border boolean if border visible (default = FALSE)
 #' @param show_values boolean if displayed range should also be printed
 #' @examples
-#' geneTrack(gff)
-
+#' geneTrack(track_file)
 geneTrack = setClass("geneTrack",
                    slots = list(
                         track_file = "ANY",
@@ -388,7 +389,7 @@ geneTrack <- function(track_file,
     }
 
     # determine axis label
-    axis_label <- pretty(c(min(.Object@track_file$start - upstream):max(.Object@track_file$end + downstream)))
+    axis_label <- getXLabel(.Object@track_file$start, .Object@track_file$end, upstream, downstream) 
     .Object@xmin <- first(axis_label)
     .Object@xmax <- last(axis_label)
     
