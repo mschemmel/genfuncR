@@ -134,7 +134,7 @@ getAnnoYBreaks <- function(x) {
 #' @examples
 #' getXLabel(10,100,20,20)
 getXLabel <- function(start, end, upstream, downstream) {
-  return(pretty(c(min(start-upstream):max(end+downstream))))
+  return(pretty(c((min(start)-upstream):max((end)+downstream))))
 }
 
 #' test if value is in specific range
@@ -172,14 +172,18 @@ relativePosition <- function(x, xmin, xmax) {
 track = setClass("track",
                  slots = list(layout = "list",
                               xmin = "numeric",
-                              xmax = "numeric"),
+                              xmax = "numeric",
+                              upstream = "numeric",
+                              downstream = "numeric"),
                  prototype = list(
                       layout = list(
                                   vp_y_position = 0.5,
                                   vp_height = 0.3
                       ),
                       xmin = 0,
-                      xmax = 0
+                      xmax = 0,
+                      upstream = 10,
+                      downstream = 10
                  )
 )
 
@@ -266,9 +270,9 @@ annoTrack <- function(track_file = NULL,
     yscale_at <- getAnnoYBreaks(yscale_label)
 
     # get environment variables
-    xmin <- get("xmin", shared)
-    xmax <- get("xmax", shared)
-    chromosome <- get("chromosome", shared)
+    xmin <- ifelse(exists("xmin", shared), get("xmin", shared), first(getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)))
+    xmax <- ifelse(exists("xmax", shared), get("xmax", shared), last(getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)))
+    chromosome <- ifelse(exists("chromosome", shared), get("chromosome", shared), unique(track_file$chr))
 
     # assign parameter to object
     .Object@track_param$track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
@@ -359,9 +363,7 @@ geneTrack = setClass("geneTrack",
 geneTrack <- function(track_file,
                       forward_color = "darkslategray",
                       reverse_color = "navajowhite3",
-                      upstream = 10,
                       features = NULL,
-                      downstream = 10,
                       transparency = 1,
                       show_axis = TRUE,
                       axis_label_text = NULL,
