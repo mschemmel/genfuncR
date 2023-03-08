@@ -462,12 +462,16 @@ setMethod(f = "show",
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$forward_strand_pos, "npc"))
 
+            grid::grid.text(x = -0.025, y = object@gene_param$forward_strand_pos, label = "3'")
+            grid::grid.text(x = 1.025, y = object@gene_param$forward_strand_pos, label = "5'")
+
             # reverse direction
             grid::grid.segments(x0 = grid::unit(0, "npc"),
                                 y0 = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
                                 x1 = grid::unit(1, "npc"),
                                 y1 = grid::unit(object@gene_param$reverse_strand_pos, "npc"))
-
+            grid::grid.text(x = -0.025, y = object@gene_param$reverse_strand_pos, label = "5'")
+            grid::grid.text(x = 1.025, y = object@gene_param$reverse_strand_pos, label = "3'")
             # add all genes/transcripts
             mapply(genearrow,
                    x1 = grid::unit(relativePosition(object@track_file$start, object@xmin, object@xmax), "npc"),
