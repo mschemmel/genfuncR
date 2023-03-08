@@ -231,10 +231,11 @@ setMethod(f = "show",
 #' @param label name of the track
 #' @param values column where the actual data is stored (default: value)
 #' @param border draw border around annoTrack viewport
-#' @param ymax max data value for y axis label
+#' @param yrange range of y scale
 #' @param label_gp gp object to edit label style
 #' @param track_gp gp object to edit track appearence
 #' @param label_orientation text orientation of track label
+#' @param show_values logical if underlying values should be displayed
 #' @examples
 #' annoTrack(gff, "Coverage", "line", "firebrick")
 annoTrack = setClass("annoTrack",
