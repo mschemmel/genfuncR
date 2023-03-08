@@ -300,7 +300,7 @@ setMethod(f = "show",
             grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
                                               y = grid::unit(object@layout["vp_y_position"], "npc"),
                                               width = 0.7,
-                                              height = as.numeric(object@layout["vp_height"]) - 0.02,
+                                              height = as.numeric(object@layout["vp_height"]) - 0.05,
                                               just = c("bottom")))
 
             # draw border if requested (default)
