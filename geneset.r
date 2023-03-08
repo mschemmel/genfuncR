@@ -342,6 +342,7 @@ setMethod(f = "show",
 #' @param track_file data.frame with chr, start, end and strand column
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
 #' @param reverse_color color of genes in reverse direction (default = "darkslategray")
+#' @param features data.frame of features to add to strand position
 #' @param transparency alpha value of gene annotation box
 #' @param show_axis show axis or not (default = TRUE)
 #' @param axis_label_text text of x axis label (default: "Region (bp)")
