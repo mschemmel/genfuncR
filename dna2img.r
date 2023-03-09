@@ -36,21 +36,23 @@ dna2img <- function(sequence,
                                        G = "#FFD403",
                                        C = "#FF9356",
                                        U = "#d83131",
-                                       N = "gray60")) {
+                                       N = "gray60"),
+                    letter_per_line = 50) {
     seq_ <- unlist(strsplit(sequence, split = ""))
-    
+
+    grid::grid.newpage()
+
     # get coordinates for every nucleotide
-    ypositions <- seq(0.95, 0, -0.05)
-    letter_per_line <- 20
-    coordx <- rep(1:letter_per_line, ceiling(length(seq_)/letter_per_line))[1:length(seq_)] / letter_per_line
+    ypositions <- seq(0.90, 0, -0.025)
+    coordx <- rep(0.5:letter_per_line, ceiling(length(seq_)/letter_per_line))[1:length(seq_)] / letter_per_line
     coordy <- rep(ypositions[1:ceiling(length(seq_)/letter_per_line)], each = letter_per_line)[1:length(seq_)]
 
     # draw all nucleotides
-    grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.9, height = 0.9))
+    grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.95, height = 0.95))
+
     lapply(seq_along(seq_), function(x){
         xpos <- coordx[x]
         ypos <- coordy[x]
-        
         textLabel(label_txt = seq_[x],
                   x_ = xpos,
                   y_ = ypos,
