@@ -230,6 +230,8 @@ setMethod(f = "show",
 #' @param track_file data.frame with chr, start, stop and strand information
 #' @param label name of the track
 #' @param values column where the actual data is stored (default: value)
+#' @param upstream distance in bp upstream
+#' @param downstream distance in bp downstream
 #' @param border draw border around annoTrack viewport
 #' @param yrange range of y scale
 #' @param label_gp gp object to edit label style
@@ -248,6 +250,8 @@ annoTrack = setClass("annoTrack",
 annoTrack <- function(track_file = NULL,
                       label = "Track",
                       values = "value",
+                      upstream = NULL,
+                      downstream = NULL,
                       border = TRUE,
                       yrange = NULL,
                       label_gp = grid::gpar(fontsize = 12, col = "black"),
@@ -343,6 +347,8 @@ setMethod(f = "show",
 #' @param track_file data.frame with chr, start, end and strand column
 #' @param forward_color color of genes in forward direction (default = "darkslategray")
 #' @param reverse_color color of genes in reverse direction (default = "darkslategray")
+#' @param upstream distance in bp upstream
+#' @param downstream distance in bp downstream
 #' @param features data.frame of features to add to strand position
 #' @param transparency alpha value of gene annotation box
 #' @param show_axis show axis or not (default = TRUE)
@@ -365,6 +371,8 @@ geneTrack = setClass("geneTrack",
 geneTrack <- function(track_file,
                       forward_color = "darkslategray",
                       reverse_color = "navajowhite3",
+                      upstream = NULL,
+                      downstream = NULL,
                       features = NULL,
                       transparency = 1,
                       show_axis = TRUE,
