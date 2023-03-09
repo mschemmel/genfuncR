@@ -275,6 +275,8 @@ annoTrack <- function(track_file = NULL,
     yscale_at <- getAnnoYBreaks(yscale_label)
 
     # get environment variables
+    .Object@upstream = upstream
+    .Object@downstream = downstream
     xmin <- ifelse(exists("xmin", shared), get("xmin", shared), first(getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)))
     xmax <- ifelse(exists("xmax", shared), get("xmax", shared), last(getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)))
     chromosome <- ifelse(exists("chromosome", shared), get("chromosome", shared), unique(track_file$chr))
@@ -401,6 +403,8 @@ geneTrack <- function(track_file,
     }
 
     # determine axis label
+    .Object@upstream = upstream
+    .Object@downstream = downstream
     axis_label <- getXLabel(.Object@track_file$start, .Object@track_file$end, .Object@upstream, .Object@downstream)
     .Object@xmin <- first(axis_label)
     .Object@xmax <- last(axis_label)
