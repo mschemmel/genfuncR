@@ -40,7 +40,7 @@ geneset(geneTrack(genes))
 ```r
 library(grid)
 # basic example
-nucleotides <- paste0(sample(c("A","T","G","C"), 1700, T), collapse = "")
+nucleotides <- paste0(sample(c("A","T","G","C"), 1700, replace = TRUE), collapse = "")
 dna2img(nucleotides)
 ```
 <p align="center"> Basic example </p>
