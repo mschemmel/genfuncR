@@ -64,7 +64,7 @@ drawText <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0
 #' @param st start coordinate of target region
 #' @param en end coordinate of target region
 #' @examples
-#' prepareAndFilter(gff, "Chr1A", 1000, 2000)
+#' prepareAndFilter(dataset, "Chr1A", 1000, 2000)
 prepareAndFilter <- function(dataset,
                              chromosome,
                              st,
@@ -109,13 +109,13 @@ getLayout <- function(x) {
 #' helper to retrieve last element of vector
 #' @param x vector to get the last element from
 #' @examples
-#' last(c(1,2,3))
+#' last(c(1, 2, 3))
 last <- function(x) return (tail(x, n = 1))
 
 #' helper to retrieve first element of vector
 #' @param x vector to get the first element from
 #' @examples
-#' first(c(1,2,3))
+#' first(c(1, 2, 3))
 first <- function(x) return (x[1])
 
 #' calculate y scale labels of annotation tracks
@@ -147,7 +147,7 @@ getAnnoYBreaks <- function(x) {
 #' @param upstream integer of bp upstream
 #' @param downstream integer of bp downstream
 #' @examples
-#' getXLabel(10,100,20,20)
+#' getXLabel(10, 100, 20, 20)
 getXLabel <- function(start, end, upstream, downstream) {
   return(pretty(c((min(start)-upstream):max((end)+downstream))))
 }
@@ -173,8 +173,10 @@ showValues <- function(object) {
 
 #' calculate relative x position of feauture
 #' @param x numeric absolute numeric value
+#' @param xmin minimal value of scale
+#' @param xmax maximal value of scale
 #' @examples
-#' relativePosition(100,50,150)
+#' relativePosition(100, 50, 150)
 relativePosition <- function(x, xmin, xmax) {
   return((x - xmin) / (xmax - xmin))
 }
