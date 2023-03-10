@@ -5,8 +5,8 @@
 #' @param direction direction of the gene (upstream | downstream)
 #' @param gd_ grid gpar object to edit the arrow appearance
 #' @examples
-#' genearrow(x1 = 1, y1 = 5, x2 = 4, y2 = 6, arrow_type = "arrow", direction = "downstream")
-genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", reverse_color = "navajowhite3", gene_height = 0.15) {
+#' drawGene(x1 = 1, x2 = 4, pos = 0.4, direction = "forward")
+drawGene <- function(x1, x2, pos, direction, forward_color = "darkslategray", reverse_color = "navajowhite3", gene_height = 0.15) {
     arrow_head_width <- (x2 - x1) * 0.2 # TODO: make size dynamic
     y1 <- pos - gene_height
     y2 <- pos + gene_height
@@ -21,6 +21,21 @@ genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", r
     )
 }
 
+#' draw strand (5' ------ 3') on specified position
+#' @param direction character string specifying forward or reverse strand
+#' @param y_ y position to draw
+#' @examples
+#' drawStrand(direction = "forward", y_ = 0.4)
+drawStrand <- function(direction = "forward", y_) {
+  direction_label <- if (direction == "forward") c("5'","3'") else c("3'", "5'")
+
+  grid::grid.segments(x0 = grid::unit(0.025, "npc"),
+                      y0 = grid::unit(y_, "npc"),
+                      x1 = grid::unit(0.975, "npc"),
+                      y1 = grid::unit(y_, "npc"))
+  grid::grid.text(x = c(0, 1), y = y_, label = direction_label)
+}
+
 #' puts a text label on a specific position
 #' @param vp_name Name of the viewport
 #' @param x_ x coordinate
@@ -31,8 +46,8 @@ genearrow <- function(x1, x2, pos, direction, forward_color = "darkslategray", r
 #' @param angle Angle of text label
 #' @param gp_ Grid parameter like font, style, color, ...
 #' @examples
-#' textLabel(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
-textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0, gp_ = NULL) {
+#' drawText(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
+drawText <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
                                       x = grid::unit(x_, "npc"),
                                       y = grid::unit(y_, "npc"),
@@ -414,9 +429,9 @@ geneTrack <- function(track_file,
     assign("chromosome", .Object@gene_param$chromosome, shared)
 
     # position of forward and reverse strand
-    forward_strand_pos <- 0.2
+    forward_strand_pos <- 0.8
     strand_gap <- 0.6
-    reverse_strand_pos <- forward_strand_pos + strand_gap
+    reverse_strand_pos <- forward_strand_pos - strand_gap
 
     .Object@plot_param$axis_label_text <- ifelse(!is.null(axis_label_text),
                                                  axis_label_text,
@@ -454,32 +469,19 @@ setMethod(f = "show",
             # draw border if requested
             if (object@plot_param$border) grid::grid.rect()
 
-            # forward direction
-            grid::grid.segments(x0 = grid::unit(0, "npc"),
-                                y0 = grid::unit(object@gene_param$forward_strand_pos, "npc"),
-                                x1 = grid::unit(1, "npc"),
-                                y1 = grid::unit(object@gene_param$forward_strand_pos, "npc"))
+            drawStrand(direction = "forward", y_ = object@gene_param$forward_strand_pos)
+            drawStrand(direction = "reverse", y_ = object@gene_param$reverse_strand_pos)
 
-            grid::grid.text(x = -0.025, y = object@gene_param$forward_strand_pos, label = "3'")
-            grid::grid.text(x = 1.025, y = object@gene_param$forward_strand_pos, label = "5'")
-
-            # reverse direction
-            grid::grid.segments(x0 = grid::unit(0, "npc"),
-                                y0 = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
-                                x1 = grid::unit(1, "npc"),
-                                y1 = grid::unit(object@gene_param$reverse_strand_pos, "npc"))
-            grid::grid.text(x = -0.025, y = object@gene_param$reverse_strand_pos, label = "5'")
-            grid::grid.text(x = 1.025, y = object@gene_param$reverse_strand_pos, label = "3'")
             # add all genes/transcripts
-            mapply(genearrow,
+            mapply(drawGene,
                    x1 = grid::unit(relativePosition(object@track_file$start, object@xmin, object@xmax), "npc"),
                    x2 = grid::unit(relativePosition(object@track_file$end, object@xmin, object@xmax), "npc"),
                    pos = ifelse(object@track_file$strand == "+",
-                                object@gene_param$reverse_strand_pos,
-                                object@gene_param$forward_strand_pos),
+                                object@gene_param$forward_strand_pos,
+                                object@gene_param$reverse_strand_pos),
                    direction = object@track_file$strand,
-                   forward_color = object@gene_param$forward_color,
-                   reverse_color = object@gene_param$reverse_color)
+                   forward_color = object@gene_param$reverse_color,
+                   reverse_color = object@gene_param$forward_color)
 
             if (!is.null(object@gene_param$features)) {
                 grid::grid.circle(x = grid::unit(relativePosition(object@gene_param$features$start, object@xmin, object@xmax), "npc"),
@@ -495,12 +497,12 @@ setMethod(f = "show",
                                  at = seq(0, 1, 1 / (length(object@plot_param$axis_label) - 1)))
 
                 # add axis label text
-                textLabel(x_ = 0.5,
-                          y_ = object@plot_param$axis_label_offset,
-                          w_ = 0.1,
-                          h_ = 0.2,
-                          label_txt = object@plot_param$axis_label_text,
-                          gp_ = object@plot_param$axis_label_gp)
+                drawText(x_ = 0.5,
+                         y_ = object@plot_param$axis_label_offset,
+                         w_ = 0.1,
+                         h_ = 0.2,
+                         label_txt = object@plot_param$axis_label_text,
+                         gp_ = object@plot_param$axis_label_gp)
             }
             grid::popViewport(1)
 })
