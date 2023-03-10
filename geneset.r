@@ -199,7 +199,7 @@ geneset = setClass("geneset", slots = list(tracks = "list"))
 # constructor method
 geneset <- function(track) {
   .Object <- new("geneset")
-  .Object@tracks <- track
+  .Object@tracks <- ifelse(typeof(track) != "list", list(track), track)
   return(.Object)
 }
 
