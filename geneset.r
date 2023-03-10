@@ -171,6 +171,21 @@ showValues <- function(object) {
   )
 }
 
+#' check provided chromosomes
+#' @param chromosomes vector of chromosomes
+#' @examples
+#' checkChromosomes(c("Chr1", "Chr1"))
+
+checkChromosomes <- function(chromosomes) {
+  found_chromosomes <- unique(chromosomes)
+  if (length(found_chromosomes) > 1) {
+    warning("Found more than one chromosome identifier. Use sfirst.")
+    return(first(found_chromosomes))
+  } else {
+    return(found_chromosomes)
+  }
+}
+
 #' calculate relative x position of feauture
 #' @param x numeric absolute numeric value
 #' @param xmin minimal value of scale
@@ -407,17 +422,9 @@ geneTrack <- function(track_file,
     # assign data to object
     .Object@track_file <- track_file
     if (show_values) showValues(.Object@track_file)
-    
-    # check for unique chromosome label
-    given_chromosome <- unique(.Object@track_file$chr)
-    if (!is.null(given_chromosome)) {
-      if (length(given_chromosome) > 1) {
-        warning("Found more than one chromosome identifier.")
-        .Object@gene_param$chromosome <- first(given_chromosome)
-      } else {
-        .Object@gene_param$chromosome <- given_chromosome
-      }
-    }
+
+    # check for chromosome label
+    .Object@gene_param$chromosome <- checkChromosomes(track_file$chr)
 
     # determine axis label
     .Object@upstream = upstream
@@ -439,7 +446,7 @@ geneTrack <- function(track_file,
                                                  axis_label_text,
                                                  paste(.Object@gene_param$chromosome, "(bp)"))
     if(!is.null(features)) {
-      .Object@gene_param$features <- prepareAndFilter(features, given_chromosome, .Object@xmin, .Object@xmax)
+      .Object@gene_param$features <- prepareAndFilter(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax)
     }
     # default params
     .Object@gene_param$forward_strand_pos <- forward_strand_pos
