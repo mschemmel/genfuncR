@@ -425,7 +425,7 @@ geneTrack <- function(track_file,
                       ) {
 
     .Object <- new("geneTrack")
-    
+
     # assign data to object
     .Object@track_file <- track_file
     if (show_values) showValues(.Object@track_file)
@@ -439,7 +439,7 @@ geneTrack <- function(track_file,
     axis_label <- getXLabel(.Object@track_file$start, .Object@track_file$end, .Object@upstream, .Object@downstream)
     .Object@xmin <- first(axis_label)
     .Object@xmax <- last(axis_label)
-    
+
     assign("xmin", .Object@xmin, shared)
     assign("xmax", .Object@xmax, shared)
     assign("chromosome", .Object@gene_param$chromosome, shared)
@@ -454,7 +454,7 @@ geneTrack <- function(track_file,
     if(!is.null(features)) {
       .Object@gene_param$features <- prepareAndFilter(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax)
     }
-    # default params
+    # set defaults
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
     .Object@gene_param$transparency <- transparency
@@ -482,6 +482,7 @@ setMethod(f = "show",
             # draw border if requested
             if (object@plot_param$border) grid::grid.rect()
 
+            # plot strands
             drawStrand(direction = "forward", y_ = object@plot_param$forward_strand_pos)
             drawStrand(direction = "reverse", y_ = object@plot_param$reverse_strand_pos)
 
@@ -496,6 +497,7 @@ setMethod(f = "show",
                    forward_color = object@gene_param$reverse_color,
                    reverse_color = object@gene_param$forward_color)
 
+            # add strand specific features
             if (!is.null(object@gene_param$features)) {
                 grid::grid.circle(x = grid::unit(relativePosition(object@gene_param$features$start, object@xmin, object@xmax), "npc"),
                                   y = grid::unit(object@plot_param$reverse_strand_pos, "npc"),
@@ -505,7 +507,6 @@ setMethod(f = "show",
 
             # add axis label
             if (object@plot_param$show_axis) {
-                # add axis label
                 grid::grid.xaxis(label = object@plot_param$axis_label,
                                  at = seq(0, 1, 1 / (length(object@plot_param$axis_label) - 1)))
 
