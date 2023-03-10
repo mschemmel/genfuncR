@@ -27,7 +27,7 @@ drawGene <- function(x1, x2, pos, direction, forward_color = "darkslategray", re
 #' @examples
 #' drawStrand(direction = "forward", y_ = 0.4)
 drawStrand <- function(direction = "forward", y_) {
-  direction_label <- if (direction == "forward") c("5'","3'") else c("3'", "5'")
+  direction_label <- if (direction == "forward") c("5'", "3'") else c("3'", "5'")
 
   grid::grid.segments(x0 = grid::unit(0.025, "npc"),
                       y0 = grid::unit(y_, "npc"),
