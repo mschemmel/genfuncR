@@ -400,6 +400,12 @@ geneTrack = setClass("geneTrack",
                         gene_param = "list",
                         plot_param = "list"
                    ),
+                   prototype = list(
+                    plot_param = list(
+                      forward_strand_pos = 0.8,
+                      reverse_strand_pos = 0.2
+                    )
+                   ),
                    contains = "track"
 )
 # constructor method
@@ -439,9 +445,8 @@ geneTrack <- function(track_file,
     assign("chromosome", .Object@gene_param$chromosome, shared)
 
     # position of forward and reverse strand
-    forward_strand_pos <- 0.8
-    strand_gap <- 0.6
-    reverse_strand_pos <- forward_strand_pos - strand_gap
+    #forward_strand_pos <- 0.8
+    #reverse_strand_pos <- 0.2
 
     .Object@plot_param$axis_label_text <- ifelse(!is.null(axis_label_text),
                                                  axis_label_text,
@@ -450,8 +455,6 @@ geneTrack <- function(track_file,
       .Object@gene_param$features <- prepareAndFilter(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax)
     }
     # default params
-    .Object@gene_param$forward_strand_pos <- forward_strand_pos
-    .Object@gene_param$reverse_strand_pos <- reverse_strand_pos
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
     .Object@gene_param$transparency <- transparency
@@ -479,23 +482,23 @@ setMethod(f = "show",
             # draw border if requested
             if (object@plot_param$border) grid::grid.rect()
 
-            drawStrand(direction = "forward", y_ = object@gene_param$forward_strand_pos)
-            drawStrand(direction = "reverse", y_ = object@gene_param$reverse_strand_pos)
+            drawStrand(direction = "forward", y_ = object@plot_param$forward_strand_pos)
+            drawStrand(direction = "reverse", y_ = object@plot_param$reverse_strand_pos)
 
             # add all genes/transcripts
             mapply(drawGene,
                    x1 = grid::unit(relativePosition(object@track_file$start, object@xmin, object@xmax), "npc"),
                    x2 = grid::unit(relativePosition(object@track_file$end, object@xmin, object@xmax), "npc"),
                    pos = ifelse(object@track_file$strand == "+",
-                                object@gene_param$forward_strand_pos,
-                                object@gene_param$reverse_strand_pos),
+                                object@plot_param$forward_strand_pos,
+                                object@plot_param$reverse_strand_pos),
                    direction = object@track_file$strand,
                    forward_color = object@gene_param$reverse_color,
                    reverse_color = object@gene_param$forward_color)
 
             if (!is.null(object@gene_param$features)) {
                 grid::grid.circle(x = grid::unit(relativePosition(object@gene_param$features$start, object@xmin, object@xmax), "npc"),
-                                  y = grid::unit(object@gene_param$reverse_strand_pos, "npc"),
+                                  y = grid::unit(object@plot_param$reverse_strand_pos, "npc"),
                                   r = grid::unit(abs(object@gene_param$features$value) * 0.1, "npc"),
                                   gp = grid::gpar(fill = "red"))
             }
