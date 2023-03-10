@@ -309,9 +309,10 @@ annoTrack <- function(track_file = NULL,
     # get environment variables
     .Object@upstream = upstream
     .Object@downstream = downstream
-    xmin <- ifelse(exists("xmin", shared), get("xmin", shared), first(getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)))
-    xmax <- ifelse(exists("xmax", shared), get("xmax", shared), last(getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)))
-    chromosome <- ifelse(exists("chromosome", shared), get("chromosome", shared), unique(track_file$chr))
+    xLabel <- getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)
+    xmin <- ifelse(exists("xmin", shared), get("xmin", shared), first(xLabel))
+    xmax <- ifelse(exists("xmax", shared), get("xmax", shared), last(xLabel))
+    chromosome <- ifelse(exists("chromosome", shared), get("chromosome", shared), checkChromosomes(track_file$chr))
 
     # assign parameter to object
     .Object@track_param$track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
