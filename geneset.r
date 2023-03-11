@@ -410,8 +410,8 @@ geneTrack = setClass("geneTrack",
 )
 # constructor method
 geneTrack <- function(track_file,
-                      forward_color = "darkslategray",
-                      reverse_color = "navajowhite3",
+                      forward_color = "navajowhite3",
+                      reverse_color = "darkslategray",
                       upstream = 0,
                       downstream = 0,
                       features = NULL,
