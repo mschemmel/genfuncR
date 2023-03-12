@@ -96,12 +96,12 @@ prepareAndFilter <- function(dataset,
 #' @examples
 #' getLayout(list(annoTrack, ...))
 getLayout <- function(x) {
-  coordinates <- list("size_per_vp" = 0.3,
-                      "places_of_vp" = 0.5)
+  coordinates <- list("size_per_vp" = 0.4,
+                      "places_of_vp" = 0.3)
 
   if (x != 1) {
-    coordinates$size_per_vp <- 0.85 / x
-    coordinates$places_of_vp <- head(seq(0.15, 1, coordinates$size_per_vp), n = -1)
+    coordinates$size_per_vp <- 0.9 / x
+    coordinates$places_of_vp <- head(seq(0.05, 1, coordinates$size_per_vp), n = -1)
   }
   return(coordinates)
 }
