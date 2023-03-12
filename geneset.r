@@ -444,10 +444,6 @@ geneTrack <- function(track_file,
     assign("xmax", .Object@xmax, shared)
     assign("chromosome", .Object@gene_param$chromosome, shared)
 
-    # position of forward and reverse strand
-    #forward_strand_pos <- 0.8
-    #reverse_strand_pos <- 0.2
-
     .Object@plot_param$axis_label_text <- ifelse(!is.null(axis_label_text),
                                                  axis_label_text,
                                                  paste(.Object@gene_param$chromosome, "(bp)"))
