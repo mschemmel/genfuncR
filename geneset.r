@@ -469,7 +469,7 @@ setMethod(f = "show",
           signature = "geneTrack",
           definition = function(object) {
             # main viewport
-            grid::pushViewport(grid::viewport(name = "main",
+            grid::pushViewport(grid::viewport(name = "main_outer",
                                               x = grid::unit(0.5, "npc"),
                                               y = grid::unit(object@layout["vp_y_position"], "npc"),
                                               width = grid::unit(object@layout["vp_width"], "npc"),
