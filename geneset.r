@@ -100,7 +100,7 @@ getLayout <- function(x) {
                       "y_position_of_vp" = 0.3)
 
   if (x != 1) {
-    coordinates$height_of_vp <- 0.9 / x
+    coordinates$height_of_vp <- 0.95 / x
     coordinates$y_position_of_vp <- head(seq(0.05, 1, coordinates$height_of_vp), n = -1)
   }
   return(coordinates)
@@ -340,7 +340,7 @@ setMethod(f = "show",
             grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
                                               y = grid::unit(object@layout["vp_y_position"], "npc"),
                                               width = grid::unit(object@layout["vp_width"], "npc"),
-                                              height = as.numeric(object@layout["vp_height"]) - 0.05,
+                                              height = as.numeric(object@layout["vp_height"]) - 0.025,
                                               just = c("bottom")))
 
             # draw border if requested (default)
@@ -419,7 +419,7 @@ geneTrack <- function(track_file,
                       transparency = 1,
                       show_axis = TRUE,
                       axis_label_text = NULL,
-                      axis_label_offset = -0.5,
+                      axis_label_offset = -0.8,
                       axis_label_gp = NULL,
                       border = FALSE,
                       show_values = FALSE
