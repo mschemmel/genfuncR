@@ -96,12 +96,12 @@ prepareAndFilter <- function(dataset,
 #' @examples
 #' getLayout(list(annoTrack, ...))
 getLayout <- function(x) {
-  coordinates <- list("size_per_vp" = 0.4,
-                      "places_of_vp" = 0.3)
+  coordinates <- list("height_of_vp" = 0.4,
+                      "y_position_of_vp" = 0.3)
 
   if (x != 1) {
-    coordinates$size_per_vp <- 0.9 / x
-    coordinates$places_of_vp <- head(seq(0.05, 1, coordinates$size_per_vp), n = -1)
+    coordinates$height_of_vp <- 0.9 / x
+    coordinates$y_position_of_vp <- head(seq(0.05, 1, coordinates$height_of_vp), n = -1)
   }
   return(coordinates)
 }
@@ -253,8 +253,8 @@ setMethod(f = "show",
                                               height = 1))
 
             lapply(c(1:length(object@tracks)), function(x) {
-                              object@tracks[[x]]@layout["vp_y_position"] <- layout$places_of_vp[[x]]
-                              object@tracks[[x]]@layout["vp_height"] <- layout$size_per_vp
+                              object@tracks[[x]]@layout["vp_y_position"] <- layout$y_position_of_vp[[x]]
+                              object@tracks[[x]]@layout["vp_height"] <- layout$height_of_vp
                               print(object@tracks[[x]])
             })
 })
@@ -476,6 +476,13 @@ setMethod(f = "show",
                                               height = object@layout["vp_height"],
                                               just = c("bottom")))
 
+            grid::pushViewport(grid::viewport(name = "main",
+                                              x = grid::unit(0.5, "npc"),
+                                              y = grid::unit(0.8, "npc"),
+                                              width = 1,
+                                              height = 0.5,
+                                              just = c("top")))
+
             # draw border if requested
             if (object@plot_param$border) grid::grid.rect()
 
@@ -515,5 +522,5 @@ setMethod(f = "show",
                          label_txt = object@plot_param$axis_label_text,
                          gp_ = object@plot_param$axis_label_gp)
             }
-            grid::popViewport(1)
+            grid::popViewport(2)
 })
