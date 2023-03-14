@@ -210,7 +210,8 @@ track = setClass("track",
                  prototype = list(
                       layout = list(
                                   vp_y_position = 0.5,
-                                  vp_height = 0.3
+                                  vp_height = 0.3,
+                                  vp_width = 0.7
                       ),
                       xmin = 0,
                       xmax = 0,
@@ -338,7 +339,7 @@ setMethod(f = "show",
           definition = function(object) {
             grid::pushViewport(grid::viewport(x = grid::unit(0.5, "npc"),
                                               y = grid::unit(object@layout["vp_y_position"], "npc"),
-                                              width = 0.7,
+                                              width = grid::unit(object@layout["vp_width"], "npc"),
                                               height = as.numeric(object@layout["vp_height"]) - 0.05,
                                               just = c("bottom")))
 
@@ -471,7 +472,7 @@ setMethod(f = "show",
             grid::pushViewport(grid::viewport(name = "main",
                                               x = grid::unit(0.5, "npc"),
                                               y = grid::unit(object@layout["vp_y_position"], "npc"),
-                                              width = 0.7,
+                                              width = grid::unit(object@layout["vp_width"], "npc"),
                                               height = object@layout["vp_height"],
                                               just = c("bottom")))
 
