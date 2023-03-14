@@ -29,11 +29,11 @@ drawGene <- function(x1, x2, pos, direction, forward_color = "darkslategray", re
 drawStrand <- function(direction = "forward", y_) {
   direction_label <- if (direction == "forward") c("5'", "3'") else c("3'", "5'")
 
-  grid::grid.segments(x0 = grid::unit(0.025, "npc"),
+  grid::grid.segments(x0 = grid::unit(0, "npc"),
                       y0 = grid::unit(y_, "npc"),
-                      x1 = grid::unit(0.975, "npc"),
+                      x1 = grid::unit(1, "npc"),
                       y1 = grid::unit(y_, "npc"))
-  grid::grid.text(x = c(0, 1), y = y_, label = direction_label)
+  grid::grid.text(x = c(-0.05, 1.05), y = y_, label = direction_label)
 }
 
 #' puts a text label on a specific position
