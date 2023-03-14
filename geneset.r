@@ -415,6 +415,7 @@ geneTrack <- function(track_file,
                       reverse_color = "darkslategray",
                       upstream = 0,
                       downstream = 0,
+                      strands = "both",
                       features = NULL,
                       transparency = 1,
                       show_axis = TRUE,
@@ -455,6 +456,7 @@ geneTrack <- function(track_file,
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
     .Object@gene_param$transparency <- transparency
+    .Object@plot_param$strands <- strands
     .Object@plot_param$show_axis <- show_axis
     .Object@plot_param$axis_label <- axis_label
     .Object@plot_param$axis_label_offset <- axis_label_offset
@@ -487,9 +489,12 @@ setMethod(f = "show",
             if (object@plot_param$border) grid::grid.rect()
 
             # plot strands
-            drawStrand(direction = "forward", y_ = object@plot_param$forward_strand_pos)
-            drawStrand(direction = "reverse", y_ = object@plot_param$reverse_strand_pos)
-
+            if( object@plot_param$strands == "both") {
+              drawStrand(direction = "forward", y_ = object@plot_param$forward_strand_pos)
+              drawStrand(direction = "reverse", y_ = object@plot_param$reverse_strand_pos)
+            } else {
+              drawStrand(direction = object@plot_param$strands, y_ = 0.5)
+            }
             # add all genes/transcripts
             mapply(drawGene,
                    x1 = grid::unit(relativePosition(object@track_file$start, object@xmin, object@xmax), "npc"),
