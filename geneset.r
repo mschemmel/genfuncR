@@ -153,7 +153,10 @@ getAnnoYBreaks <- function(x) {
 #' @examples
 #' getXLabel(10, 100, 20, 20)
 getXLabel <- function(start, end, upstream, downstream) {
-  return(pretty(c((min(start)-upstream):max((end)+downstream))))
+  min_ <- min(start) - upstream
+  min_ <- ifelse(min_ < 0, 0, min_)
+  max_ <- max(end) + downstream
+  return(pretty(c(min_:max_)))
 }
 
 #' test if value is in specific range
