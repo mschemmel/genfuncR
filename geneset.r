@@ -6,7 +6,7 @@
 #' @param gd_ grid gpar object to edit the arrow appearance
 #' @examples
 #' drawGene(x1 = 1, x2 = 4, pos = 0.4, direction = "forward")
-drawGene <- function(x1, x2, pos, direction, forward_color = "darkslategray", reverse_color = "navajowhite3", gene_height = 0.15) {
+drawGene <- function(x1, x2, pos, direction, forward_color, reverse_color, gene_height = 0.15) {
     arrow_head_width <- (x2 - x1) * 0.2 # TODO: make size dynamic
     y1 <- pos - gene_height
     y2 <- pos + gene_height
@@ -26,8 +26,8 @@ drawGene <- function(x1, x2, pos, direction, forward_color = "darkslategray", re
 #' @param y_ y position to draw
 #' @examples
 #' drawStrand(direction = "forward", y_ = 0.4)
-drawStrand <- function(direction = "forward", y_) {
-  direction_label <- if (direction == "forward") c("5'", "3'") else c("3'", "5'")
+drawStrand <- function(direction = "+", y_) {
+  direction_label <- if (direction == "+") c("5'", "3'") else c("3'", "5'")
 
   grid::grid.segments(x0 = grid::unit(0, "npc"),
                       y0 = grid::unit(y_, "npc"),
@@ -61,14 +61,16 @@ drawText <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0
 #' prepareAndFilter (order and subset) input data
 #' @param dataset data.frame of input
 #' @param chromosome target chromosome
-#' @param st start coordinate of target region
-#' @param en end coordinate of target region
+#' @param begin start coordinate of target region
+#' @param stop end coordinate of target region
+#' @param strand strand direction
 #' @examples
-#' prepareAndFilter(dataset, "Chr1A", 1000, 2000)
+#' prepareAndFilter(dataset, "Chr1A", 1000, 2000, "both")
 prepareAndFilter <- function(dataset,
                              chromosome,
-                             st,
-                             en) {
+                             begin,
+                             stop,
+                             strand = "both") {
 
     # check if input file is valid
     if (!is.null(dataset)) {
@@ -82,11 +84,13 @@ prepareAndFilter <- function(dataset,
 
     # order input by start and end column and filter
     dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ]
-    dataset <- dataset[dataset$chr == chromosome & dataset$start >= st & dataset$end <= en, ]
-
+    dataset <- dataset[dataset$chr == chromosome & dataset$start >= begin & dataset$end <= stop, ]
+    if (strand != "both") {
+      dataset <- dataset[dataset$strand == strand, ]
+    }
     # check if data frame not empty
     if (nrow(dataset) == 0) {
-        cat("Input data frame is empty after filtering (", chromosome, ":", st, "-", en, ")\n", sep = "")
+        cat("Input data frame is empty after filtering (", chromosome, ":", begin, "-", stop, ")\n", sep = "")
     }
     return (dataset)
 }
@@ -404,7 +408,8 @@ geneTrack = setClass("geneTrack",
                    prototype = list(
                     plot_param = list(
                       forward_strand_pos = 0.8,
-                      reverse_strand_pos = 0.2
+                      reverse_strand_pos = 0.2,
+                      single_strand_pos = 0.5
                     )
                    ),
                    contains = "track"
@@ -429,11 +434,14 @@ geneTrack <- function(track_file,
     .Object <- new("geneTrack")
 
     # assign data to object
+    if (strands != "both") {
+      track_file <- track_file[track_file$strand == strands, ]
+    }
     .Object@track_file <- track_file
     if (show_values) showValues(.Object@track_file)
 
     # check for chromosome label
-    .Object@gene_param$chromosome <- checkChromosomes(track_file$chr)
+    .Object@gene_param$chromosome <- checkChromosomes(.Object@track_file$chr)
 
     # determine axis label
     .Object@upstream = upstream
@@ -450,7 +458,7 @@ geneTrack <- function(track_file,
                                                  axis_label_text,
                                                  paste(.Object@gene_param$chromosome, "(bp)"))
     if(!is.null(features)) {
-      .Object@gene_param$features <- prepareAndFilter(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax)
+      .Object@gene_param$features <- prepareAndFilter(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax, strands)
     }
     # set defaults
     .Object@gene_param$forward_color <- forward_color
@@ -489,19 +497,21 @@ setMethod(f = "show",
             if (object@plot_param$border) grid::grid.rect()
 
             # plot strands
-            if( object@plot_param$strands == "both") {
-              drawStrand(direction = "forward", y_ = object@plot_param$forward_strand_pos)
-              drawStrand(direction = "reverse", y_ = object@plot_param$reverse_strand_pos)
+            if (object@plot_param$strands == "both") {
+              drawStrand(direction = "+", y_ = object@plot_param$forward_strand_pos)
+              drawStrand(direction = "-", y_ = object@plot_param$reverse_strand_pos)
+              positions <- ifelse(object@track_file$strand == "+",
+                                  object@plot_param$forward_strand_pos,
+                                  object@plot_param$reverse_strand_pos)
             } else {
-              drawStrand(direction = object@plot_param$strands, y_ = 0.5)
+              drawStrand(direction = object@plot_param$strands, y_ = object@plot_param$single_strand_pos)
+              positions <- object@plot_param$single_strand_pos
             }
             # add all genes/transcripts
             mapply(drawGene,
                    x1 = grid::unit(relativePosition(object@track_file$start, object@xmin, object@xmax), "npc"),
                    x2 = grid::unit(relativePosition(object@track_file$end, object@xmin, object@xmax), "npc"),
-                   pos = ifelse(object@track_file$strand == "+",
-                                object@plot_param$forward_strand_pos,
-                                object@plot_param$reverse_strand_pos),
+                   pos =  positions,
                    direction = object@track_file$strand,
                    forward_color = object@gene_param$reverse_color,
                    reverse_color = object@gene_param$forward_color)
