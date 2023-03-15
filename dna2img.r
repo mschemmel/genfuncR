@@ -24,7 +24,7 @@ textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 
 #' plots nucleotide sequence as image
 #'
 #' @param sequence A nucleotide sequence string
-#' @param base_colos A list of colors to be used for every nucleotide
+#' @param base_colors A list of colors to be used for every nucleotide
 #' return Viewport with printed nucleotide sequence
 #'
 #' @examples
