@@ -30,37 +30,52 @@ textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 
 #' @examples
 #' dna_to_img("TATCGATCGATC", list(A = "#9EE362", T = "#00C0D0", G = "#FFD403", C = "#FF9356", U = "#d83131"))
 
+dna2img <- setClass("dna2img",
+                    slots = list(sequence = "character",
+                                 base_colors = "list",
+                                 letter_per_line = "numeric"),
+                    prototype = list(base_colors = list(A = "#9EE362",
+                                                        T = "#00C0D0",
+                                                        G = "#FFD403",
+                                                        C = "#FF9356",
+                                                        U = "#d83131",
+                                                        N = "gray60"),
+                                     letter_per_line = 50))
+
 dna2img <- function(sequence,
-                    base_colors = list(A = "#9EE362",
-                                       T = "#00C0D0",
-                                       G = "#FFD403",
-                                       C = "#FF9356",
-                                       U = "#d83131",
-                                       N = "gray60"),
-                    letter_per_line = 50) {
-    seq_ <- unlist(strsplit(sequence, split = ""))
+                    base_colors,
+                    letter_per_line) {
+    .Object <- new("dna2img")
+    .Object@sequence <- unlist(strsplit(sequence, split = ""))
+    .Object@letter_per_line = letter_per_line
+    return(.Object)
+}
+
+setMethod(f = "show",
+          signature = "dna2img",
+          definition = function(object) {
 
     grid::grid.newpage()
 
     # get coordinates for every nucleotide
     ypositions <- seq(0.90, 0, -0.025)
-    coordx <- rep(0.5:letter_per_line, ceiling(length(seq_)/letter_per_line))[1:length(seq_)] / letter_per_line
-    coordy <- rep(ypositions[1:ceiling(length(seq_)/letter_per_line)], each = letter_per_line)[1:length(seq_)]
+    coordx <- rep(0.5:object@letter_per_line, ceiling(length(object@sequence)/object@letter_per_line))[1:length(object@sequence)] / object@letter_per_line
+    coordy <- rep(ypositions[1:ceiling(length(object@sequence)/object@letter_per_line)], each = object@letter_per_line)[1:length(object@sequence)]
 
     # draw all nucleotides
     grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.95, height = 0.95))
 
-    lapply(seq_along(seq_), function(x){
+    lapply(seq_along(object@sequence), function(x){
         xpos <- coordx[x]
         ypos <- coordy[x]
-        textLabel(label_txt = seq_[x],
+        textLabel(label_txt = object@sequence[x],
                   x_ = xpos,
                   y_ = ypos,
                   w_ = 0.01,
                   h_ = 0.1,
                   gp_ = grid::gpar(fontsize = 12,
                                    fontface = "bold",
-                                   col = base_colors[[seq_[x]]]))
+                                   col = object@base_colors[[object@sequence[x]]]))
         })
     grid::popViewport(1)
-}
+})
