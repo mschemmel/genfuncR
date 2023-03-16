@@ -47,7 +47,7 @@ yCoords <- function(seq_, letter) {
 #'
 #' @param sequence A nucleotide sequence string
 #' @param base_colors A list of colors to be used for every nucleotide
-#' @param letter_per_line number of nucleotides per line
+#' @param letter number of nucleotides per line
 #' @param background background color of nucleotide
 #'
 #' @examples
@@ -56,7 +56,7 @@ yCoords <- function(seq_, letter) {
 dna2img <- setClass("dna2img",
                     slots = list(sequence = "character",
                                  base_colors = "list",
-                                 letter_per_line = "numeric",
+                                 letter = "numeric",
                                  background = "character",
                                  border = "character"),
                     prototype = list(base_colors = list(A = "#9EE362",
@@ -65,18 +65,18 @@ dna2img <- setClass("dna2img",
                                                         C = "#FF9356",
                                                         U = "#d83131",
                                                         N = "gray60"),
-                                     letter_per_line = 20,
+                                     letter = 20,
                                      background = "gray80",
                                      border = "white"))
 
 dna2img <- function(sequence,
                     base_colors,
-                    letter_per_line = 20,
+                    letter = 20,
                     background = "gray80",
                     border = "white") {
     .Object <- new("dna2img")
     .Object@sequence <- unlist(strsplit(sequence, split = ""))
-    .Object@letter_per_line <- letter_per_line
+    .Object@letter <- letter
     .Object@background <- background
     .Object@border <- border
     return(.Object)
@@ -89,8 +89,8 @@ setMethod(f = "show",
     grid::grid.newpage()
 
     # get coordinates for every nucleotide
-    coordx <- xCoords(object@sequence, object@letter_per_line)
-    coordy <- yCoords(object@sequence, object@letter_per_line)
+    coordx <- xCoords(object@sequence, object@letter)
+    coordy <- yCoords(object@sequence, object@letter)
 
     # draw all nucleotides
     grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.95, height = 0.95))
