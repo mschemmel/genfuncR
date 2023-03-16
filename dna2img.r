@@ -21,6 +21,27 @@ textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 
     grid::popViewport(1)
 }
 
+#' calculate x coordinates of nucleotides
+#'
+#' @param seq_ character string of nucleotides
+#' @param letter number of letters per line
+#' @examples
+#' xCoords("ATG",10)
+xCoords <- function(seq_, letter) {
+    return(rep(0.5:letter, ceiling(length(seq_)/letter))[1:length(seq_)] / letter)
+}
+
+#' calculate y coordinates of nucleotides
+#'
+#' @param seq_ character string of nucleotides
+#' @param letter number of letters per line
+#' @examples
+#' yCoords("ATG",10)
+yCoords <- function(seq_, letter) {
+    ypositions <- seq(0.90, 0, -0.025)
+    return(rep(ypositions[1:ceiling(length(seq_) / letter)], each = letter)[1:length(seq_)])
+}
+
 #' plots nucleotide sequence as image
 #'
 #' @param sequence A nucleotide sequence string
@@ -58,9 +79,8 @@ setMethod(f = "show",
     grid::grid.newpage()
 
     # get coordinates for every nucleotide
-    ypositions <- seq(0.90, 0, -0.025)
-    coordx <- rep(0.5:object@letter_per_line, ceiling(length(object@sequence)/object@letter_per_line))[1:length(object@sequence)] / object@letter_per_line
-    coordy <- rep(ypositions[1:ceiling(length(object@sequence)/object@letter_per_line)], each = object@letter_per_line)[1:length(object@sequence)]
+    coordx <- xCoords(object@sequence, object@letter_per_line)
+    coordy <- yCoords(object@sequence, object@letter_per_line)
 
     # draw all nucleotides
     grid::pushViewport(grid::viewport(x = 0.5, y = 0.5, width = 0.95, height = 0.95))
