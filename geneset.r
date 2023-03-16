@@ -503,18 +503,18 @@ setMethod(f = "show",
             if (object@plot_param$strands == "both") {
               drawStrand(direction = "+", y_ = object@plot_param$forward_strand_pos)
               drawStrand(direction = "-", y_ = object@plot_param$reverse_strand_pos)
-              positions <- ifelse(object@track_file$strand == "+",
+              strand_positions <- ifelse(object@track_file$strand == "+",
                                   object@plot_param$forward_strand_pos,
                                   object@plot_param$reverse_strand_pos)
             } else {
               drawStrand(direction = object@plot_param$strands, y_ = object@plot_param$single_strand_pos)
-              positions <- object@plot_param$single_strand_pos
+              strand_positions <- object@plot_param$single_strand_pos
             }
             # add all genes/transcripts
             mapply(drawGene,
                    x1 = grid::unit(relativePosition(object@track_file$start, object@xmin, object@xmax), "npc"),
                    x2 = grid::unit(relativePosition(object@track_file$end, object@xmin, object@xmax), "npc"),
-                   pos =  positions,
+                   pos =  strand_positions,
                    direction = object@track_file$strand,
                    forward_color = object@gene_param$reverse_color,
                    reverse_color = object@gene_param$forward_color)
