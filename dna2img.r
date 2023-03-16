@@ -38,7 +38,7 @@ xCoords <- function(seq_, letter) {
 #' @examples
 #' yCoords("ATG",10)
 yCoords <- function(seq_, letter) {
-    ypositions <- seq(0.90, 0, -0.025)
+    ypositions <- seq(0.90, 0, -0.05)
     return(rep(ypositions[1:ceiling(length(seq_) / letter)], each = letter)[1:length(seq_)])
 }
 
@@ -93,7 +93,7 @@ setMethod(f = "show",
                   y_ = ypos,
                   w_ = 0.01,
                   h_ = 0.1,
-                  gp_ = grid::gpar(fontsize = 12,
+                  gp_ = grid::gpar(fontsize = 14,
                                    fontface = "bold",
                                    col = object@base_colors[[object@sequence[x]]]))
         })
