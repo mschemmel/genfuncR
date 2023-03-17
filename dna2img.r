@@ -27,9 +27,9 @@ textLabel <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 
 #' @param seq_ character string of nucleotides
 #' @param letter number of letters per line
 #' @examples
-#' xCoords("ATG",10)
+#' xCoords("ATG", 10)
 xCoords <- function(seq_, letter) {
-    return(rep(0.5:letter, ceiling(length(seq_)/letter))[1:length(seq_)] / letter)
+    return(rep(0.5:letter, ceiling(length(seq_) / letter))[1:length(seq_)] / letter)
 }
 
 #' calculate y coordinates of nucleotides
@@ -37,9 +37,9 @@ xCoords <- function(seq_, letter) {
 #' @param seq_ character string of nucleotides
 #' @param letter number of letters per line
 #' @examples
-#' yCoords("ATG",10)
+#' yCoords("ATG", 10)
 yCoords <- function(seq_, letter) {
-    ypositions <- seq(0.90, 0, -0.05)
+    ypositions <- seq(0.9, 0.1, -0.05)
     return(rep(ypositions[1:ceiling(length(seq_) / letter)], each = letter)[1:length(seq_)])
 }
 
@@ -101,8 +101,8 @@ setMethod(f = "show",
         textLabel(label_txt = object@sequence[x],
                   x_ = xpos,
                   y_ = ypos,
-                  w_ = 0.05,
-                  h_ = 0.05,
+                  w_ = (0.95/object@letter)/2,
+                  h_ = (0.95/object@letter)/2,
                   bg = object@background,
                   borderCol = object@border,
                   gp_ = grid::gpar(fontsize = 14,
