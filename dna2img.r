@@ -88,7 +88,7 @@ setMethod(f = "show",
 
     grid::grid.newpage()
 
-    # get coordinates for every nucleotide
+    # get coordinates of every nucleotide
     coordx <- xCoords(object@sequence, object@letter)
     coordy <- yCoords(object@sequence, object@letter)
 
@@ -101,8 +101,8 @@ setMethod(f = "show",
         textLabel(label_txt = object@sequence[x],
                   x_ = xpos,
                   y_ = ypos,
-                  w_ = (0.95/object@letter)/2,
-                  h_ = (0.95/object@letter)/2,
+                  w_ = (0.95 / object@letter) / 2,
+                  h_ = (0.95 / object@letter) / 2,
                   bg = object@background,
                   borderCol = object@border,
                   gp_ = grid::gpar(fontsize = 14,
