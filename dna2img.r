@@ -8,6 +8,8 @@
 #' @param angle angle of text label
 #' @param gp_ grid parameter like font, style, color, ...
 #' @param cex fontsize of nucleotide
+#' @param bg background color of nucleotide
+#' @param borderCol color of border of nucleotide
 #' @examples
 #' textLabel(x_ = 1, y_ = 3, w_ = 1, h_ = 1, label_txt = "Test", angle = 45)
 
@@ -60,6 +62,7 @@ yCoords <- function(seq_, letter) {
 #'
 #' @param sequence A nucleotide sequence string
 #' @param base_colors A list of colors to be used for every nucleotide
+#' @param cex size of font of single nucleotide
 #' @param letter number of nucleotides per line
 #' @param background background color of nucleotide
 #'
