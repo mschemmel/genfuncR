@@ -24,16 +24,19 @@ drawGene <- function(x1, x2, pos, direction, forward_color, reverse_color, gene_
 #' draw strand (5' ------ 3') on specified position
 #' @param direction character string specifying forward or reverse strand
 #' @param y_ y position to draw
+#' @param show_direction boolean if direction labels should be displayed
 #' @examples
 #' drawStrand(direction = "forward", y_ = 0.4)
-drawStrand <- function(direction = "+", y_) {
+drawStrand <- function(direction = "+", y_, show_direction = TRUE) {
   direction_label <- if (direction == "+") c("5'", "3'") else c("3'", "5'")
 
   grid::grid.segments(x0 = grid::unit(0, "npc"),
                       y0 = grid::unit(y_, "npc"),
                       x1 = grid::unit(1, "npc"),
                       y1 = grid::unit(y_, "npc"))
-  grid::grid.text(x = c(-0.05, 1.05), y = y_, label = direction_label)
+  if (identical(show_direction, TRUE)) {
+    grid::grid.text(x = c(-0.05, 1.05), y = y_, label = direction_label)
+  }
 }
 
 #' puts a text label on a specific position
@@ -428,6 +431,7 @@ geneTrack <- function(track_file,
                       features = NULL,
                       transparency = 1,
                       show_axis = TRUE,
+                      show_direction_label = TRUE,
                       axis_label_text = NULL,
                       axis_label_offset = -0.8,
                       axis_label_gp = NULL,
@@ -470,6 +474,7 @@ geneTrack <- function(track_file,
     .Object@gene_param$transparency <- transparency
     .Object@plot_param$strands <- strands
     .Object@plot_param$show_axis <- show_axis
+    .Object@plot_param$show_direction_label <- show_direction_label
     .Object@plot_param$axis_label <- axis_label
     .Object@plot_param$axis_label_offset <- axis_label_offset
     .Object@plot_param$axis_label_gp <- axis_label_gp
@@ -502,13 +507,21 @@ setMethod(f = "show",
 
             # plot strands
             if (object@plot_param$strands == "both") {
-              drawStrand(direction = "+", y_ = object@plot_param$forward_strand_pos)
-              drawStrand(direction = "-", y_ = object@plot_param$reverse_strand_pos)
+              drawStrand(direction = "+",
+                         y_ = object@plot_param$forward_strand_pos,
+                         show_direction = object@plot_param$show_direction_label)
+              drawStrand(direction = "-",
+                         y_ = object@plot_param$reverse_strand_pos,
+                         show_direction = object@plot_param$show_direction_label)
+
               strand_positions <- ifelse(object@track_file$strand == "+",
                                   object@plot_param$forward_strand_pos,
                                   object@plot_param$reverse_strand_pos)
             } else {
-              drawStrand(direction = object@plot_param$strands, y_ = object@plot_param$single_strand_pos)
+              drawStrand(direction = object@plot_param$strands,
+                         y_ = object@plot_param$single_strand_pos,
+                         show_direction = object@plot_param$show_direction_label)
+
               strand_positions <- object@plot_param$single_strand_pos
             }
             # add all genes/transcripts
