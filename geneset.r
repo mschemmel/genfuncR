@@ -517,8 +517,8 @@ setMethod(f = "show",
                    x2 = grid::unit(relativePosition(object@track_file$end, object@xmin, object@xmax), "npc"),
                    pos =  strand_positions,
                    direction = object@track_file$strand,
-                   forward_color = object@gene_param$reverse_color,
-                   reverse_color = object@gene_param$forward_color)
+                   forward_color = object@gene_param$forward_color,
+                   reverse_color = object@gene_param$reverse_color)
 
             # add strand specific features
             if (!is.null(object@gene_param$features)) {
