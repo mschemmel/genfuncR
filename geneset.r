@@ -239,6 +239,7 @@ geneset = setClass("geneset", slots = list(tracks = "list"))
 # constructor method
 geneset <- function(track) {
   .Object <- new("geneset")
+  if(typeof(track) != "list") track <- list(track)
   .Object@tracks <- track
   return(.Object)
 }
