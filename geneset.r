@@ -468,6 +468,7 @@ geneTrack <- function(track_file,
     if(!is.null(features)) {
       .Object@gene_param$features <- prepareAndFilter(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax, strands)
     }
+
     # set defaults
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
@@ -524,6 +525,7 @@ setMethod(f = "show",
 
               strand_positions <- object@plot_param$single_strand_pos
             }
+
             # add all genes/transcripts
             mapply(drawGene,
                    x1 = grid::unit(relativePosition(object@track_file$start, object@xmin, object@xmax), "npc"),
@@ -536,8 +538,8 @@ setMethod(f = "show",
             # add strand specific features
             if (!is.null(object@gene_param$features)) {
                 grid::grid.circle(x = grid::unit(relativePosition(object@gene_param$features$start, object@xmin, object@xmax), "npc"),
-                                  y = grid::unit(object@plot_param$reverse_strand_pos, "npc"),
-                                  r = grid::unit(abs(object@gene_param$features$value) * 0.1, "npc"),
+                                  y = grid::unit(ifelse(object@gene_param$features$strand == "+", object@plot_param$forward_strand_pos, object@plot_param$reverse_strand_pos), "npc"),
+                                  r = grid::unit(abs(object@gene_param$features$value), "npc"),
                                   gp = grid::gpar(fill = "red"))
             }
 
