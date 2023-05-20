@@ -110,7 +110,7 @@ getLayout <- function(x) {
     coordinates$height_of_vp <- 0.95 / x
     coordinates$y_position_of_vp <- head(seq(0.05, 1, coordinates$height_of_vp), n = -1)
   }
-  return(coordinates)
+  return (coordinates)
 }
 
 #' helper to retrieve last element of vector
@@ -137,7 +137,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   
   # test if user provided specific range
   if (!is.null(range_)) { interval <- range_ }
-  return(pretty(interval))
+  return (pretty(interval))
 }
 
 #' calculate y scale breaks of annotation tracks
@@ -145,7 +145,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
 #' @examples
 #' getAnnoYBreaks(c(0:10))
 getAnnoYBreaks <- function(x) {
-  return(seq(0, 1, 1 / (length(x) - 1)))
+  return (seq(0, 1, 1 / (length(x) - 1)))
 }
 
 #' calculate x scale label
@@ -159,7 +159,7 @@ getXLabel <- function(start, end, upstream, downstream) {
   min_ <- min(start) - upstream
   min_ <- ifelse(min_ < 0, 0, min_)
   max_ <- max(end) + downstream
-  return(pretty(c(min_:max_)))
+  return (pretty(c(min_:max_)))
 }
 
 #' test if value is in specific range
@@ -189,10 +189,10 @@ showValues <- function(object) {
 checkChromosomes <- function(chromosomes) {
   found_chromosomes <- unique(chromosomes)
   if (length(found_chromosomes) > 1) {
-    warning("Found more than one chromosome identifier. Use sfirst.")
+    warning("Found more than one chromosome identifier -> use first.")
     return(first(found_chromosomes))
   } else {
-    return(found_chromosomes)
+    return (found_chromosomes)
   }
 }
 
@@ -203,7 +203,7 @@ checkChromosomes <- function(chromosomes) {
 #' @examples
 #' relativePosition(100, 50, 150)
 relativePosition <- function(x, xmin, xmax) {
-  return((x - xmin) / (xmax - xmin))
+  return ((x - xmin) / (xmax - xmin))
 }
 
 #' set track specific layout parameter
@@ -244,7 +244,7 @@ geneset <- function(track) {
   .Object <- new("geneset")
   if(typeof(track) != "list") track <- list(track)
   .Object@tracks <- track
-  return(.Object)
+  return (.Object)
 }
 
 setMethod(f = "show",
@@ -342,7 +342,7 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$label_orientation <- ifelse(!(label_orientation %in% c("h", "v")),
                                                     "h",
                                                     label_orientation)
-    return(.Object)
+    return (.Object)
 }
 
 setMethod(f = "show",
@@ -482,7 +482,7 @@ geneTrack <- function(track_file,
     .Object@plot_param$border <- border
     .Object@plot_param$show_values <- show_values
 
-    return(.Object)
+    return (.Object)
 }
 
 setMethod(f = "show",
