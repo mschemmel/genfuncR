@@ -61,15 +61,15 @@ drawText <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0
     grid::popViewport(1)
 }
 
-#' prepareAndFilter (order and subset) input data
+#' prepare (order and subset) input data
 #' @param dataset data.frame of input
 #' @param chromosome target chromosome
 #' @param begin start coordinate of target region
 #' @param stop end coordinate of target region
 #' @param strand strand direction
 #' @examples
-#' prepareAndFilter(dataset, "Chr1A", 1000, 2000, "both")
-prepareAndFilter <- function(dataset,
+#' prepare(dataset, "Chr1A", 1000, 2000, "both")
+prepare <- function(dataset,
                              chromosome,
                              begin,
                              stop,
@@ -327,7 +327,7 @@ annoTrack <- function(track_file = NULL,
     chromosome <- ifelse(exists("chromosome", shared), get("chromosome", shared), checkChromosomes(track_file$chr))
 
     # assign parameter to object
-    .Object@track_param$track_file <- prepareAndFilter(track_file, chromosome, xmin, xmax)
+    .Object@track_param$track_file <- prepare(track_file, chromosome, xmin, xmax)
     if(show_values) showValues(.Object@track_param$track_file)
     .Object@xmin <- xmin
     .Object@xmax <- xmax
@@ -397,7 +397,6 @@ setMethod(f = "show",
 #' @param upstream distance in bp upstream
 #' @param downstream distance in bp downstream
 #' @param features data.frame of features to add to strand position
-#' @param transparency alpha value of gene annotation box
 #' @param show_axis show axis or not (default = TRUE)
 #' @param axis_label_text text of x axis label (default: "Region (bp)")
 #' @param axis_label_offset offset of label (default: -0.5)
@@ -429,7 +428,6 @@ geneTrack <- function(track_file,
                       downstream = 0,
                       strands = "both",
                       features = NULL,
-                      transparency = 1,
                       show_axis = TRUE,
                       show_direction_label = TRUE,
                       axis_label_text = NULL,
@@ -466,13 +464,12 @@ geneTrack <- function(track_file,
                                                  axis_label_text,
                                                  paste(.Object@gene_param$chromosome, "(bp)"))
     if(!is.null(features)) {
-      .Object@gene_param$features <- prepareAndFilter(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax, strands)
+      .Object@gene_param$features <- prepare(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax, strands)
     }
 
     # set defaults
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
-    .Object@gene_param$transparency <- transparency
     .Object@plot_param$strands <- strands
     .Object@plot_param$show_axis <- show_axis
     .Object@plot_param$show_direction_label <- show_direction_label
