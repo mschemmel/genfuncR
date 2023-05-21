@@ -39,6 +39,18 @@ drawStrand <- function(direction = "+", y_, show_direction = TRUE) {
   }
 }
 
+#' draw Feature on specified position
+#' @param pos position to put
+#' @param strand_pos y position to draw
+#' @param value numerical value of feature
+#' @param col color of feature
+drawFeature <- function(pos, strand_pos, value, col) {
+  grid::grid.circle(x = grid::unit(pos, "npc"),
+                    y = grid::unit(strand_pos, "npc"),
+                    r = grid::unit(abs(value), "npc"),
+                    gp = grid::gpar(fill = col))
+}
+
 #' puts a text label on a specific position
 #' @param vp_name Name of the viewport
 #' @param x_ x coordinate
@@ -414,8 +426,8 @@ geneTrack = setClass("geneTrack",
                    prototype = list(
                     plot_param = list(
                       forward_strand_pos = 0.8,
-                      reverse_strand_pos = 0.2,
-                      single_strand_pos = 0.5
+                      single_strand_pos = 0.5,
+                      reverse_strand_pos = 0.2
                     )
                    ),
                    contains = "track"
@@ -426,7 +438,7 @@ geneTrack <- function(track_file,
                       reverse_color = "darkslategray",
                       upstream = 0,
                       downstream = 0,
-                      strands = "both",
+                      strand = "both",
                       features = NULL,
                       show_axis = TRUE,
                       show_direction_label = TRUE,
@@ -440,8 +452,8 @@ geneTrack <- function(track_file,
     .Object <- new("geneTrack")
 
     # assign data to object
-    if (strands != "both") {
-      track_file <- track_file[track_file$strand == strands, ]
+    if (strand != "both") {
+      track_file <- track_file[track_file$strand == strand, ]
     }
     .Object@track_file <- track_file
     if (show_values) showValues(.Object@track_file)
@@ -464,13 +476,13 @@ geneTrack <- function(track_file,
                                                  axis_label_text,
                                                  paste(.Object@gene_param$chromosome, "(bp)"))
     if(!is.null(features)) {
-      .Object@gene_param$features <- prepare(features, .Object@gene_param$chr, .Object@xmin, .Object@xmax, strands)
+      .Object@gene_param$features <- features
     }
 
     # set defaults
     .Object@gene_param$forward_color <- forward_color
     .Object@gene_param$reverse_color <- reverse_color
-    .Object@plot_param$strands <- strands
+    .Object@plot_param$strand <- strand
     .Object@plot_param$show_axis <- show_axis
     .Object@plot_param$show_direction_label <- show_direction_label
     .Object@plot_param$axis_label <- axis_label
@@ -503,8 +515,8 @@ setMethod(f = "show",
             # draw border if requested
             if (object@plot_param$border) grid::grid.rect()
 
-            # plot strands
-            if (object@plot_param$strands == "both") {
+            # plot strand
+            if (object@plot_param$strand == "both") {
               drawStrand(direction = "+",
                          y_ = object@plot_param$forward_strand_pos,
                          show_direction = object@plot_param$show_direction_label)
@@ -516,7 +528,7 @@ setMethod(f = "show",
                                   object@plot_param$forward_strand_pos,
                                   object@plot_param$reverse_strand_pos)
             } else {
-              drawStrand(direction = object@plot_param$strands,
+              drawStrand(direction = object@plot_param$strand,
                          y_ = object@plot_param$single_strand_pos,
                          show_direction = object@plot_param$show_direction_label)
 
@@ -534,10 +546,10 @@ setMethod(f = "show",
 
             # add strand specific features
             if (!is.null(object@gene_param$features)) {
-                grid::grid.circle(x = grid::unit(relativePosition(object@gene_param$features$start, object@xmin, object@xmax), "npc"),
-                                  y = grid::unit(ifelse(object@gene_param$features$strand == "+", object@plot_param$forward_strand_pos, object@plot_param$reverse_strand_pos), "npc"),
-                                  r = grid::unit(abs(object@gene_param$features$value), "npc"),
-                                  gp = grid::gpar(fill = "red"))
+              drawFeature(relativePosition(object@gene_param$features$pos, object@xmin, object@xmax),
+                          ifelse(object@gene_param$features$strand == "+", object@plot_param$forward_strand_pos, object@plot_param$reverse_strand_pos),
+                          object@gene_param$features$value,
+                          object@gene_param$features$col)
             }
 
             # add axis label
