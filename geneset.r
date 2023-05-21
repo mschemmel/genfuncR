@@ -44,11 +44,19 @@ drawStrand <- function(direction = "+", y_, show_direction = TRUE) {
 #' @param strand_pos y position to draw
 #' @param value numerical value of feature
 #' @param col color of feature
-drawFeature <- function(pos, strand_pos, value, col) {
-  grid::grid.circle(x = grid::unit(pos, "npc"),
-                    y = grid::unit(strand_pos, "npc"),
-                    r = grid::unit(abs(value), "npc"),
-                    gp = grid::gpar(fill = col))
+drawFeature <- function(pos, strand_pos, value, col, type = "circle") {
+  if(type == "circle") {
+    grid::grid.circle(x = grid::unit(pos, "npc"),
+                      y = grid::unit(strand_pos, "npc"),
+                      r = grid::unit(abs(value), "npc"),
+                      gp = grid::gpar(fill = col))
+  }
+  else if (type == "triangle") {
+    sizefactor <- 0.05
+    grid::grid.polygon(c(pos-(pos*sizefactor),pos,pos+(pos*sizefactor)),
+                       c(strand_pos-(strand_pos*sizefactor),strand_pos+(strand_pos*sizefactor), strand_pos-(strand_pos*sizefactor)),
+                       gp = grid::gpar(fill = col))
+  }
 }
 
 #' puts a text label on a specific position
@@ -549,7 +557,8 @@ setMethod(f = "show",
               drawFeature(relativePosition(object@gene_param$features$pos, object@xmin, object@xmax),
                           ifelse(object@gene_param$features$strand == "+", object@plot_param$forward_strand_pos, object@plot_param$reverse_strand_pos),
                           object@gene_param$features$value,
-                          object@gene_param$features$col)
+                          object@gene_param$features$col,
+                          object@gene_param$features$type)
             }
 
             # add axis label
