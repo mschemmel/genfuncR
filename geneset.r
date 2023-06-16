@@ -35,7 +35,7 @@ drawStrand <- function(direction = "+", y_, show_direction = TRUE) {
                       x1 = grid::unit(1, "npc"),
                       y1 = grid::unit(y_, "npc"))
   if (identical(show_direction, TRUE)) {
-    grid::grid.text(x = c(-0.05, 1.05), y = y_, label = direction_label)
+    grid::grid.text(x = c(-0.05, 1.05), y = y_, label = direction_label, gp = grid::gpar(fontsize = 16))
   }
 }
 
@@ -105,9 +105,11 @@ prepare <- function(dataset,
         }
     }
 
-    # order input by start and end column and filter
-    dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ]
+    # filter by start and end column and order dataset
     dataset <- dataset[dataset$chr == chromosome & dataset$start >= begin & dataset$end <= stop, ]
+    dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ]
+
+    # check strand information
     if (strand != "both") {
       dataset <- dataset[dataset$strand == strand, ]
     }
@@ -318,13 +320,21 @@ annoTrack <- function(track_file = NULL,
                       downstream = 0,
                       border = TRUE,
                       yrange = NULL,
-                      label_gp = grid::gpar(fontsize = 12, col = "black"),
+                      label_gp = grid::gpar(fontsize = 20, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
                       label_orientation = "h",
                       show_values = FALSE
                       ) {
 
     .Object <- new("annoTrack")
+
+    # get environment variables
+    xmin <- ifelse(exists("xmin", shared), get("xmin", shared), first(xLabel))
+    xmax <- ifelse(exists("xmax", shared), get("xmax", shared), last(xLabel))
+    chromosome <- ifelse(exists("chromosome", shared), get("chromosome", shared), checkChromosomes(track_file$chr))
+
+    # prepare track file
+    track_file <- prepare(track_file, chromosome, xmin, xmax)
 
     # get column with data
     if (values %in% names(track_file)) {
@@ -338,16 +348,12 @@ annoTrack <- function(track_file = NULL,
     yscale_label <- getAnnoYScale(track_file$value, yrange)
     yscale_at <- getAnnoYBreaks(yscale_label)
 
-    # get environment variables
     .Object@upstream = upstream
     .Object@downstream = downstream
     xLabel <- getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)
-    xmin <- ifelse(exists("xmin", shared), get("xmin", shared), first(xLabel))
-    xmax <- ifelse(exists("xmax", shared), get("xmax", shared), last(xLabel))
-    chromosome <- ifelse(exists("chromosome", shared), get("chromosome", shared), checkChromosomes(track_file$chr))
 
     # assign parameter to object
-    .Object@track_param$track_file <- prepare(track_file, chromosome, xmin, xmax)
+    .Object@track_param$track_file <- track_file
     if(show_values) showValues(.Object@track_param$track_file)
     .Object@xmin <- xmin
     .Object@xmax <- xmax
@@ -388,7 +394,7 @@ setMethod(f = "show",
             # add yaxis
             grid::grid.yaxis(label = object@track_param$yscale_label,
                              at = object@track_param$yscale_at,
-                             gp = grid::gpar(fontsize = 8))
+                             gp = grid::gpar(fontsize = 16))
 
         if (nrow(object@track_param$track_file) != 0) {
             # add middle line
