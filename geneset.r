@@ -130,7 +130,7 @@ getLayout <- function(x) {
 
   if (x != 1) {
     coordinates$height_of_vp <- 0.95 / x
-    coordinates$y_position_of_vp <- head(seq(0.05, 1, coordinates$height_of_vp), n = -1)
+    coordinates$y_position_of_vp <- dropLast(seq(0.05, 1, coordinates$height_of_vp))
   }
   return (coordinates)
 }
@@ -146,6 +146,12 @@ last <- function(x) return (tail(x, n = 1))
 #' @examples
 #' first(c(1, 2, 3))
 first <- function(x) return (x[1])
+
+#' helper to drop last element of vector
+#' @param x vector to drop last element
+#' @examples
+#' dropLast(c(1, 2, 3))
+dropLast <- function(x) return (x[-length(x)])
 
 #' calculate y scale labels of annotation tracks
 #' @param x data frame to infer max and min values from
