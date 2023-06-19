@@ -106,7 +106,7 @@ prepare <- function(dataset,
     }
 
     # filter by start and end column and order dataset
-    dataset <- dataset[dataset$chr == chromosome & dataset$start >= begin & dataset$end <= stop, ]
+    dataset <- dataset[which(dataset$chr == chromosome & dataset$start >= begin & dataset$end <= stop), ]
     dataset <- dataset[with(dataset, order(dataset$start, dataset$end)), ]
 
     # check strand information
