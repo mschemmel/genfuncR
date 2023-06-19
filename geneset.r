@@ -164,7 +164,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   if (length(x) == 1) interval <- c(0, x)
   
   # test if user provided specific range
-  if (!is.null(range_)) { interval <- range_ }
+  if (!is.null(range_)) interval <- range_
   return (pretty(interval))
 }
 
@@ -217,7 +217,7 @@ showValues <- function(object) {
 checkChromosomes <- function(chromosomes) {
   found_chromosomes <- unique(chromosomes)
   if (length(found_chromosomes) > 1) {
-    warning("Found more than one chromosome identifier -> use first.")
+    warning("Found more than one chromosome identifier, use first.")
     return(first(found_chromosomes))
   } else {
     return (found_chromosomes)
