@@ -159,6 +159,7 @@ dropLast <- function(x) return (x[-length(x)])
 #' @examples
 #' getAnnoYScale(dat, threshold = 10)
 getAnnoYScale <- function(x, range_ = NULL) {
+  if (identical(x, numeric(0))) return(c(0,0.5,1))
   # get min and max of y scale of annoTrack
   interval <- c(min(x), max(x))
   if (length(x) == 1) interval <- c(0, x)
@@ -173,7 +174,9 @@ getAnnoYScale <- function(x, range_ = NULL) {
 #' @examples
 #' getAnnoYBreaks(c(0:10))
 getAnnoYBreaks <- function(x) {
-  return (seq(0, 1, 1 / (length(x) - 1)))
+  if (identical(x, numeric(0))) return(c(0,0.5,1))
+  no_of_breaks <- ifelse(length(x) < 3, 3, length(x))
+  return (seq(0, 1, 1 / (no_of_breaks - 1)))
 }
 
 #' calculate x scale label
@@ -354,15 +357,13 @@ annoTrack <- function(track_file = NULL,
     yscale_label <- getAnnoYScale(track_file$value, yrange)
     yscale_at <- getAnnoYBreaks(yscale_label)
 
-    .Object@upstream = upstream
-    .Object@downstream = downstream
-    xLabel <- getXLabel(track_file$start, track_file$end, .Object@upstream, .Object@downstream)
-
     # assign parameter to object
     .Object@track_param$track_file <- track_file
     if(show_values) showValues(.Object@track_param$track_file)
     .Object@xmin <- xmin
     .Object@xmax <- xmax
+    .Object@upstream = upstream
+    .Object@downstream = downstream
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
     .Object@track_param$ymax <- diff(range(yscale_label))
