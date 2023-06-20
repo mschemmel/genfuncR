@@ -159,7 +159,7 @@ dropLast <- function(x) return (x[-length(x)])
 #' @examples
 #' getAnnoYScale(dat, threshold = 10)
 getAnnoYScale <- function(x, range_ = NULL) {
-  if (identical(x, numeric(0))) return(c(0,0.5,1))
+  if (identical(x, numeric(0))) return(c(0, 0.5, 1))
   # get min and max of y scale of annoTrack
   interval <- c(min(x), max(x))
   if (length(x) == 1) interval <- c(0, x)
@@ -174,7 +174,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
 #' @examples
 #' getAnnoYBreaks(c(0:10))
 getAnnoYBreaks <- function(x) {
-  if (identical(x, numeric(0))) return(c(0,0.5,1))
+  if (identical(x, numeric(0))) return(c(0, 0.5, 1))
   no_of_breaks <- ifelse(length(x) < 3, 3, length(x))
   return (seq(0, 1, 1 / (no_of_breaks - 1)))
 }
@@ -366,7 +366,9 @@ annoTrack <- function(track_file = NULL,
     .Object@downstream = downstream
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
-    .Object@track_param$ymax <- diff(range(yscale_label))
+    .Object@track_param$yinterval <- diff(range(yscale_label))
+    .Object@track_param$ymax <- max(yscale_label)
+    .Object@track_param$ymin <- min(yscale_label)
     .Object@track_param$start_y <- yscale_at[which(yscale_label == 0)]
     .Object@track_param$label <- label
     .Object@track_param$label_gp <- label_gp
@@ -392,7 +394,7 @@ setMethod(f = "show",
 
             # add track label
             grid::grid.text(object@track_param$label,
-                            x = -0.05,
+                            x = -0.075,
                             y = 0.5,
                             just = ifelse(object@track_param$label_orientation == "h", "right", "center"),
                             rot = ifelse(object@track_param$label_orientation == "h", 0, 90),
@@ -411,14 +413,18 @@ setMethod(f = "show",
                                 y1 = grid::unit(object@track_param$start_y,  "npc"),
                                 gp = grid::gpar(col = "gray30"))
 
+            left_border <- relativePosition(object@track_param$track_file$start, object@xmin, object@xmax)
+            right_border <- relativePosition(object@track_param$track_file$end, object@xmin, object@xmax)
+            width_ <- right_border - left_border
+            height_ <- object@track_param$track_file$value / object@track_param$yinterval
+
             # which region should be displayed
-            grid::grid.segments(x0 = grid::unit(relativePosition(object@track_param$track_file$start, object@xmin, object@xmax), "npc"),
-                                y0 = grid::unit(object@track_param$start_y, "npc"),
-                                x1 = grid::unit(relativePosition(object@track_param$track_file$end, object@xmin, object@xmax), "npc"),
-                                y1 = ifelse(object@track_param$track_file$value < object@track_param$ymax,
-                                            grid::unit(object@track_param$start_y + (object@track_param$track_file$value / object@track_param$ymax), "npc"),
-                                            grid::unit(1, "npc")),
-                                gp = object@track_param$track_gp)
+            grid::grid.rect(x = grid::unit(left_border, "npc"),
+                            y = grid::unit(object@track_param$start_y, "npc"),
+                            width = grid::unit(width_, "npc"),
+                            height = grid::unit(height_, "npc"),
+                            just = c("left", "bottom"),
+                            gp = object@track_param$track_gp)
         }
         grid::popViewport(1)
     })
