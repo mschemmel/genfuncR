@@ -356,7 +356,7 @@ annoTrack <- function(track_file = NULL,
     # get min and max of scale
     yscale_label <- getAnnoYScale(track_file$value, yrange)
     yscale_at <- getAnnoYBreaks(yscale_label)
-
+    yinterval <- diff(range(yscale_label))
     # assign parameter to object
     .Object@track_param$track_file <- track_file
     if(show_values) showValues(.Object@track_param$track_file)
@@ -366,10 +366,10 @@ annoTrack <- function(track_file = NULL,
     .Object@downstream = downstream
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
-    .Object@track_param$yinterval <- diff(range(yscale_label))
+    .Object@track_param$yinterval <- ifelse(yinterval < 1, 1, yinterval)
     .Object@track_param$ymax <- max(yscale_label)
     .Object@track_param$ymin <- min(yscale_label)
-    .Object@track_param$start_y <- yscale_at[which(yscale_label == 0)]
+    .Object@track_param$start_y <- ifelse(0 %in% yscale_label, yscale_at[which(yscale_label == 0)], 0)
     .Object@track_param$label <- label
     .Object@track_param$label_gp <- label_gp
     .Object@track_param$track_gp <- track_gp
