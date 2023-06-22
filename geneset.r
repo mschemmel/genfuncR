@@ -40,7 +40,7 @@ drawStrand <- function(direction = "+", y_, show_direction = TRUE) {
 }
 
 #' draw Feature on specified position
-#' @param pos position to put
+#' @param pos position to draw feature
 #' @param strand_pos y position to draw
 #' @param value numerical value of feature
 #' @param col color of feature
@@ -90,10 +90,10 @@ drawText <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0
 #' @examples
 #' prepare(dataset, "Chr1A", 1000, 2000, "both")
 prepare <- function(dataset,
-                             chromosome,
-                             begin,
-                             stop,
-                             strand = "both") {
+                    chromosome,
+                    begin,
+                    stop,
+                    strand) {
 
     # check if input file is valid
     if (!is.null(dataset)) {
@@ -111,7 +111,7 @@ prepare <- function(dataset,
 
     # check strand information
     if (strand != "both") {
-      dataset <- dataset[dataset$strand == strand, ]
+      dataset <- dataset[whic(dataset$strand == strand), ]
     }
     # check if data frame not empty
     if (nrow(dataset) == 0) {
@@ -155,16 +155,16 @@ dropLast <- function(x) return (x[-length(x)])
 
 #' calculate y scale labels of annotation tracks
 #' @param x data frame to infer max and min values from
-#' @param threshold maximal y value for reference
+#' @param range_ range to display
 #' @examples
-#' getAnnoYScale(dat, threshold = 10)
+#' getAnnoYScale(dat, range_ = c(0, 10))
 getAnnoYScale <- function(x, range_ = NULL) {
   if (identical(x, numeric(0))) return(c(0, 0.5, 1))
-  # get min and max of y scale of annoTrack
+  # get min and max of y scale
   interval <- c(min(x), max(x))
   if (length(x) == 1) interval <- c(0, x)
   
-  # test if user provided specific range
+  # test if specific range is provided
   if (!is.null(range_)) interval <- range_
   return (pretty(interval))
 }
