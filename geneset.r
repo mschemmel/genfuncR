@@ -93,7 +93,7 @@ prepare <- function(dataset,
                     chromosome,
                     begin,
                     stop,
-                    strand) {
+                    strand = "both") {
 
     # check if input file is valid
     if (!is.null(dataset)) {
@@ -153,6 +153,14 @@ first <- function(x) return (x[1])
 #' dropLast(c(1, 2, 3))
 dropLast <- function(x) return (x[-length(x)])
 
+#' test if value is in specific range
+#' @param x single value to test
+#' @param min_ minimal allowed value
+#' @param max_ maximal allowed value
+#' @examples
+#' inRange(10,5,15)
+inRange <- function(x, min_, max_) { return(all(x >= min_ & x <= max_)) }
+
 #' calculate y scale labels of annotation tracks
 #' @param x data frame to infer max and min values from
 #' @param range_ range to display
@@ -160,12 +168,17 @@ dropLast <- function(x) return (x[-length(x)])
 #' getAnnoYScale(dat, range_ = c(0, 10))
 getAnnoYScale <- function(x, range_ = NULL) {
   if (identical(x, numeric(0))) return(c(0, 0.5, 1))
+  if (length(x) == 1) return(pretty(c(0, x)))
+
+  # test if specific range is provided
+  if (!is.null(range_)) return(pretty(range_))
+
   # get min and max of y scale
   interval <- c(min(x), max(x))
-  if (length(x) == 1) interval <- c(0, x)
-  
-  # test if specific range is provided
-  if (!is.null(range_)) interval <- range_
+  # check range ( <-0 | <-0-> | 0-> )
+  if (all(x > 0)) interval <- c(0, max(x))
+  if (all(x < 0)) interval <- c(min(x), 0)
+  if (any(x > 0) & any(x < 0)) interval <- c(-max(abs(x)), max(abs(x)))
   return (pretty(interval))
 }
 
@@ -192,14 +205,6 @@ getXLabel <- function(start, end, upstream, downstream) {
   max_ <- max(end) + downstream
   return (pretty(c(min_:max_)))
 }
-
-#' test if value is in specific range
-#' @param x single value to test
-#' @param min_ minimal allowed value
-#' @param max_ maximal allowed value
-#' @examples
-#' inRange(10,5,15)
-inRange <- function(x, min_, max_) { return(all(x >= min_ & x <= max_)) }
 
 #' print values of tracks
 #' @param object data.frame containing data
