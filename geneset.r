@@ -111,13 +111,13 @@ prepare <- function(dataset,
 
     # check strand information
     if (strand != "both") {
-      dataset <- dataset[whic(dataset$strand == strand), ]
+      dataset <- dataset[which(dataset$strand == strand), ]
     }
     # check if data frame not empty
     if (nrow(dataset) == 0) {
         cat("Input data frame is empty after filtering (", chromosome, ":", begin, "-", stop, ")\n", sep = "")
     }
-    return (dataset)
+    return(dataset)
 }
 
 #' get coordinates of viewports to draw on
@@ -132,26 +132,26 @@ getLayout <- function(x) {
     coordinates$height_of_vp <- 0.95 / x
     coordinates$y_position_of_vp <- dropLast(seq(0.05, 1, coordinates$height_of_vp))
   }
-  return (coordinates)
+  return(coordinates)
 }
 
 #' helper to retrieve last element of vector
 #' @param x vector to get the last element from
 #' @examples
 #' last(c(1, 2, 3))
-last <- function(x) return (tail(x, n = 1))
+last <- function(x) return(tail(x, n = 1))
 
 #' helper to retrieve first element of vector
 #' @param x vector to get the first element from
 #' @examples
 #' first(c(1, 2, 3))
-first <- function(x) return (x[1])
+first <- function(x) return(x[1])
 
 #' helper to drop last element of vector
 #' @param x vector to drop last element
 #' @examples
 #' dropLast(c(1, 2, 3))
-dropLast <- function(x) return (x[-length(x)])
+dropLast <- function(x) return(x[-length(x)])
 
 #' test if value is in specific range
 #' @param x single value to test
@@ -159,7 +159,7 @@ dropLast <- function(x) return (x[-length(x)])
 #' @param max_ maximal allowed value
 #' @examples
 #' inRange(10,5,15)
-inRange <- function(x, min_, max_) { return(all(x >= min_ & x <= max_)) }
+inRange <- function(x, min_, max_) return(all(x >= min_ & x <= max_))
 
 #' calculate y scale labels of annotation tracks
 #' @param x data frame to infer max and min values from
@@ -179,7 +179,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   if (all(x > 0)) interval <- c(0, max(x))
   if (all(x < 0)) interval <- c(min(x), 0)
   if (any(x > 0) & any(x < 0)) interval <- c(-max(abs(x)), max(abs(x)))
-  return (pretty(interval))
+  return(pretty(interval))
 }
 
 #' calculate y scale breaks of annotation tracks
@@ -189,7 +189,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
 getAnnoYBreaks <- function(x) {
   if (identical(x, numeric(0))) return(c(0, 0.5, 1))
   no_of_breaks <- ifelse(length(x) < 3, 3, length(x))
-  return (seq(0, 1, 1 / (no_of_breaks - 1)))
+  return(seq(0, 1, 1 / (no_of_breaks - 1)))
 }
 
 #' calculate x scale label
@@ -203,7 +203,7 @@ getXLabel <- function(start, end, upstream, downstream) {
   min_ <- min(start) - upstream
   min_ <- ifelse(min_ < 0, 0, min_)
   max_ <- max(end) + downstream
-  return (pretty(c(min_:max_)))
+  return(pretty(c(min_:max_)))
 }
 
 #' print values of tracks
@@ -223,12 +223,12 @@ showValues <- function(object) {
 #' checkChromosomes(c("Chr1", "Chr1"))
 
 checkChromosomes <- function(chromosomes) {
-  found_chromosomes <- unique(chromosomes)
+  found_chromosomes <- unique(as.character(chromosomes))
   if (length(found_chromosomes) > 1) {
     warning("Found more than one chromosome identifier, use first.")
     return(first(found_chromosomes))
   } else {
-    return (found_chromosomes)
+    return(found_chromosomes)
   }
 }
 
@@ -239,7 +239,11 @@ checkChromosomes <- function(chromosomes) {
 #' @examples
 #' relativePosition(100, 50, 150)
 relativePosition <- function(x, xmin, xmax) {
-  return ((x - xmin) / (xmax - xmin))
+  if (!inRange(x, xmin, xmax)) {
+    warning("Specified x position not in range of axis.")
+    return(0)
+  }
+  return((x - xmin) / (xmax - xmin))
 }
 
 #' set track specific layout parameter

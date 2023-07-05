@@ -7,7 +7,6 @@ test.helpers <- function() {
   expect_false(inRange(3, 4, 10))
   expect_true(inRange(10, 3, 10))
   expect_false(inRange(11, 3, 10))
-
 }
 test.helpers()
 
@@ -21,6 +20,9 @@ test.layout <- function() {
   expect_equal(getAnnoYBreaks(c(1:2)), c(0, 0.5, 1))
 
   expect_equal(relativePosition(100, 50, 150), 0.5)
+  expect_equal(relativePosition(0, 50, 150), 0)
+  expect_equal(relativePosition(150, 50, 150), 1)
+  expect_warning(relativePosition(200, 50, 150))
 }
 test.layout()
 
