@@ -45,7 +45,7 @@ drawStrand <- function(direction = "+", y_, show_direction = TRUE) {
 #' @param value numerical value of feature
 #' @param col color of feature
 drawFeature <- function(pos, strand_pos, value, col, type = "circle") {
-  if(type == "circle") {
+  if (type == "circle") {
     grid::grid.circle(x = grid::unit(pos, "npc"),
                       y = grid::unit(strand_pos, "npc"),
                       r = grid::unit(abs(value), "npc"),
@@ -53,8 +53,8 @@ drawFeature <- function(pos, strand_pos, value, col, type = "circle") {
   }
   else if (type == "triangle") {
     sizefactor <- 0.05
-    grid::grid.polygon(c(pos-(pos*sizefactor),pos,pos+(pos*sizefactor)),
-                       c(strand_pos-(strand_pos*sizefactor),strand_pos+(strand_pos*sizefactor), strand_pos-(strand_pos*sizefactor)),
+    grid::grid.polygon(c(pos - (pos * sizefactor), pos, pos + (pos * sizefactor)),
+                       c(strand_pos - (strand_pos * sizefactor), strand_pos + (strand_pos * sizefactor), strand_pos - (strand_pos * sizefactor)),
                        gp = grid::gpar(fill = col))
   }
 }
@@ -251,7 +251,7 @@ relativePosition <- function(x, xmin, xmax) {
 #' @param vp_height height of viewport
 #' @examples
 #' track(...)
-track = setClass("track",
+track <- setClass("track",
                  slots = list(layout = "list",
                               xmin = "numeric",
                               xmax = "numeric",
@@ -277,14 +277,14 @@ shared <- new.env()
 #' @param tracks list of tracks to plot
 #' @examples
 #' geneset(list(geneTrack(...), annoTrack(anno)))
-geneset = setClass("geneset", slots = list(tracks = "list"))
+geneset <- setClass("geneset", slots = list(tracks = "list"))
 
 # constructor method
 geneset <- function(track) {
   .Object <- new("geneset")
-  if(typeof(track) != "list") track <- list(track)
+  if (typeof(track) != "list") track <- list(track)
   .Object@tracks <- track
-  return (.Object)
+  return(.Object)
 }
 
 setMethod(f = "show",
@@ -303,7 +303,7 @@ setMethod(f = "show",
                                               width = 1,
                                               height = 1))
 
-            lapply(c(1:length(object@tracks)), function(x) {
+            lapply(seq_len(length(object@tracks)), function(x) {
                               object@tracks[[x]]@layout["vp_y_position"] <- layout$y_position_of_vp[[x]]
                               object@tracks[[x]]@layout["vp_height"] <- layout$height_of_vp
                               print(object@tracks[[x]])
@@ -324,7 +324,7 @@ setMethod(f = "show",
 #' @param show_values logical if underlying values should be displayed
 #' @examples
 #' annoTrack(gff, "Coverage", "line", "firebrick")
-annoTrack = setClass("annoTrack",
+annoTrack <- setClass("annoTrack",
                      slots = list(
                        track_param = "list"
                      ),
@@ -347,8 +347,8 @@ annoTrack <- function(track_file = NULL,
     .Object <- new("annoTrack")
 
     # get environment variables
-    xmin <- ifelse(exists("xmin", shared), get("xmin", shared), first(xLabel))
-    xmax <- ifelse(exists("xmax", shared), get("xmax", shared), last(xLabel))
+    xmin <- ifelse(exists("xmin", shared), get("xmin", shared), print("No shared variable of x found."))
+    xmax <- ifelse(exists("xmax", shared), get("xmax", shared), print("No shared variable of x found."))
     chromosome <- ifelse(exists("chromosome", shared), get("chromosome", shared), checkChromosomes(track_file$chr))
 
     # prepare track file
@@ -368,11 +368,11 @@ annoTrack <- function(track_file = NULL,
     yinterval <- diff(range(yscale_label))
     # assign parameter to object
     .Object@track_param$track_file <- track_file
-    if(show_values) showValues(.Object@track_param$track_file)
+    if (show_values) showValues(.Object@track_param$track_file)
     .Object@xmin <- xmin
     .Object@xmax <- xmax
-    .Object@upstream = upstream
-    .Object@downstream = downstream
+    .Object@upstream <- upstream
+    .Object@downstream <- downstream
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
     .Object@track_param$yinterval <- ifelse(yinterval < 1, 1, yinterval)
@@ -386,7 +386,7 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$label_orientation <- ifelse(!(label_orientation %in% c("h", "v")),
                                                     "h",
                                                     label_orientation)
-    return (.Object)
+    return(.Object)
 }
 
 setMethod(f = "show",
@@ -453,7 +453,7 @@ setMethod(f = "show",
 #' @param show_values boolean if displayed range should also be printed
 #' @examples
 #' geneTrack(track_file)
-geneTrack = setClass("geneTrack",
+geneTrack <- setClass("geneTrack",
                    slots = list(
                         track_file = "ANY",
                         gene_param = "list",
@@ -498,8 +498,8 @@ geneTrack <- function(track_file,
     .Object@gene_param$chromosome <- checkChromosomes(.Object@track_file$chr)
 
     # determine axis label
-    .Object@upstream = upstream
-    .Object@downstream = downstream
+    .Object@upstream <- upstream
+    .Object@downstream <- downstream
     axis_label <- getXLabel(.Object@track_file$start, .Object@track_file$end, .Object@upstream, .Object@downstream)
     .Object@xmin <- first(axis_label)
     .Object@xmax <- last(axis_label)
@@ -511,7 +511,7 @@ geneTrack <- function(track_file,
     .Object@plot_param$axis_label_text <- ifelse(!is.null(axis_label_text),
                                                  axis_label_text,
                                                  paste(.Object@gene_param$chromosome, "(bp)"))
-    if(!is.null(features)) {
+    if (!is.null(features)) {
       .Object@gene_param$features <- features
     }
 
@@ -527,7 +527,7 @@ geneTrack <- function(track_file,
     .Object@plot_param$border <- border
     .Object@plot_param$show_values <- show_values
 
-    return (.Object)
+    return(.Object)
 }
 
 setMethod(f = "show",
@@ -583,7 +583,9 @@ setMethod(f = "show",
             # add strand specific features
             if (!is.null(object@gene_param$features)) {
               drawFeature(relativePosition(object@gene_param$features$pos, object@xmin, object@xmax),
-                          ifelse(object@gene_param$features$strand == "+", object@plot_param$forward_strand_pos, object@plot_param$reverse_strand_pos),
+                          ifelse(object@gene_param$features$strand == "+",
+                                 object@plot_param$forward_strand_pos,
+                                 object@plot_param$reverse_strand_pos),
                           object@gene_param$features$value,
                           object@gene_param$features$col,
                           object@gene_param$features$type)
