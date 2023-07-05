@@ -1,3 +1,11 @@
+fakedata <- function(entries) {
+  fake <- data.frame("chr" = rep("Chr1", entries))
+  fake$start <- sample(entries)
+  fake$end <- fake$start + 100
+  fake$strand <- sample(c("+", "-"), size = entries, replace = TRUE)
+  return(fake)
+}
+
 test.helpers <- function() {
   expect_equal(last(c(1:3)), 3)
   expect_equal(first(c(1:3)), 1)
@@ -27,6 +35,10 @@ test.layout <- function() {
 test.layout()
 
 test.data <- function() {
+  df <- fakedata(100)
+
+  expect_stdout(setNames(data.frame("Chr1", 1, 10, "+"), c("allele", "start", "end", "strand"))) # wrong colnames
+  expect_stdout(prepare(df, "Chr1", 101, 110, "+")) # empty data.frame after filtering
   expect_warning(checkChromosomes(c("Chr1", "Chr2", "Chr3")))
   expect_equal(checkChromosomes(c("Chr1", "Chr2", "Chr3")), "Chr1")
   expect_equal(checkChromosomes(c("Chr1")), "Chr1")
