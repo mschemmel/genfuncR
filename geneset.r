@@ -124,13 +124,18 @@ prepare <- function(dataset,
 #' @param x number of tracks to draw
 #' @examples
 #' getLayout(list(annoTrack, ...))
-getLayout <- function(x) {
-  coordinates <- list("height_of_vp" = 0.4,
-                      "y_position_of_vp" = 0.3)
+getLayout <- function(x, rel_heights) {
+  coordinates <- list("height_of_vp" = 0.95,
+                      "y_position_of_vp" = 0.05)
 
   if (x != 1) {
-    coordinates$height_of_vp <- 0.95 / x
-    coordinates$y_position_of_vp <- dropLast(seq(0.05, 1, coordinates$height_of_vp))
+    if (!is.null(rel_heights)) {
+      coordinates$height_of_vp <- rel_heights
+      coordinates$y_position_of_vp <- dropLast(cumsum(c(0.05, rel_heights))) * 0.95
+      return(coordinates)
+    }
+    coordinates$height_of_vp <- rep(0.95 / x, x)
+    coordinates$y_position_of_vp <- dropLast(seq(0.05, 1, first(coordinates$height_of_vp)))
   }
   return(coordinates)
 }
@@ -277,13 +282,16 @@ shared <- new.env()
 #' @param tracks list of tracks to plot
 #' @examples
 #' geneset(list(geneTrack(...), annoTrack(anno)))
-geneset <- setClass("geneset", slots = list(tracks = "list"))
+geneset <- setClass("geneset", slots = list(tracks = "list",
+                                            rel_heights = "ANY"))
 
 # constructor method
-geneset <- function(track) {
+geneset <- function(track,
+                    rel_heights = NULL) {
   .Object <- new("geneset")
   if (typeof(track) != "list") track <- list(track)
   .Object@tracks <- track
+  .Object@rel_heights <- rel_heights
   return(.Object)
 }
 
@@ -291,7 +299,7 @@ setMethod(f = "show",
           signature = "geneset",
           definition = function(object) {
             # get layout of plot
-            layout <- getLayout(length(object@tracks))
+            layout <- getLayout(length(object@tracks), object@rel_heights)
 
             # create new device and newpage
             grid::grid.newpage()
@@ -305,7 +313,7 @@ setMethod(f = "show",
 
             lapply(seq_len(length(object@tracks)), function(x) {
                               object@tracks[[x]]@layout["vp_y_position"] <- layout$y_position_of_vp[[x]]
-                              object@tracks[[x]]@layout["vp_height"] <- layout$height_of_vp
+                              object@tracks[[x]]@layout["vp_height"] <- layout$height_of_vp[[x]]
                               print(object@tracks[[x]])
             })
 })
@@ -353,6 +361,7 @@ annoTrack <- function(track_file = NULL,
 
     # prepare track file
     track_file <- prepare(track_file, chromosome, xmin, xmax)
+    if (show_values) showValues(.Object@track_param$track_file)
 
     # get column with data
     if (values %in% names(track_file)) {
@@ -366,9 +375,9 @@ annoTrack <- function(track_file = NULL,
     yscale_label <- getAnnoYScale(track_file$value, yrange)
     yscale_at <- getAnnoYBreaks(yscale_label)
     yinterval <- diff(range(yscale_label))
+
     # assign parameter to object
     .Object@track_param$track_file <- track_file
-    if (show_values) showValues(.Object@track_param$track_file)
     .Object@xmin <- xmin
     .Object@xmax <- xmax
     .Object@upstream <- upstream
@@ -479,7 +488,7 @@ geneTrack <- function(track_file,
                       show_axis = TRUE,
                       show_direction_label = TRUE,
                       axis_label_text = NULL,
-                      axis_label_offset = -0.8,
+                      axis_label_offset = -0.1,
                       axis_label_gp = NULL,
                       border = FALSE,
                       show_values = FALSE
