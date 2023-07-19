@@ -361,7 +361,7 @@ annoTrack <- function(track_file = NULL,
 
     # prepare track file
     track_file <- prepare(track_file, chromosome, xmin, xmax)
-    if (show_values) showValues(.Object@track_param$track_file)
+    if (show_values) showValues(track_file)
 
     # get column with data
     if (values %in% names(track_file)) {
