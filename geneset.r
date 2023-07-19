@@ -237,15 +237,15 @@ checkChromosomes <- function(chromosomes) {
   }
 }
 
-#' calculate relative x position of feauture
-#' @param x numeric absolute numeric value
+#' calculate relative position of feature
+#' @param x absolute numeric value
 #' @param xmin minimal value of scale
 #' @param xmax maximal value of scale
 #' @examples
 #' relativePosition(100, 50, 150)
 relativePosition <- function(x, xmin, xmax) {
   if (!inRange(x, xmin, xmax)) {
-    warning("Specified x position not in range of axis.")
+    warning("Specified position not in range of axis.")
     return(0)
   }
   return((x - xmin) / (xmax - xmin))
@@ -384,7 +384,7 @@ annoTrack <- function(track_file = NULL,
     .Object@downstream <- downstream
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
-    .Object@track_param$yinterval <- ifelse(yinterval < 1, 1, yinterval)
+    .Object@track_param$yinterval <- yinterval
     .Object@track_param$ymax <- max(yscale_label)
     .Object@track_param$ymin <- min(yscale_label)
     .Object@track_param$start_y <- ifelse(0 %in% yscale_label, yscale_at[which(yscale_label == 0)], 0)
