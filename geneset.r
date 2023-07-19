@@ -412,7 +412,7 @@ setMethod(f = "show",
 
             # add track label
             grid::grid.text(object@track_param$label,
-                            x = -0.075,
+                            x = -0.15,
                             y = 0.5,
                             just = ifelse(object@track_param$label_orientation == "h", "right", "center"),
                             rot = ifelse(object@track_param$label_orientation == "h", 0, 90),
