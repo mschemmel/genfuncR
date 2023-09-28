@@ -183,7 +183,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   # check range ( <-0 | <-0-> | 0-> )
   if (all(x > 0)) interval <- c(0, max(x))
   if (all(x < 0)) interval <- c(min(x), 0)
-  if (any(x > 0) & any(x < 0)) interval <- c(-max(abs(x)), max(abs(x)))
+  if (any(x > 0) & any(x < 0)) interval <- max(abs(x)) * c(-1, 1)
   return(pretty(interval))
 }
 
