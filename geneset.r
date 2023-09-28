@@ -69,7 +69,7 @@ drawFeature <- function(pos, strand_pos, value, col, type = "circle") {
 #' @param angle Angle of text label
 #' @param gp_ Grid parameter like font, style, color, ...
 #' @examples
-#' drawText(x_ = 1, y_ = 3, w_ = 1, h_ = 1, "Test", angle = 45)
+#' drawText(x_ = 1, y_ = 3, w_ = 1, h_ = 1, label_txt = "Test", angle = 45)
 drawText <- function(vp_name = NULL, x_, y_, w_, h_, label_txt = NULL, angle = 0, gp_ = NULL) {
     grid::pushViewport(grid::viewport(name = vp_name,
                                       x = grid::unit(x_, "npc"),
@@ -163,7 +163,7 @@ dropLast <- function(x) return(x[-length(x)])
 #' @param min_ minimal allowed value
 #' @param max_ maximal allowed value
 #' @examples
-#' inRange(10,5,15)
+#' inRange(10, 5, 15)
 inRange <- function(x, min_, max_) return(all(x >= min_ & x <= max_))
 
 #' calculate y scale labels of annotation tracks
