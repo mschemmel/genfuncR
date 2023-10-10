@@ -51,8 +51,7 @@ drawFeature <- function(pos, strand_pos, value, col, type = "circle") {
                       y = grid::unit(strand_pos, "npc"),
                       r = grid::unit(abs(value), "npc"),
                       gp = grid::gpar(fill = col))
-  }
-  else if (type == "triangle") {
+  } else if (type == "triangle") {
     sizefactor <- 0.05
     grid::grid.polygon(c(pos - (pos * sizefactor), pos, pos + (pos * sizefactor)),
                        c(strand_pos - (strand_pos * sizefactor), strand_pos + (strand_pos * sizefactor), strand_pos - (strand_pos * sizefactor)),
@@ -227,7 +226,6 @@ showValues <- function(object) {
 #' @param chromosomes vector of chromosomes
 #' @examples
 #' checkChromosomes(c("Chr1", "Chr1"))
-
 checkChromosomes <- function(chromosomes) {
   found_chromosomes <- unique(as.character(chromosomes))
   if (length(found_chromosomes) > 1) {
