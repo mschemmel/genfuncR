@@ -11,14 +11,15 @@ drawGene <- function(x1, x2, pos, direction, forward_color, reverse_color, gene_
     y1 <- pos - gene_height
     y2 <- pos + gene_height
 
-    ifelse(direction == "+",
-           grid::grid.polygon(c(x1, x1, x2 - arrow_head_width, x2, x2 - arrow_head_width),
-                              c(y1, y2, y2, pos, y1),
-                              gp = grid::gpar(fill = forward_color)),
-           grid::grid.polygon(c(x1 + arrow_head_width, x1, x1 + arrow_head_width, x2, x2),
-                              c(y1, pos, y2, y2, y1),
-                              gp = grid::gpar(fill = reverse_color))
-    )
+    color <- list("+" = forward_color, "-" = reverse_color)
+    coords <- list("+x" = c(x1, x1, x2 - arrow_head_width, x2, x2 - arrow_head_width),
+                   "+y" = c(y1, y2, y2, pos, y1),
+                   "-x" = c(x1 + arrow_head_width, x1, x1 + arrow_head_width, x2, x2),
+                   "-y" = c(y1, pos, y2, y2, y1))
+
+    grid::grid.polygon(coords[[paste0(direction, "x")]],
+                       coords[[paste0(direction, "y")]],
+                       gp = grid::gpar(fill = color[[direction]]))
 }
 
 #' draw strand (5' ------ 3') on specified position
