@@ -183,7 +183,7 @@ getAnnoYScale <- function(x, range_ = NULL) {
   # check range ( <-0 | <-0-> | 0-> )
   if (all(x > 0)) interval <- c(0, max(x))
   if (all(x < 0)) interval <- c(min(x), 0)
-  if (any(x > 0) & any(x < 0)) interval <- max(abs(x)) * c(-1, 1)
+  if (any(x > 0) && any(x < 0)) interval <- max(abs(x)) * c(-1, 1)
   return(pretty(interval))
 }
 
@@ -345,7 +345,7 @@ annoTrack <- function(track_file = NULL,
                       downstream = 0,
                       border = TRUE,
                       yrange = NULL,
-                      label_gp = grid::gpar(fontsize = 20, col = "black"),
+                      label_gp = grid::gpar(fontsize = 10, col = "black"),
                       track_gp = grid::gpar(col = "gray40", lwd = 1),
                       label_orientation = "h",
                       show_values = FALSE
@@ -420,7 +420,7 @@ setMethod(f = "show",
             # add yaxis
             grid::grid.yaxis(label = object@track_param$yscale_label,
                              at = object@track_param$yscale_at,
-                             gp = grid::gpar(fontsize = 16))
+                             gp = grid::gpar(fontsize = 10))
 
         if (nrow(object@track_param$track_file) != 0) {
             # add middle line
