@@ -173,7 +173,10 @@ inRange <- function(x, min_, max_) return(all(x >= min_ & x <= max_))
 #' getAnnoYScale(dat, range_ = c(0, 10))
 getAnnoYScale <- function(x, range_ = NULL) {
   # test if specific range is provided
-  if (!is.null(range_)) return(pretty(range_))
+  if (!is.null(range_)) {
+    if(max(range_) < max(x)) print("annoTrack: data exceeds given range of yaxis.")
+    return(pretty(range_))
+  }
   if (identical(x, numeric(0))) return(c(0, 0.5, 1))
   if (length(x) == 1) return(pretty(c(0, x)))
 
@@ -568,8 +571,8 @@ setMethod(f = "show",
                          show_direction = object@plot_param$show_direction_label)
 
               strand_positions <- ifelse(object@track_file$strand == "+",
-                                  object@plot_param$forward_strand_pos,
-                                  object@plot_param$reverse_strand_pos)
+                                         object@plot_param$forward_strand_pos,
+                                         object@plot_param$reverse_strand_pos)
             } else {
               drawStrand(direction = object@plot_param$strand,
                          y_ = object@plot_param$single_strand_pos,
