@@ -172,11 +172,10 @@ inRange <- function(x, min_, max_) return(all(x >= min_ & x <= max_))
 #' @examples
 #' getAnnoYScale(dat, range_ = c(0, 10))
 getAnnoYScale <- function(x, range_ = NULL) {
-  if (identical(x, numeric(0))) return(c(0, 0.5, 1))
-  if (length(x) == 1) return(pretty(c(0, x)))
-
   # test if specific range is provided
   if (!is.null(range_)) return(pretty(range_))
+  if (identical(x, numeric(0))) return(c(0, 0.5, 1))
+  if (length(x) == 1) return(pretty(c(0, x)))
 
   # get min and max of y scale
   interval <- c(min(x), max(x))
@@ -384,8 +383,8 @@ annoTrack <- function(track_file = NULL,
     .Object@track_param$yscale_label <- yscale_label
     .Object@track_param$yscale_at <- yscale_at
     .Object@track_param$yinterval <- yinterval
-    .Object@track_param$ymax <- max(yscale_label)
-    .Object@track_param$ymin <- min(yscale_label)
+    #.Object@track_param$ymax <- max(yscale_label)
+    #.Object@track_param$ymin <- min(yscale_label)
     .Object@track_param$start_y <- ifelse(0 %in% yscale_label, yscale_at[which(yscale_label == 0)], 0)
     .Object@track_param$label <- label
     .Object@track_param$label_gp <- label_gp
